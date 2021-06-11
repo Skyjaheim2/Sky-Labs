@@ -1,0 +1,223 @@
+{% extends "layout.html" %}
+
+{% block head %}
+{% endblock %}
+
+{% block style %}
+<style>
+    #solveBtn {
+        margin-bottom: 10px;
+    }
+    #userInput {
+        padding: 5px;
+        font-size: 25px;
+        min-height: 35px;
+        width: 800px;
+        border-radius: 10px;
+        margin-bottom: 5px;
+    }
+    .main-container {
+        margin-left: 20%;
+        margin-right: 20%;
+    }
+    .results-container {
+        background-color: rgba(226, 226, 226, 0.45);
+        height: 500px;
+        border-radius: 15px;
+        /*font-size: 30px;*/
+        padding: 20px;
+    }
+    .final-result {
+        font-size: 20px;
+    }
+    .steps-heading {
+        display: none;
+        margin-top: 10px;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: 25px;
+        font-weight: 600;
+    }
+    .steps-container {
+        background-color: white;
+        padding: 10px;
+        border-radius: 10px;
+        height: 400px;
+    }
+    .step-description {
+        background-color: rgba(226, 226, 226, 0.45);
+        font-family: "Times New Roman", Symbola, serif;
+        font-size: 18px;
+        padding: 5px;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        /*margin-top: 50px;*/
+    }
+    .step-info {
+        margin-bottom: 8px;
+    }
+    #finalStep {
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: 18px;
+    }
+
+
+</style>
+{% endblock %}
+
+
+{% block body %}
+
+    <div id="mainHeading">Computer Algebra</div>
+
+
+    <div class="main-container">
+        <label class="inputLabel" for="userInput">Enter Problem:</label>
+        <p><span id="userInput"></span></p>
+        <button id="solveBtn" type="button" class="btn btn-primary">Solve</button>
+
+        <div class="results-container">
+            <div id="finalStep"></div>
+            <div class="steps-heading">Steps</div>
+            <div class="steps-container">
+<!--                <div class="step-description">Simplify inside the brackets: $ (1+1)=2 $</div>-->
+<!--                <div class="step-info">$ \left(\left(1+1\right)\cdot 2\right) = (2 \cdot 2) $</div>-->
+
+<!--                <div class="step-description">Simplify inside the brackets: $ (2 \cdot 2)=4 $</div>-->
+<!--                <div class="final-step">Solution: $ 4 $</div>-->
+
+            </div>
+
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block script %}
+
+<script>
+    class UI {
+        static displayResult(resultText) {
+            let resultContainer = document.querySelector('.results-container')
+            let resultDiv = document.createElement('div')
+            resultDiv.textContent = resultText
+            resultContainer.appendChild(resultDiv)
+        }
+        static displayStepsHeading() {
+            let stepsHeading = document.querySelector('.steps-heading')
+            stepsHeading.style.display = 'block'
+        }
+        static addLatexToDom(element, latexString) {
+            katex.render(String.raw`${latexString}`, element, {
+                throwOnError: false
+            });
+        }
+        static showAllSteps(solution) {
+            let stepsContainer = document.querySelector('.steps-container')
+            solution.forEach((step) => {
+                stepsContainer.innerHTML += `
+                    <div class="step-description">Simplify inside the brackets: $ (1+1)=2 $</div>
+                    <div class="step-info">$ \\left(\\left(1+1\\right)\\cdot 2\\right) = (2 \\cdot 2) $</div>
+                `
+            })
+
+        }
+        static getUserInput() {
+            return document.querySelector('#userInput').value
+        }
+
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        var MQ = MathQuill.getInterface(2)
+        var config = {
+            spaceBehavesLikeTab: false,
+            leftRightIntoCmdGoes: 'up',
+            restrictMismatchedBrackets: true,
+            sumStartsWithNEquals: true,
+            supSubsRequireOperand: true,
+            charsThatBreakOutOfSupSub: '+-=<>',
+            autoSubscriptNumerals: true,
+            autoCommands: 'pi theta sqrt sum int',
+            autoOperatorNames: 'sin cos',
+            maxDepth: 10,
+        }
+
+        var userInput = document.getElementById('userInput');
+
+        var answerMathField = MQ.MathField(userInput, config, {
+            handlers: {
+                edit: function() {},
+                upOutOf: function(mathField) {},
+                moveOutOf: function(dir, mathField) {
+                    if (dir === MQ.L) {
+
+                    }
+                    else {
+
+                    }
+                },
+                enter: function () {
+                    alert('enter')
+                }
+            }
+
+        });
+        /* ON-KEY UP EVENTS */
+
+        // UserInput
+        document.querySelector('#userInput').addEventListener('keyup', function() {
+            let enteredMath = answerMathField.latex(); // Get entered math in LaTeX format
+            // console.log(enteredMath)
+        })
+
+        /* ON-CLICK EVENTS */
+
+        // Solve Button
+        document.querySelector('#solveBtn').addEventListener('click', () => {
+            let enteredMath = answerMathField.latex()
+            let finalStepDiv = document.querySelector('#finalStep')
+            console.log(enteredMath)
+
+            const request = new XMLHttpRequest()
+            request.open('POST', `/solve`)
+            request.onload = () => {
+                if (request.status === 200) {
+                    let solution = request.responseText
+                    if (solution !== 'Unable To Solve') {
+                        solution = JSON.parse(solution)
+                        let numSteps = Object.keys(solution).length;
+                        let finalStepLatex = solution[numSteps]
+                        // Add final step to DOM
+                        UI.addLatexToDom(finalStepDiv, finalStepLatex)
+                        UI.displayStepsHeading()
+                        // Add all steps to DOM
+                        UI.showAllSteps(solution)
+
+
+                        console.log(solution)
+                        console.log(finalStepLatex)
+                    }
+                    else {
+
+                    }
+                }
+            }
+            const data = new FormData()
+            data.set('userInput', enteredMath)
+            request.send(data)
+        })
+
+
+    })
+
+
+    /* ONCLICK EVENTS */
+
+    // Solve Button
+    document.querySelector('#solveBtn').addEventListener('click', () => {
+
+    })
+</script>
+
+{% endblock %}
