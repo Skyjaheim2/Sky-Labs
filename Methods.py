@@ -29,23 +29,38 @@ def simplify(expression: str, stepCounter=None, Steps=None):
             if operation == 'arithmetic-add':
                 firstTerm, secondTerm = currentExpressionToEvaluate.split('+')[0], currentExpressionToEvaluate.split('+')[1]
                 result = str(int(firstTerm) + int(secondTerm))
-                expression = expression.replace(f'({firstTerm}+{secondTerm})', result)
+                simplifiedExpression = expression.replace(f'({firstTerm}+{secondTerm})', result)
+                expression = simplifiedExpression
                 stepCounter += 1
-                Steps.update({stepCounter: f'Simplify inside the brackets: ({firstTerm}+{secondTerm}) = {result}'})
+                stepDictValue = {
+                    'step': f'Simplify inside the brackets: ({firstTerm}+{secondTerm}) = {result}',
+                    'simplification': simplifiedExpression
+                }
+                Steps.update({stepCounter: stepDictValue})
                 return simplify(expression, stepCounter, Steps)
             elif operation == 'arithmetic-subtract':
                 firstTerm, secondTerm = currentExpressionToEvaluate.split('-')[0], currentExpressionToEvaluate.split('-')[1]
                 result = str(int(firstTerm) - int(secondTerm))
-                expression = expression.replace(f'({firstTerm}-{secondTerm})', result)
+                simplifiedExpression = expression.replace(f'({firstTerm}-{secondTerm})', result)
+                expression = simplifiedExpression
                 stepCounter += 1
-                Steps.update({stepCounter: f'Simplify inside the brackets: ({firstTerm}-{secondTerm}) = {result}'})
+                stepDictValue = {
+                    'step': f'Simplify inside the brackets: ({firstTerm}-{secondTerm}) = {result}',
+                    'simplification': simplifiedExpression
+                }
+                Steps.update({stepCounter: stepDictValue})
                 return simplify(expression, stepCounter, Steps)
             elif operation == 'arithmetic-multiply':
                 firstTerm, secondTerm = currentExpressionToEvaluate.split('*')[0], currentExpressionToEvaluate.split('*')[1]
                 result = str(int(firstTerm) * int(secondTerm))
-                expression = expression.replace(f'({firstTerm}*{secondTerm})', result)
+                simplifiedExpression = expression.replace(f'({firstTerm}*{secondTerm})', result)
+                expression = simplifiedExpression
                 stepCounter += 1
-                Steps.update({stepCounter: f'Simplify inside the brackets: ({firstTerm}*{secondTerm}) = {result}'})
+                stepDictValue = {
+                    'step': f'Simplify inside the brackets: ({firstTerm}*{secondTerm}) = {result}',
+                    'simplification': simplifiedExpression
+                }
+                Steps.update({stepCounter: stepDictValue})
                 return simplify(expression, stepCounter, Steps)
 
 
@@ -78,17 +93,22 @@ def getNumOpenParen(expression):
 
 
 def main():
-    # print(simplify('((1+1)*2)'))
-    Steps = {1: 'Simplify inside the brackets: (1+1) = 2', 2: 'Simplify inside the brackets: (2*2) = 4', 3: '((1+1)*2) = 4'}
+    # print(simplify('((1+1)*2)')[0])
+
+    Steps = {1: {'step': 'Simplify inside the brackets: (1+1) = 2', 'simplification': '(2*2)'},
+           2: {'step': 'Simplify inside the brackets: (2*2) = 4', 'simplification': '4'}}
 
     print(Steps)
     print()
-    for step in Steps:
-        Steps.update({step: latexify(Steps[step])})
+    for stepNum in Steps:
+        Steps.update({stepNum: {'step': latexify(Steps[stepNum]["step"]), 'simplification': latexify(Steps[stepNum]["simplification"])}})
 
     print(Steps)
 
 
-if __name__ == '__main__':
 
+
+
+
+if __name__ == '__main__':
     main()

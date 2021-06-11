@@ -16,13 +16,17 @@
         border-radius: 10px;
         margin-bottom: 5px;
     }
+    #finalStep {
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: 18px;
+    }
     .main-container {
         margin-left: 20%;
         margin-right: 20%;
     }
     .results-container {
         background-color: rgba(226, 226, 226, 0.45);
-        height: 500px;
+        /*height: 500px;*/
         border-radius: 15px;
         /*font-size: 30px;*/
         padding: 20px;
@@ -41,7 +45,7 @@
         background-color: white;
         padding: 10px;
         border-radius: 10px;
-        height: 400px;
+        /*height: 400px;*/
     }
     .step-description {
         background-color: rgba(226, 226, 226, 0.45);
@@ -53,12 +57,15 @@
         /*margin-top: 50px;*/
     }
     .step-info {
-        margin-bottom: 8px;
+        margin-bottom: 15px;
     }
-    #finalStep {
+    .final-step {
+        margin-top: 10px;
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
         font-size: 18px;
+        font-weight: 600;
     }
+
 
 
 </style>
@@ -107,25 +114,97 @@
             let stepsHeading = document.querySelector('.steps-heading')
             stepsHeading.style.display = 'block'
         }
-        static addLatexToDom(element, latexString) {
+        static addLatexToElement(element, latexString) {
             katex.render(String.raw`${latexString}`, element, {
                 throwOnError: false
             });
         }
-        static showAllSteps(solution) {
+        static showAllSteps(solution, enteredExpression) {
             let stepsContainer = document.querySelector('.steps-container')
-            solution.forEach((step) => {
-                stepsContainer.innerHTML += `
-                    <div class="step-description">Simplify inside the brackets: $ (1+1)=2 $</div>
-                    <div class="step-info">$ \\left(\\left(1+1\\right)\\cdot 2\\right) = (2 \\cdot 2) $</div>
-                `
-            })
+            let allSimplifications = extractAllSimplificationsFromSolution(solution)
+            let stepCounter = 1
+            console.log(allSimplifications)
+
+            /* Clear any previous steps */
+            stepsContainer.innerHTML = ''
+
+            for (let stepNum in solution) {
+                let currentStep = new Step(solution[stepNum])
+
+                // console.log(solution[currentStep])
+
+                if (!(currentStep.isFinalStep)) {
+                    let latexStepDescriptionSpan = document.createElement('span')
+                    let latexStepInfoSpan = document.createElement('span')
+
+                    // console.log(`Description: ${step.description}`)
+                    // console.log(`Result: ${step.result}`)
+                    // console.log()
+
+                    /* Create step description */
+                    let stepDescriptionDiv = document.createElement('div')
+                    stepDescriptionDiv.className = 'step-description'
+                    stepDescriptionDiv.textContent = `${currentStep.description}: `
+                    stepDescriptionDiv.appendChild(latexStepDescriptionSpan)
+                    /* Create step info */
+                    let stepInfoDiv = document.createElement('div')
+                    stepInfoDiv.className = 'step-info'
+                    stepInfoDiv.appendChild(latexStepInfoSpan)
+
+                    /* Add step description and step info to stepsContainer */
+                    stepsContainer.appendChild(stepDescriptionDiv)
+                    stepsContainer.appendChild(stepInfoDiv)
+
+
+                    /* Add latex */
+                    UI.addLatexToElement(latexStepDescriptionSpan, currentStep.result)
+                    if (stepCounter === 1) {
+                        UI.addLatexToElement(latexStepInfoSpan, `${enteredExpression} = ${currentStep.simplification}`)
+                    }
+                    else {
+                        /* Show the the previous simplification for currentStep step-info */
+                        UI.addLatexToElement(latexStepInfoSpan, `${allSimplifications[stepCounter-1]} = ${allSimplifications[stepNum]}`)
+                    }
+
+                }
+                else {
+                    let lastStepInfoDiv = stepsContainer.lastElementChild
+                    lastStepInfoDiv.className = 'final-step'
+                    lastStepInfoDiv.textContent = 'Solution: '
+
+                    let latexFinalStepSpan = document.createElement('span')
+
+                    lastStepInfoDiv.appendChild(latexFinalStepSpan)
+
+                    UI.addLatexToElement(latexFinalStepSpan, solution[stepCounter])
+
+                }
+                stepCounter += 1
+            }
 
         }
         static getUserInput() {
             return document.querySelector('#userInput').value
         }
 
+    }
+
+    class Step {
+        constructor(stepDict) {
+            if (typeof stepDict === 'object' && typeof stepDict !== null) {
+                this.simplification = stepDict['simplification']
+                this.step = stepDict['step']
+                this.isFinalStep = false
+                this.description = this.step.split(': ')[0]
+                this.result = this.step.split(': ')[1]
+
+            }
+            else {
+                this.simplification = stepDict
+                this.step = stepDict
+                this.isFinalStep = true
+            }
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -177,7 +256,7 @@
         document.querySelector('#solveBtn').addEventListener('click', () => {
             let enteredMath = answerMathField.latex()
             let finalStepDiv = document.querySelector('#finalStep')
-            console.log(enteredMath)
+            // console.log(enteredMath)
 
             const request = new XMLHttpRequest()
             request.open('POST', `/solve`)
@@ -188,15 +267,17 @@
                         solution = JSON.parse(solution)
                         let numSteps = Object.keys(solution).length;
                         let finalStepLatex = solution[numSteps]
+                        // console.log(solution)
+                        // console.log(finalStepLatex)
                         // Add final step to DOM
-                        UI.addLatexToDom(finalStepDiv, finalStepLatex)
+                        UI.addLatexToElement(finalStepDiv, finalStepLatex)
                         UI.displayStepsHeading()
                         // Add all steps to DOM
-                        UI.showAllSteps(solution)
+                        UI.showAllSteps(solution, enteredMath)
 
 
-                        console.log(solution)
-                        console.log(finalStepLatex)
+                        // console.log(solution)
+                        // console.log(finalStepLatex)
                     }
                     else {
 
@@ -214,10 +295,20 @@
 
     /* ONCLICK EVENTS */
 
-    // Solve Button
-    document.querySelector('#solveBtn').addEventListener('click', () => {
+    function extractAllSimplificationsFromSolution(solution) {
+        let allSimplifications = {}
+        let i = 1
+        for (let stepNum in solution) {
+            allSimplifications[stepNum] = solution[stepNum]['simplification']
 
-    })
+        }
+        return allSimplifications
+
+    }
+
+
+
+
 </script>
 
 {% endblock %}

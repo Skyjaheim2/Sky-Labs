@@ -23,13 +23,14 @@ def solve():
         Steps, result, stepCounter = Simplification[0], Simplification[1], Simplification[2]
 
         if Steps != -1:
-            Steps.update({stepCounter+1: f'{userInput} = {result}'})
-            # Steps = {
-            #     1: 'Hey there'
-            # }
-            print(Steps)
-            for step in Steps:
-                Steps.update({step: latexify(Steps[step])})
+
+
+            # CONVERT ALL STEPS TO LATEX
+            for stepNum in Steps:
+                Steps.update({stepNum: {'step': latexify(Steps[stepNum]["step"]),
+                                        'simplification': latexify(Steps[stepNum]["simplification"])}})
+
+            Steps.update({stepCounter + 1: f'{latexify(userInput)} = {result}'})
             return jsonify(Steps)
 
     return 'Unable To Solve'
