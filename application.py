@@ -17,23 +17,23 @@ def solve():
     userInput = parseLatex(userInput)
     print(f'After parse: {userInput}')
 
-    if '(' in userInput or ')' in userInput:
-        Simplification = simplify(userInput)
-        # print(Simplification)
-        Steps, result, stepCounter = Simplification[0], Simplification[1], Simplification[2]
 
-        if Steps != -1:
+    Simplification = simplify(userInput)
+    # print(Simplification)
+    Steps, result, stepCounter = Simplification[0], Simplification[1], Simplification[2]
+
+    if Steps != -1:
 
 
-            # CONVERT ALL STEPS TO LATEX
-            for stepNum in Steps:
-                Steps.update({stepNum: {'step': latexify(Steps[stepNum]["step"]),
-                                        'simplification': latexify(Steps[stepNum]["simplification"])}})
+        # CONVERT ALL STEPS TO LATEX
+        for stepNum in Steps:
+            Steps.update({stepNum: {'step': latexify(Steps[stepNum]["step"]),
+                                    'simplification': latexify(Steps[stepNum]["simplification"])}})
 
-            Steps.update({stepCounter + 1: f'{latexify(userInput)} = {result}'})
-            return jsonify(Steps)
-
-    return 'Unable To Solve'
+        Steps.update({stepCounter + 1: f'{latexify(userInput)} = {result}'})
+        return jsonify(Steps)
+    else:
+        return 'Unable To Solve'
 
 
 
