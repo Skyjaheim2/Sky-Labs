@@ -18,7 +18,7 @@ def solve():
     print(f'After parse: {userInput}')
 
 
-    Simplification = simplify(userInput)
+    Simplification = evaluateArithmetic(userInput)
     # print(Simplification)
     Steps, result, stepCounter = Simplification[0], Simplification[1], Simplification[2]
 

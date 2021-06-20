@@ -1,11 +1,13 @@
-from math import floor
+from math import floor, pi, e
 
 def parseLatex(latexString: str):
-    latexString = latexString.replace('\left(', '(').replace('\\right)', ')').replace('\cdot', '*')
+    latexString = latexString.replace('\left(', '(').replace('\\right)', ')').replace('\cdot', '*').replace('\\pi', f'{pi}')\
+                             .replace('e', f'{e}')
     return latexString
 
 def latexify(expression):
-    expression = expression.replace('(', '\left(').replace(')', '\\right)').replace('*', '\cdot')
+    expression = expression.replace('(', '\left(').replace(')', '\\right)').replace('*', '\cdot').replace(f'{pi}', '\pi')\
+                           .replace(f'{e}', 'e')
     return expression
 
 def simplify(expression: str, stepCounter=None, Steps=None):
@@ -67,23 +69,26 @@ def simplify(expression: str, stepCounter=None, Steps=None):
                     return simplify(expression, stepCounter, Steps)
                 elif operation == 'add-subtract-only':
                     result = addAndSubtractTerms(currentExpressionToEvaluate)
+                    simplifiedExpression = expression.replace(f'({currentExpressionToEvaluate})', result)
                     stepCounter += 1
                     stepDictValue = {
-                        'step': f'Add and subtract [left to right]: {currentExpressionToEvaluate} = {result}',
-                        'simplification': result
+                        'step': f'Simplify inside the parentheses by adding and subtracting [left to right]: ({currentExpressionToEvaluate}) = ({result})',
+                        'simplification': simplifiedExpression
                     }
                     Steps.update({stepCounter: stepDictValue})
-                    return simplify(result, stepCounter, Steps)
+                    expression = simplifiedExpression
+                    return simplify(expression, stepCounter, Steps)
                 elif operation == 'general-arithmetic':
-                    expressionWithOrder = applyPEDMAS(currentExpressionToEvaluate)
+                    expressionWithOrder = applyPEMDAS(currentExpressionToEvaluate)
+                    simplifiedExpression = expression.replace(f'{currentExpressionToEvaluate}', expressionWithOrder)
 
                     stepCounter += 1
                     stepDictValue = {
-                        'step': f'Apply PEDMAS: {currentExpressionToEvaluate} = {expressionWithOrder}',
-                        'simplification': expressionWithOrder
+                        'step': f'Simplify inside the parentheses by applying PEMDAS: {currentExpressionToEvaluate} = {expressionWithOrder}',
+                        'simplification': simplifiedExpression
                     }
                     Steps.update({stepCounter: stepDictValue})
-                    return simplify(expressionWithOrder, stepCounter, Steps)
+                    return simplify(simplifiedExpression, stepCounter, Steps)
                 elif operation == 'no-operation':
                     result = currentExpressionToEvaluate
                     simplifiedExpression = expression.replace(f'({currentExpressionToEvaluate})', f'{result}')
@@ -138,16 +143,150 @@ def simplify(expression: str, stepCounter=None, Steps=None):
             Steps.update({stepCounter: stepDictValue})
             return simplify(result, stepCounter, Steps)
         elif operation == 'general-arithmetic':
-            expressionWithOrder = applyPEDMAS(expression)
+            expressionWithOrder = applyPEMDAS(expression)
 
             stepCounter += 1
             stepDictValue = {
-                'step': f'Apply PEDMAS: {expression} = {expressionWithOrder}',
+                'step': f'Apply PEMDAS: {expression} = {expressionWithOrder}',
                 'simplification': expressionWithOrder
             }
             Steps.update({stepCounter: stepDictValue})
             return simplify(expressionWithOrder, stepCounter, Steps)
 
+def evaluateArithmetic(expression, stepCounter=None, Steps=None, returnStepsAsArray=False):
+    if Steps is None:
+        Steps = {}
+    if stepCounter is None:
+        stepCounter = 0
+    if isSingleExpression(expression):
+        if returnStepsAsArray:
+            stepsAsArray = []
+            for step in Steps:
+                stepsAsArray.append(Steps[step])
+            return (stepsAsArray, expression, stepCounter)
+        return (Steps,expression, stepCounter)
+
+    allOperators = ['+','-','*','/']
+    operation = getOperationToPerform(expression)
+
+    if '+-' in expression:
+        simplifiedExpression = expression.replace('+-', '-')
+        expression = simplifiedExpression
+
+        stepDictValue = {
+            'step': f'Apply rule: a+-b = a-b',
+            'simplification': simplifiedExpression
+        }
+        stepCounter += 1
+        Steps.update({stepCounter: stepDictValue})
+
+        return evaluateArithmetic(expression, stepCounter, Steps, returnStepsAsArray)
+
+    if '--' in expression:
+        simplifiedExpression = expression.replace('--', '+')
+        expression = simplifiedExpression
+
+        stepDictValue = {
+            'step': f'Apply rule: a--b = a+b',
+            'simplification': simplifiedExpression
+        }
+        stepCounter += 1
+        Steps.update({stepCounter: stepDictValue})
+
+        return evaluateArithmetic(expression, stepCounter, Steps, returnStepsAsArray)
+
+
+    if operation == 'general-arithmetic' and '(' not in expression:
+        expressionWithOrder = applyPEMDAS(expression)
+
+        stepDictValue = {
+            'step': f'Apply PEMDAS: {expression} = {expressionWithOrder}',
+            'simplification': expressionWithOrder
+        }
+        expression = expressionWithOrder
+        stepCounter += 1
+        Steps.update({stepCounter: stepDictValue})
+
+    elif operation == 'multiply-only':
+        result = performOperation(expression, operation='arithmetic-multiply-single')
+        stepCounter += 1
+        stepDictValue = {
+            'step': f'Multiply [left to right]: {expression} = {result}',
+            'simplification': result
+        }
+        Steps.update({stepCounter: stepDictValue})
+        return evaluateArithmetic(result, stepCounter, Steps, returnStepsAsArray)
+
+    elif operation == 'add-subtract-only' and '(' not in expression:
+        result = performOperation(expression)
+        stepCounter += 1
+        stepDictValue = {
+            'step': f'Add and subtract [left to right]: {expression} = {result}',
+            'simplification': result
+        }
+        Steps.update({stepCounter: stepDictValue})
+        return evaluateArithmetic(result, stepCounter, Steps, returnStepsAsArray)
+
+    for i in range(len(expression)):
+        if ('(' in expression and ')' in expression) or isSingleExpression(expression):
+
+            for i in range(len(expression)):
+                currentExpressionToEvaluate = ''
+                if expression[i] == '(' and i == getIndexOfInnerMostParen(expression, '('):
+                    for j in range(i + 1, len(expression)):
+                        if expression[j] != ')':
+                            currentExpressionToEvaluate += expression[j]
+                        else:
+                            break
+
+                    Simplification = evaluateArithmetic(currentExpressionToEvaluate, returnStepsAsArray=True)
+                    result = Simplification[1]
+                    stepsAsArray = Simplification[0]
+
+                    for stepToAdd in stepsAsArray:
+                        stepDictValue = {
+                            'step': wrapStepInParen(f"{stepToAdd['step']}"),
+                            'simplification': expression.replace(f'({currentExpressionToEvaluate})', f"({stepToAdd['simplification']})")
+                        }
+                        stepCounter += 1
+                        Steps.update({stepCounter: stepDictValue})
+
+                    simplifiedExpression = expression.replace(f'({currentExpressionToEvaluate})', result)
+                    expression = simplifiedExpression
+
+                    return evaluateArithmetic(expression, stepCounter, Steps, returnStepsAsArray)
+
+        if expression[i] in allOperators:
+            operator = expression[i]
+            operationMessage = getOperationMessage(operator)
+            Terms = splitExpression(expression, i, operator, operation=operation)
+            firstTerm, secondTerm = Terms[0], Terms[1]
+
+            if firstTerm != '' and secondTerm != '':
+                result = castToFloatOrInt(eval(f'float(firstTerm) {operator} float(secondTerm)'), True)
+                simplifiedExpression = expression.replace(f'{firstTerm}{operator}{secondTerm}', result)
+                expression = simplifiedExpression
+
+                stepDictValue = {
+                    'step': f'{operationMessage} the first and second term: {firstTerm}{operator}{secondTerm} = {result}',
+                    'simplification': simplifiedExpression
+                }
+                stepCounter += 1
+                Steps.update({stepCounter: stepDictValue})
+
+                return evaluateArithmetic(expression, stepCounter, Steps, returnStepsAsArray)
+
+
+
+def getOperationMessage(operator):
+    if operator == '+':
+        return 'Add'
+    elif operator == '-':
+        return 'Subtract'
+    elif operator == '*':
+        return 'Multiply'
+    elif operator == '/':
+        return 'divide'
 
 
 def getOperationToPerform(expression):
@@ -161,8 +300,18 @@ def getOperationToPerform(expression):
         numberOfSubtractions = getNumOperation(expression, '-')
         if numberOfAdditions > 1 or numberOfSubtractions > 1 or (numberOfAdditions + numberOfSubtractions > 1):
             return 'add-subtract-only'
-    if len(allOperations) > 2:
-        return 'general-arithmetic'
+    if ('*' in allOperations) and ('+' not in allOperations and '/' not in allOperations):
+        numberOfMultiplication = getNumOperation(expression, '*')
+        termsToBeMultiplied = expression.split('*')
+
+        couldBeMultiplyOnly = True
+
+        for term in termsToBeMultiplied:
+            if not isSingleExpression(term):
+                couldBeMultiplyOnly = False
+
+        if numberOfMultiplication > 1 and couldBeMultiplyOnly:
+            return 'multiply-only'
 
     if '+' in expression:
         numberOfAdditions = getNumOperation(expression, '+')
@@ -170,21 +319,26 @@ def getOperationToPerform(expression):
             if isDigit(expression.split('+')[0]) and isDigit(expression.split('+')[1]):
                 return 'arithmetic-add-single'
 
-    elif '-' in expression:
+    if '-' in expression:
         numberOfSubtractions = getNumOperation(expression, '-')
         if numberOfSubtractions == 1:
             if isDigit(expression.split('-')[0]) and isDigit(expression.split('-')[1]):
                 return 'arithmetic-subtract-single'
-    elif '*' in expression:
+    if '*' in expression:
         numberOfMultiplications = getNumOperation(expression, '*')
         if numberOfMultiplications == 1:
             if isDigit(expression.split('*')[0]) and isDigit(expression.split('*')[1]):
                 return 'arithmetic-multiply-single'
-    elif '/' in expression:
+        if numberOfMultiplications > 1:
+            pass
+    if '/' in expression:
         numberOfDivisions = getNumOperation(expression, '/')
         if numberOfDivisions == '1':
             if isDigit(expression.split('/')[0]) and isDigit(expression.split('/')[1]):
                 return 'arithmetic-divide-single'
+
+    if len(allOperations) >= 2:
+        return 'general-arithmetic'
 
 def getNumOperation(expression, operation):
     allPossibleOperations = ['+', '-', '*', '/']
@@ -224,7 +378,7 @@ def castToFloatOrInt(num, castToString=False):
     else:
         if isFloat(num):
             if castToString:
-                return str(float(num))
+                return str(round(float(num), 5))
             else:
                 return float(num)
         if isInt(num):
@@ -274,6 +428,23 @@ def addAndSubtractTerms(expression):
             expression = simplifiedExpression
             return addAndSubtractTerms(expression)
 
+def performOperation(expression, operation=None):
+    if isSingleExpression(expression):
+        return expression
+
+    allOperators = ['+','-','*','/']
+    for i in range(len(expression)):
+        if expression[i] in allOperators:
+            operator = expression[i]
+            Terms = splitExpression(expression, i, operator, operation=operation)
+            if Terms[0] and Terms[1] != '':
+                firstTerm, secondTerm = Terms[0], Terms[1]
+                result = castToFloatOrInt(eval(f'float(firstTerm) {operator} float(secondTerm)'), True)
+                simplifiedExpression = expression.replace(f'{firstTerm}{operator}{secondTerm}', result)
+                expression = simplifiedExpression
+
+                return performOperation(expression, operation)
+
 def getIndexOfInnerMostParen(expression, paren):
     if paren not in expression:
         raise ValueError(f"{paren} not in expression")
@@ -309,12 +480,89 @@ def splitAdditionOrSubtraction(expression, index):
 
             return (firstTerm, secondTerm)
 
-def applyPEDMAS(expression):
+
+def splitExpression(expression, index, operator, binarySplit=True, operation=None):
+    """
+    A BINARY SPLIT OF THE expression 2+43*21-5 ON THE OPERATOR '*' AT INDEX 4 RETURNS ('43', '21')
+    A NON-BINARY SPLIT OF THE expression 2+43*21-5 ON THE OPERATOR '*' AT INDEX 4 RETURNS ('2+43', '21-5')
+    """
+    if not binarySplit:
+        for i in range(len(expression)):
+            if i == index:
+                firstTerm, secondTerm = '', ''
+                """ GET FIRST TERM """
+                j = 0
+                while True:
+                    if expression[j] == operator:
+                        break
+                    firstTerm += expression[j]
+                    j+= 1
+                """ GET SECOND TERM """
+                j = i+1
+                while True:
+                    if j == len(expression):
+                        break
+                    if expression[j] == operator:
+                        break
+                    secondTerm += expression[j]
+                    j += 1
+
+                return (firstTerm, secondTerm)
+    else:
+        otherOperators = getRestricredOperators('-')
+        allOperators = ['+','-','*','/']
+        for i in range(len(expression)):
+            if i == index:
+                firstTerm, secondTerm = '', ''
+                """ GET FIRST TERM """
+                j = i-1
+                while expression[j] not in otherOperators and j >=0:
+                    firstTerm += expression[j]
+                    j -=1
+                firstTerm = reverse(firstTerm)
+                """ GET SECOND TERM """
+                j = i + 1
+                while ((expression[j] not in allOperators) or (operation == 'arithmetic-multiply-single')) and expression[j] != operator:
+                    secondTerm += expression[j]
+                    j += 1
+                    operation = None
+                    if j == len(expression):
+                        break
+
+                return (firstTerm, secondTerm)
+
+def getRestricredOperators(restrictedOperator):
+    """ RETURNS ALL OPERATORS EXCEPT THE ONE PASS AS PARAMETER """
+    allOperators = {'+', '-', '*', '/'}
+    return allOperators.symmetric_difference(restrictedOperator)
+
+def reverse(iterable):
+    return iterable[::-1]
+
+def applyPEMDAS(expression):
     i = 0
     while i < len(expression):
         # TODO - PARENTHESES, EXPONENTS
         if expression[i] == '*':
-            firstTerm, secondTerm = expression[i-1], expression[i+1]
+            otherOperators = getRestricredOperators('*')
+            if expression[i + 2] == '*':
+                expressionWithOrder = '('
+                expressionToReplace = ''
+                j = i - 1
+
+                while (expression[j] not in otherOperators):
+                    expressionWithOrder += expression[j]
+                    expressionToReplace += expression[j]
+                    j += 1
+                    if j == len(expression):
+                        break
+                expressionWithOrder += ')'
+
+                expression = expression.replace(expressionToReplace, expressionWithOrder)
+                return expression
+
+            Terms = splitExpression(expression, i, '*', operation = 'arithmetic-multiply-single')
+            firstTerm, secondTerm = Terms[0], Terms[1]
             expression = expression.replace(f'{firstTerm}*{secondTerm}', f'({firstTerm}*{secondTerm})')
             i += 1
         i += 1
@@ -328,13 +576,58 @@ def isDigit(numString):
     return True
 
 
+def wrapStepInParen(stepExpression):
+    """ WRAPS A STEP EXPRESSION IN PARENTHESES: 1+2+3+4 = 10 = (1+2+3+4) = (10) """
+    cpyStepExpression = stepExpression    # GET THE stepExpression BEFORE .split()
+    if ':' in stepExpression:
+        stepExpression = stepExpression.split(':')
+        stepWords = stepExpression[0]
+        expressionToWrap = stepExpression[1].lstrip()
+
+        if alreadyWrapped(expressionToWrap):
+            return cpyStepExpression
+
+        newExpression = '('
+        checkForEqual = True
+        wrapExpressionAfterEqualSign = False
+        for i in range(len(expressionToWrap)):
+            if checkForEqual:
+                if expressionToWrap[i + 1] == '=':
+                    newExpression += ')'
+                    checkForEqual = False
+                    wrapExpressionAfterEqualSign = True
+            if wrapExpressionAfterEqualSign:
+                if newExpression[i] == '=':
+                    newExpression += '('
+            newExpression += expressionToWrap[i]
+        newExpression += ')'
+
+        return f"{stepWords}: {newExpression}"
+    else:
+        return stepExpression
+
+def alreadyWrapped(expression):
+    wrappedParentheses = 0
+    if expression[0] == '(':
+        wrappedParentheses += 1
+    if expression[-1] == ')':
+        wrappedParentheses += 1
+    for i in range(len(expression)):
+        if expression[i] == '=':
+            if expression[i-2] == ')':
+                wrappedParentheses += 1
+            if expression[i+2] == '(':
+                wrappedParentheses += 1
+            break
+    return wrappedParentheses == 4
+
 
 
 
 
 def main():
     # print(simplify('((1+1)*2)')[0])
-    print(simplify('(1+2+((3+9)))'))
+    print(evaluateArithmetic('-1*-2+3'))
 
     pass
 
