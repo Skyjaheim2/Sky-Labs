@@ -3,6 +3,6 @@
   "\\left(1+3\\cdot 2+18-65\\right)": "-40",
   "1+33\\cdot 2+78-5+12\\cdot 5+19": "219",
   "3\\cdot \\left(1+83-5+16+2-19+64-19+82\\right)": "615",
-  "\\left(\\left(1+\\left(2+2\\right)\\cdot 3\\right)+5\\right)+\\left(3\\cdot 2+5\\right)\\cdot \\left(1+30+30+30+30\\right)": "1349"
-
+  "\\left(\\left(1+\\left(2+2\\right)\\cdot 3\\right)+5\\right)+\\left(3\\cdot 2+5\\right)\\cdot \\left(1+30+30+30+30\\right)": "1349",
+  "0.33\\cdot \\pi \\cdot \\left(\\left(300\\cdot 300\\cdot -0.1\\right)+\\left(60\\cdot 2\\cdot 300\\cdot -0.5\\right)\\right)": "−27991.71"
 }

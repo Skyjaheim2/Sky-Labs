@@ -545,21 +545,22 @@ def applyPEMDAS(expression):
         # TODO - PARENTHESES, EXPONENTS
         if expression[i] == '*':
             otherOperators = getRestricredOperators('*')
-            if expression[i + 2] == '*':
-                expressionWithOrder = '('
-                expressionToReplace = ''
-                j = i - 1
+            if i != len(expression)-2:
+                if expression[i + 2] == '*':
+                    expressionWithOrder = '('
+                    expressionToReplace = ''
+                    j = i - 1
 
-                while (expression[j] not in otherOperators):
-                    expressionWithOrder += expression[j]
-                    expressionToReplace += expression[j]
-                    j += 1
-                    if j == len(expression):
-                        break
-                expressionWithOrder += ')'
+                    while (expression[j] not in otherOperators):
+                        expressionWithOrder += expression[j]
+                        expressionToReplace += expression[j]
+                        j += 1
+                        if j == len(expression):
+                            break
+                    expressionWithOrder += ')'
 
-                expression = expression.replace(expressionToReplace, expressionWithOrder)
-                return expression
+                    expression = expression.replace(expressionToReplace, expressionWithOrder)
+                    return expression
 
             Terms = splitExpression(expression, i, '*', operation = 'arithmetic-multiply-single')
             firstTerm, secondTerm = Terms[0], Terms[1]
@@ -627,7 +628,7 @@ def alreadyWrapped(expression):
 
 def main():
     # print(simplify('((1+1)*2)')[0])
-    print(evaluateArithmetic('-1*-2+3'))
+    print(evaluateArithmetic('9*2.718281828459045*(283+82-4)')[0])
 
     pass
 
