@@ -5,6 +5,7 @@ import unittest
 from Methods import *
 
 
+# python -m unittest test_Methods.py
 
 class TestCalc(unittest.TestCase):
     # THIS RUNS 'ONCE' BEFORE ALL THE TESTS
@@ -22,6 +23,88 @@ class TestCalc(unittest.TestCase):
         pass
 
 
+    # TEST isSingleExpression
+    def test_isSingleExpression(self):
+        expressionsAndResults = [
+            {
+                'expression': '1262',
+                'result': True,
+            },
+            {
+                'expression': '-17264',
+                'result': True,
+            },
+            {
+                'expression': '128+92',
+                'result': False,
+            },
+            {
+                'expression': '-2742-8242',
+                'result': False,
+            },
+            {
+                'expression': '476*12',
+                'result': False,
+            },
+
+        ]
+
+        for item in expressionsAndResults:
+            self.assertEqual(isSingleExpression(item['expression']), item['result'], f"Expression: {item['expression']}")
+
+    # TEST getOperationToPerform
+    def test_getOperationToPerform(self):
+        expressionAndResults = [
+            {
+                'expression': '146+481',
+                'result': 'arithmetic-add-single',
+            },
+            {
+                'expression': '-148+482',
+                'result': 'add-subtract-only',
+            },
+            {
+                'expression': '2894-287+834+984-2974',
+                'result': 'add-subtract-only',
+            },
+            {
+                'expression': '183*822',
+                'result': 'arithmetic-multiply-single',
+            },
+            {
+                'expression': '-282*824',
+                'result': 'arithmetic-multiply-single',
+            },
+            {
+                'expression': '-925*-3298',
+                'result': 'arithmetic-multiply-single',
+            },
+            {
+                'expression': '274*732*826*636*816',
+                'result': 'multiply-only',
+            },
+            {
+                'expression': '-498*-842*-9842*824',
+                'result': 'multiply-only',
+            },
+            {
+                'expression': '284+724-2848*12+734-12*14',
+                'result': 'general-arithmetic',
+            },
+            {
+                'expression': '1+27*712*12-5',
+                'result': 'general-arithmetic',
+            },
+            {
+                'expression': '123',
+                'result': 'no-operation',
+            },
+        ]
+
+        for item in expressionAndResults:
+            self.assertEqual(getOperationToPerform(item['expression']), item['result'], f"Expression: {item['expression']}")
+
+    # TEST evaluateArithmetic
     def test_evaluateArithmetic(self):
         expressionsAndResults = [
             # ADDITION AND SUBTRACTION
@@ -68,6 +151,13 @@ class TestCalc(unittest.TestCase):
                           3: {'step': 'Add and subtract [left to right]: 1+2+15 = 18', 'simplification': '18'}},
             },
             {
+                'expression': '23-125*11+18',
+                'result': '-1334',
+                'steps': {1: {'step': 'Apply PEMDAS: 23-125*11+18 = 23-(125*11)+18', 'simplification': '23-(125*11)+18'},
+                          2: {'step': 'Multiply the first and second term: (125*11) = (1375)', 'simplification': '23-(1375)+18'},
+                          3: {'step': 'Add and subtract [left to right]: 23-1375+18 = -1334', 'simplification': '-1334'}}
+            },
+            {
                 'expression': '1+2+3+4*5+6+7+9*10',
                 'result': '129',
                 'steps': {1: {'step': 'Apply PEMDAS: 1+2+3+4*5+6+7+9*10 = 1+2+3+(4*5)+6+7+(9*10)', 'simplification': '1+2+3+(4*5)+6+7+(9*10)'},
@@ -85,7 +175,7 @@ class TestCalc(unittest.TestCase):
             {
                 'expression': '1+2*-3*-4*5+9',
                 'result': '130',
-                'steps': {1: {'step': 'Apply PEMDAS: 1+2*-3*-4*5+9 = 1+(2*(-3)*(-4)*5)+9', 'simplification': '1+(2*(-3)*(-4)*5)+9'},
+                'steps': {1: {'step': 'Apply PEMDAS: 1+2*-3*-4*5+9 = 1+(2*-3*-4*5)+9', 'simplification': '1+(2*-3*-4*5)+9'},
                           2: {'step': 'Multiply [left to right]: (2*-3*-4*5) = (120)', 'simplification': '1+(120)+9'},
                           3: {'step': 'Add and subtract [left to right]: 1+120+9 = 130', 'simplification': '130'}},
             },
@@ -106,6 +196,7 @@ class TestCalc(unittest.TestCase):
                           11: {'step': 'Multiply the first and second term: (11*121) = (1331)', 'simplification': '18+(1331)'},
                           12: {'step': 'Add the first and second term: 18+1331 = 1349', 'simplification': '1349'}},
             },
+            # COMPLICATED
             {
                 'expression': '((((((28+298)*34)+22)*2821)*18)+7)+((((((27+213)*242)+1763)*3)*4)+3)',
                 'result': '564658594',
@@ -147,10 +238,222 @@ class TestCalc(unittest.TestCase):
             self.assertEqual(Steps, item['steps'], f"Expression: {item['expression']}")
             self.assertEqual(Result, item['result'], f"Expression: {item['expression']}")
 
+    # TEST performOperation
+    def test_performOperation(self):
+        expressionAndResults = [
+            {
+                'expression': '1+2+3+4+5+6',
+                'result': '21',
+                'operation': 'arithmetic-add-single',
+            },
+            {
+                'expression': '1+26+274+8723+26',
+                'result': '9050',
+                'operation': 'arithmetic-add-single',
+            },
+            {
+                'expression': '-44-245-27-47-482',
+                'result': '-845',
+                'operation': 'add-subtract-only',
+            },
+            {
+                'expression': '264+2842+132-427+183-78',
+                'result': '2916',
+                'operation': 'add-subtract-only',
+            },
+            {
+                'expression': '21*62*51*12',
+                'result': '796824',
+                'operation': 'multiply-only',
+            },
+            {
+                'expression': '21*62*51*12*11',
+                'result': '8765064',
+                'operation': 'multiply-only',
+            },
+            {
+                'expression': '12*-5*21*32*-12*3*-3',
+                'result': '-4354560',
+                'operation': 'multiply-only',
+            },
+            {
+                'expression': '12*-5*21*32*-12*3*-3*-2',
+                'result': '8709120',
+                'operation': 'multiply-only',
+            },
+        ]
 
+        for item in expressionAndResults:
+            self.assertEqual(performOperation(item['expression'], item['operation']), item['result'], f"Expression: {item['expression']}")
+
+    # TEST applyPEMDAS
+    def test_applyPEMDAS(self):
+        expressionAndResults = [
+            {
+                'expression': '1+2+3',
+                'result': '1+2+3',
+            },
+            {
+                'expression': '1+2*3',
+                'result': '1+(2*3)',
+            },
+            {
+                'expression': '1-2*3',
+                'result': '1-(2*3)',
+            },
+            {
+                'expression': '1+2*3*4*5',
+                'result': '1+(2*3*4*5)',
+            },
+            {
+                'expression': '1+274*24*24*5',
+                'result': '1+(274*24*24*5)',
+            },
+            {
+                'expression': '1+24*43*24*5*6+234',
+                'result': '1+(24*43*24*5*6)+234',
+            },
+            {
+                'expression': '1+2*-5*-23*4*54+96',
+                'result': '1+(2*-5*-23*4*54)+96',
+            },
+            {
+                'expression': '12+3*2+67+9*13+12-5*7',
+                'result': '12+(3*2)+67+(9*13)+12-(5*7)',
+            },
+
+        ]
+
+        for item in expressionAndResults:
+            self.assertEqual(applyPEMDAS(item['expression']), item['result'], f"Expression: {item['expression']}")
+
+    # TEST getIndexOfInnerMostParen
+    def test_getIndexOfInnerMostParen(self):
+        expressionAndResults = [
+            {
+                'expression': '23*(3+2+(3*2))',
+                'result': 8,
+            },
+            {
+                'expression': '((((((28+298)*34)+22)*2821)*18)+7)',
+                'result': 5,
+            },
+            {
+                'expression': '23*(5*(5+3+(3*(3+62+75*(23+89)))))',
+                'result': 23,
+            },
+        ]
+
+        for item in expressionAndResults:
+            self.assertEqual(item['result'], getIndexOfInnerMostParen(item['expression']), f"Expression: {item['expression']}")
+
+    # TEST wrapStepInParen
+    def test_wrapStepInParen(self):
+        stepsAndResults = [
+            {
+                'step': 'Add and subtract [left to right]: (3*53*342) = (54378)',
+                'result': 'Add and subtract [left to right]: (3*53*342) = (54378)',
+            },
+            {
+                'step': 'Add and subtract [left to right]: 3*53*342 = 54378',
+                'result': 'Add and subtract [left to right]: (3*53*342) = (54378)',
+            },
+            {
+                'step': 'Apply log rule [ln(a*b) = ln(a) + ln(b)]: ln(e*a^t) = ln(e) + ln(a^t)',
+                'result': 'Apply log rule [ln(a*b) = ln(a) + ln(b)]: (ln(e*a^t)) = (ln(e) + ln(a^t))',
+            },
+        ]
+
+        for item in stepsAndResults:
+            self.assertEqual(item['result'], wrapStepInParen(item['step']), f"Step: {item['step']}")
+
+    # TEST splitExpression
+    def test_splitExpression(self):
+        expressionAndResults = [
+            {
+                'expression': '132*425+12-48',
+                'index': 7,
+                'operator': '+',
+                'operation': 'arithmetic-add-single',
+                'binarySplit': True,
+                'result': ('425', '12'),
+            },
+            {
+                'expression': '132+425*12-48',
+                'index': 7,
+                'operator': '*',
+                'operation': 'multiply-only',
+                'binarySplit': False,
+                'result': ('132+425', '12-48'),
+            },
+            {
+                'expression': '56-123*57-28',
+                'index': 6,
+                'operator': '*',
+                'operation': 'multiply-only',
+                'binarySplit': True,
+                'result': ('-123', '57'),
+            },
+            {
+                'expression': '56-123*57-28',
+                'index': 6,
+                'operator': '*',
+                'operation': 'multiply-only',
+                'binarySplit': False,
+                'result': ('56-123', '57-28'),
+            },
+            {
+                'expression': '12+127*-57-28',
+                'index': 6,
+                'operator': '*',
+                'operation': 'multiply-only',
+                'binarySplit': True,
+                'result': ('127', '-57'),
+            },
+            {
+                'expression': '12+127*-57-28',
+                'index': 6,
+                'operator': '*',
+                'operation': 'multiply-only',
+                'binarySplit': False,
+                'result': ('12+127', '-57-28'),
+            },
+        ]
+
+        for item in expressionAndResults:
+            Result = splitExpression(item['expression'], item['index'], item['operator'], item['binarySplit'], item['operation'])
+            self.assertEqual(item['result'], Result, f"Expression: {item['expression']}")
+
+    # TEST castToFloatOrInt
+    def test_castToFloatOrInt(self):
+        expressionAndResults = [
+            {
+                'expression': 2.0,
+                'castToString': True,
+                'result': '2',
+            },
+            {
+                'expression': 2.0,
+                'castToString': False,
+                'result': 2,
+            },
+            {
+                'expression': 0.25,
+                'castToString': True,
+                'result': '0.25',
+            },
+            {
+                'expression': 0.25,
+                'castToString': False,
+                'result': 0.25,
+            },
+        ]
+
+        for item in expressionAndResults:
+            self.assertEqual(item['result'], castToFloatOrInt(item['expression'], item['castToString']))
 
 def test():
-    Simplification = evaluateArithmetic('1+2+3+4+5+6+7+8*5')
+    Simplification = evaluateArithmetic('23-125*11+18')
 
     result = Simplification[1]
     print(result)

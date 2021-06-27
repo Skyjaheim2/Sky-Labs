@@ -169,6 +169,19 @@ def evaluateArithmetic(expression, stepCounter=None, Steps=None, returnStepsAsAr
     allOperators = ['+','-','*','/']
     operation = getOperationToPerform(expression)
 
+    if '++' in expression:
+        simplifiedExpression = expression.replace('++', '+')
+        expression = simplifiedExpression
+
+        stepDictValue = {
+            'step': f'Apply rule: a++b = a+b',
+            'simplification': simplifiedExpression
+        }
+        stepCounter += 1
+        Steps.update({stepCounter: stepDictValue})
+
+        return evaluateArithmetic(expression, stepCounter, Steps, returnStepsAsArray)
+
     if '+-' in expression:
         simplifiedExpression = expression.replace('+-', '-')
         expression = simplifiedExpression
@@ -208,7 +221,7 @@ def evaluateArithmetic(expression, stepCounter=None, Steps=None, returnStepsAsAr
         Steps.update({stepCounter: stepDictValue})
 
     elif operation == 'multiply-only':
-        result = performOperation(expression, operation='arithmetic-multiply-single')
+        result = performOperation(expression, operation='multiply-only')
         stepCounter += 1
         stepDictValue = {
             'step': f'Multiply [left to right]: {expression} = {result}',
@@ -445,7 +458,9 @@ def performOperation(expression, operation=None):
 
                 return performOperation(expression, operation)
 
-def getIndexOfInnerMostParen(expression, paren):
+def getIndexOfInnerMostParen(expression, paren=None):
+    if paren == None:
+        paren = '('
     if paren not in expression:
         raise ValueError(f"{paren} not in expression")
     if paren == '(':
@@ -518,11 +533,13 @@ def splitExpression(expression, index, operator, binarySplit=True, operation=Non
                 j = i-1
                 while expression[j] not in otherOperators and j >=0:
                     firstTerm += expression[j]
+                    if expression[j] == '-':
+                        break
                     j -=1
                 firstTerm = reverse(firstTerm)
                 """ GET SECOND TERM """
                 j = i + 1
-                while ((expression[j] not in allOperators) or (operation == 'arithmetic-multiply-single')) and expression[j] != operator:
+                while ((expression[j] not in allOperators) or (operation == 'multiply-only')) and expression[j] != operator:
                     secondTerm += expression[j]
                     j += 1
                     operation = None
@@ -544,30 +561,63 @@ def applyPEMDAS(expression):
     while i < len(expression):
         # TODO - PARENTHESES, EXPONENTS
         if expression[i] == '*':
-            otherOperators = getRestricredOperators('*')
-            if i != len(expression)-2:
-                if expression[i + 2] == '*':
-                    expressionWithOrder = '('
-                    expressionToReplace = ''
-                    j = i - 1
+            allOperators = ['+', '-', '*', '/']
+            # if i != len(expression)-2:
+            if getNextOperator(expression, i) == '*':
+                expressionWithOrder = '('
+                expressionToReplace = ''
+                """
+                j IS OUR STATING INDEX, MEANING THE INDEX WHERE WE WILL START APPLYING PEMDAS, SO IT HAS TO BE SET EQUAL
+                TO THE FIRST NUMBER/CHAR THAT WILL BE INCLUDED IN PARENTHESES.
+                IN THE EXPRESSION S = '1+936*24*24*5', i WILL BE EQUAL TO 5 AND j SHOULD BE EQUAL TO 2 SINCE S[j] = S[2] = 9
+                AND WE WILL START APPLYING PEMDAS AT 9: 1+(936*24*24*5)
+                """
+                j = i
+                while expression[j-1] not in allOperators:
+                    j -= 1
 
-                    while (expression[j] not in otherOperators):
-                        expressionWithOrder += expression[j]
-                        expressionToReplace += expression[j]
-                        j += 1
-                        if j == len(expression):
+                while True:
+                    if expression[j] == '*':
+                        if getNextOperator(expression, j) != '*':
+                            k = j
+                            while expression[k] not in getRestricredOperators('*'):
+                                expressionWithOrder += expression[k]
+                                expressionToReplace += expression[k]
+                                if k+1 == len(expression):
+                                    break
+                                k += 1
                             break
-                    expressionWithOrder += ')'
+                    expressionWithOrder += expression[j]
+                    expressionToReplace += expression[j]
+                    j += 1
+                    if j == len(expression):
+                        break
+                expressionWithOrder += ')'
 
-                    expression = expression.replace(expressionToReplace, expressionWithOrder)
-                    return expression
+                expression = expression.replace(expressionToReplace, expressionWithOrder)
+                return expression
 
             Terms = splitExpression(expression, i, '*', operation = 'arithmetic-multiply-single')
             firstTerm, secondTerm = Terms[0], Terms[1]
-            expression = expression.replace(f'{firstTerm}*{secondTerm}', f'({firstTerm}*{secondTerm})')
+            expression = expression.replace(f"{firstTerm.replace('-', '')}*{secondTerm}", f"({firstTerm.replace('-', '')}*{secondTerm})")
             i += 1
         i += 1
     return expression
+
+def getNextOperator(expression, index):
+    """ RETURNS THE NEXT OPERATOR AFTER AN EXPRESSION AT A GIVEN INDEX """
+    isNegativeNumber = False
+    if expression[index+1] == '-':
+        isNegativeNumber = True
+
+    allOperators = ['+', '-', '*', '/']
+    i = index+1
+    if isNegativeNumber:
+        i += 1
+    while i < len(expression):
+        if expression[i] in allOperators:
+            return expression[i]
+        i += 1
 
 def isDigit(numString):
     try:
@@ -578,7 +628,7 @@ def isDigit(numString):
 
 
 def wrapStepInParen(stepExpression):
-    """ WRAPS A STEP EXPRESSION IN PARENTHESES: 1+2+3+4 = 10 = (1+2+3+4) = (10) """
+    """ WRAPS A STEP EXPRESSION IN PARENTHESES: Add and subtract [left to right]: 1+2+3+4 = 10 = Add ... : (1+2+3+4) = (10) """
     cpyStepExpression = stepExpression    # GET THE stepExpression BEFORE .split()
     if ':' in stepExpression:
         stepExpression = stepExpression.split(':')
@@ -628,7 +678,9 @@ def alreadyWrapped(expression):
 
 def main():
     # print(simplify('((1+1)*2)')[0])
-    print(evaluateArithmetic('9*2.718281828459045*(283+82-4)')[0])
+    print(evaluateArithmetic('23-125*11+18')[0])
+
+    # print(applyPEMDAS('1+2*-3*-4*523+9'))
 
     pass
 
