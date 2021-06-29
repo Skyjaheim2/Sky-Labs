@@ -102,7 +102,8 @@ class TestCalc(unittest.TestCase):
         ]
 
         for item in expressionAndResults:
-            self.assertEqual(getOperationToPerform(item['expression']), item['result'], f"Expression: {item['expression']}")
+            Expression = arithmeticExpression(item['expression'])
+            self.assertEqual(Expression.getOperationToPerform(), item['result'], f"Expression: {item['expression']}")
 
     # TEST evaluateArithmetic
     def test_evaluateArithmetic(self):
@@ -325,7 +326,8 @@ class TestCalc(unittest.TestCase):
         ]
 
         for item in expressionAndResults:
-            self.assertEqual(applyPEMDAS(item['expression']), item['result'], f"Expression: {item['expression']}")
+            Expression = arithmeticExpression(item['expression'])
+            self.assertEqual(str(Expression.applyPEMDAS()), item['result'], f"Expression: {item['expression']}")
 
     # TEST getIndexOfInnerMostParen
     def test_getIndexOfInnerMostParen(self):
@@ -345,7 +347,8 @@ class TestCalc(unittest.TestCase):
         ]
 
         for item in expressionAndResults:
-            self.assertEqual(item['result'], getIndexOfInnerMostParen(item['expression']), f"Expression: {item['expression']}")
+            Expression = arithmeticExpression(item['expression'])
+            self.assertEqual(Expression.getIndexOfInnerMostParen(), item['result'], f"Expression: {item['expression']}")
 
     # TEST wrapStepInParen
     def test_wrapStepInParen(self):
