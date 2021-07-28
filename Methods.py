@@ -1,7 +1,7 @@
 from math import floor, pi, e
 
 
-class arithmeticExpression:
+class ArithmeticExpression:
     def __init__(self, expression):
         self.expression = expression
 
@@ -13,13 +13,82 @@ class arithmeticExpression:
         if len(allOperations) == 0 and self.isSingleExpression():
             return 'no-operation'
 
-        # if '^' in expression:
-        #     if '{' in expression:
-        #         pass
-        #     else:
-        #         exponent = expression.split('^')[1]
-        #         if isDigit(exponent):
-        #             return 'arithmetic-exponent'
+        if '^' in self.expression:
+            operationsInfo = self.getOperationsOnExponent(returnWithCounter=True)
+            operationsOnExponent = operationsInfo[0]
+            operationsCounter = operationsInfo[1]
+
+
+            if operationsOnExponent != 'no-operation':
+                """ IF THE ONLY OPERATION IS MULTIPLICATION THEN WE WANT TO RETURN THAT AS A SEPARATE OPERATION SO WE CAN APPLY THE EXPONENT RULE FOR PRODUCTS """
+                if operationsOnExponent == {'*'} and operationsCounter > 1:
+
+                    allExponentsInExpression = self.getAllExponentsInExpression()
+                    baseToCheckFor = Exponential(allExponentsInExpression[0]).base
+
+                    baseMatched = True
+                    for expression in allExponentsInExpression:
+                        expression = Exponential(expression)
+                        if expression.base != baseToCheckFor:
+                            baseMatched = False
+
+                    if baseMatched:
+                        pass
+
+                        return 'arithmetic-exponent-multiply'
+
+            exponentIndex = indexOf(str(self.expression), '^')
+            exponentData = self.splitExpression(exponentIndex, '^', binarySplit=False)
+
+
+            base = ArithmeticExpression(exponentData[0])
+            exponent = ArithmeticExpression(exponentData[1])
+
+            if '{' in exponent:
+                # CHECKING TO THE RIGHT OF THE EXPONENT
+                isSingleExponent = False
+                exponentEndIndex = indexOf(exponent, '}')
+                if base.isSingleExpression():
+                    if exponentEndIndex == len(exponent) - 1:
+                        isSingleExponent = True
+                    else:
+                        isSingleExponent = False
+                else:
+                    expressionToTheLeftOfExponent = ArithmeticExpression(self.expression[:exponentIndex])
+                    if '(' not in expressionToTheLeftOfExponent:
+                        return 'general-arithmetic'
+                    indexWhereExponentEnds = expressionToTheLeftOfExponent.getIndexOfInnerMostParen()
+
+                    if (expressionToTheLeftOfExponent[:indexWhereExponentEnds] == '') and exponentEndIndex == len(exponent) - 1:
+                        isSingleExponent = True
+
+                return 'arithmetic-exponent-single' if isSingleExponent else 'general-arithmetic'
+
+            else:
+                exponentData = self.splitExpression(exponentIndex, '^', binarySplit=False)
+                base = ArithmeticExpression(exponentData[0])
+                exponent = ArithmeticExpression(exponentData[1])
+                if base.isSingleExpression():
+                    if exponent.isSingleExpression():
+                        return 'arithmetic-exponent-single'
+                    else:
+                        return 'general-arithmetic'
+                else:
+                    # CHECKING TO THE RIGHT OF THE EXPONENT
+                    if not exponent.isSingleExpression():
+                        return 'general-arithmetic'
+                    isSingleExponent = False
+                    # CHECKING TO THE LEFT OF THE EXPONENT
+                    expressionToTheLeftOfExponent = ArithmeticExpression(self.expression[:exponentIndex])
+                    if '(' not in expressionToTheLeftOfExponent:
+                        return 'general-arithmetic'
+                    indexWhereExponentEnds = expressionToTheLeftOfExponent.getIndexOfInnerMostParen()
+
+                    if (expressionToTheLeftOfExponent[:indexWhereExponentEnds] == ''):
+                        isSingleExponent = True
+
+                    return 'arithmetic-exponent-single' if isSingleExponent else 'general-arithmetic'
+
 
         if ('+' in allOperations or '-' in allOperations) and ('*' not in allOperations and '/' not in allOperations):
             numberOfAdditions = self.getNumOperation('+', self.expression)
@@ -70,11 +139,16 @@ class arithmeticExpression:
         if expression == None:
             expression = self.expression
 
+        expression = expression.replace('(', '').replace(')', '')
         allPossibleOperations = ['+', '-', '*', '/', '^']
         allOperationsInExpression = set()
         for operation in allPossibleOperations:
             if operation in expression:
                 allOperationsInExpression.add(operation)
+
+        if '...e' in expression:
+            if getNumOperation(expression, '+') == 1 or getNumOperation(expression, '-') == 1:
+                return True
         if len(allOperationsInExpression) == 0:
             return True
         elif len(allOperationsInExpression) == 1:
@@ -157,7 +231,7 @@ class arithmeticExpression:
 
                     return (firstTerm, secondTerm)
         else:
-            otherOperators = getRestricredOperators('-')
+            otherOperators = getRestrictedOperators('-')
             allOperators = ['+', '-', '*', '/']
             for i in range(len(self.expression)):
                 if i == index:
@@ -172,8 +246,7 @@ class arithmeticExpression:
                     firstTerm = reverse(firstTerm)
                     """ GET SECOND TERM """
                     j = i + 1
-                    while ((self.expression[j] not in allOperators) or (operation == 'multiply-only')) and \
-                            self.expression[j] != operator:
+                    while ((self.expression[j] not in allOperators) or (operation == 'multiply-only')) and (self.expression[j] != operator and self.expression[j] != '}'):
                         secondTerm += self.expression[j]
                         j += 1
                         operation = None
@@ -184,6 +257,12 @@ class arithmeticExpression:
 
     def applyPEMDAS(self):
         newExpression = self.expression
+
+        if '^' in newExpression:
+            newExpression = wrapExponentInParen(self.expression)
+            return ArithmeticExpression(newExpression)
+            # newExpression = self.expression
+
         i = 0
         while i < len(self.expression):
             # TODO - PARENTHESES, EXPONENTS
@@ -207,7 +286,8 @@ class arithmeticExpression:
                         if self.expression[j] == '*':
                             if getNextOperator(self.expression, j) != '*':
                                 k = j
-                                while self.expression[k] not in getRestricredOperators('*'):
+                                while self.expression[k] not in getRestrictedOperators('*') and self.expression[k] != '}':
+                                    """ GET THE NUM AFTER THE LAST '*' """
                                     expressionWithOrder += self.expression[k]
                                     expressionToReplace += self.expression[k]
                                     if k + 1 == len(self.expression):
@@ -221,8 +301,8 @@ class arithmeticExpression:
                             break
                     expressionWithOrder += ')'
 
-                    newExpression = self.expression.replace(expressionToReplace, expressionWithOrder)
-                    return arithmeticExpression(newExpression)
+                    newExpression = newExpression.replace(expressionToReplace, expressionWithOrder)
+                    return ArithmeticExpression(newExpression)
 
                 Terms = self.splitExpression(i, '*', operation='arithmetic-multiply-single')
                 firstTerm, secondTerm = Terms[0], Terms[1]
@@ -231,35 +311,171 @@ class arithmeticExpression:
                 i += 1
             i += 1
 
-        return arithmeticExpression(newExpression)
+        return ArithmeticExpression(newExpression)
 
+    def applyExponentsToSingleExpressions(self):
+        """
+        RETURNS A COPY OF THE EXPRESSION WITH SINGLE EXPRESSIONS RAISED TO THE FIRST POWER
+        FOR EXAMPLE: 2*3*5^2*3 --> 2^1*3^1*5^2*3^1
+        """
+        numbersInExpression = self.expression.split('*')
+        expressionWithExponents = ''
+        for i in range(len(numbersInExpression)):
+            if '^' not in numbersInExpression[i]:
+                # THIS CHECK IS TO NOT INCLUDE '*' AT THE END OF THE EXPRESSION. FOR EXAMPLE: 2^2*2^3*
+                if i != len(numbersInExpression) - 1:
+                    expressionWithExponents += f"{numbersInExpression[i]}^1*"
+                else:
+                    expressionWithExponents += f"{numbersInExpression[i]}^1"
+            else:
+                # THIS CHECK IS TO NOT INCLUDE '*' AT THE END OF THE EXPRESSION. FOR EXAMPLE: 2^2*2^{1+2+3}*
+                if i != len(numbersInExpression) - 1:
+                    expressionWithExponents += f"{numbersInExpression[i]}*"
+                else:
+                    expressionWithExponents += f"{numbersInExpression[i]}"
+
+        return ArithmeticExpression(expressionWithExponents)
+
+    def getOperationsOnExponent(self, returnWithIndex=False, returnWithCounter=False):
+        """ RETURNS AN ARRAY WITH ALL THE OPERATIONS TO BE PERFORMED IN AN EXPONENTIAL EXPRESSION """
+        expression = self.applyExponentsToSingleExpressions()
+        operationsOnExponentWithIndex = []
+        operationsOnExponent = set()
+        allOperations = ['+', '-', '*', '/']
+        operationCounter = 0
+        for i in range(len(expression)):
+            if expression[i] in allOperations:
+                if expression[i - 1] == '}' or expression[i - 2] == '^':
+                    operationsOnExponentWithIndex.append({expression[i]: i})
+                    operationsOnExponent.add(expression[i])
+                    operationCounter += 1
+
+        if operationsOnExponent != set():
+            return operationsOnExponentWithIndex if returnWithIndex else (operationsOnExponent, operationCounter) if returnWithCounter else operationsOnExponent
+        else:
+            return 'no-operation'
+
+    def getAllExponentsInExpression(self):
+        """ RETURNS AN ARRAY OF ALL THE EXPONENTS IN AN EXPRESSION """
+        expression = self.applyExponentsToSingleExpressions()
+        allOperations = ['+', '-', '*', '/', '^']
+        currentExpressionStartIndex = 0
+        allExponentExpressions = []
+        for i in range(len(expression)):
+            if (expression[i] in allOperations and expression[i - 1] == '}') or (expression[i] == '}' and i == len(expression) - 1) or (expression[i] in allOperations and expression[i - 2] == '^'):
+                exponentExpression = expression[currentExpressionStartIndex: i]
+                if i == len(expression) - 1:
+                    exponentExpression += '}'
+                allExponentExpressions.append(exponentExpression)
+                currentExpressionStartIndex = i + 1
+
+        return allExponentExpressions
+
+    def convertOutOfStandardForm(self):
+        if '...e' in self.expression:
+            expressionAsArr = self.expression.split('...e')
+            powerOf10 = expressionAsArr[1]
+            newExpression = f"{float(expressionAsArr[0])*10**float(powerOf10):.0f}"
+            return ArithmeticExpression(newExpression)
+        return self
 
     def replace(self, subStringToBeReplace, replacement):
         return self.expression.replace(subStringToBeReplace, replacement)
 
+    def split(self, char):
+        return self.expression.split(char)
+
     """ DUNDER METHODS """
 
     def __add__(self, other):
-        if type(other) != arithmeticExpression:
+        if type(other) != ArithmeticExpression:
             return 'Only two expression can be added'
         try:
             Result = evaluateArithmetic(f"{self.expression}+{other.expression}")[1]
         except:
             return 'Something went wrong'
 
-        return arithmeticExpression(Result)
+        return ArithmeticExpression(Result)
 
     def __str__(self):
         return self.expression
-
+    def __repr__(self):
+        return f"{self.expression}"
     def __len__(self):
         return len(self.expression)
 
     def __contains__(self, item):
+        """ 'in' OPERATOR """
         return item in self.expression
 
     def __getitem__(self, index):
+        """ [] OPERATOR """
         return self.expression[index]
+
+    def __eq__(self, other):
+        """ DOUBLE EQUAL TO OPERATOR """
+        return str(self.expression) == str(other)
+
+    def __gt__(self, other):
+        """ GREATER THAN OPERATOR """
+        if type(other) == int or type(other) == float:
+            other = ArithmeticExpression(str(other))
+        if not self.isSingleExpression():
+            raise ValueError('Comparison can only be made when expression is a single expression')
+        if type(other) != ArithmeticExpression and type(other) != int and type(other) != float:
+            raise TypeError(f"'>' not supported between instances of '{type(self.expression)}' and '{other}'")
+
+        return float(self.expression) > float(other.expression)
+    def __ge__(self, other):
+        """ GREATER THAN OR EQUAL TO OPERATOR """
+        if type(other) == int or type(other) == float:
+            other = ArithmeticExpression(str(other))
+        if not self.isSingleExpression():
+            raise ValueError('Comparison can only be made when expression is a single expression')
+        if type(other) != ArithmeticExpression and type(other) != int and type(other) != float:
+            raise TypeError(f"'>=' not supported between instances of '{type(self.expression)}' and '{other}'")
+
+        return float(self.expression) >= float(other.expression)
+
+    def __lt__(self, other):
+        """ LESS THAN OPERATOR """
+        if type(other) == int or type(other) == float:
+            other = ArithmeticExpression(str(other))
+        if not self.isSingleExpression():
+            raise ValueError('Comparison can only be made when expression is a single expression')
+        if type(other) != ArithmeticExpression and type(other) != int and type(other) != float:
+            raise TypeError(f"'<' not supported between instances of '{type(self.expression)}' and '{other}'")
+
+        return float(self.expression) < float(other.expression)
+    def __le__(self, other):
+        """ LESS THAN OR EQUAL TO OPERATOR """
+        if type(other) == int or type(other) == float:
+            other = ArithmeticExpression(str(other))
+        if not self.isSingleExpression():
+            raise ValueError('Comparison can only be made when expression is a single expression')
+        if type(other) != ArithmeticExpression and type(other) != int and type(other) != float:
+            raise TypeError(f"'<=' not supported between instances of '{type(self.expression)}' and '{other}'")
+
+        return float(self.expression) <= float(other.expression)
+
+class Exponential:
+    def __init__(self, expression):
+        expression = ArithmeticExpression(expression)
+        if '^' not in expression:
+            self.base = expression
+            self.exponent = ArithmeticExpression('1')
+        else:
+            exponentIndex = indexOf(str(expression), '^')
+            exponentData = expression.splitExpression(exponentIndex, '^', binarySplit=False)
+
+            self.base = ArithmeticExpression(exponentData[0])
+            self.exponent = ArithmeticExpression(exponentData[1])
+
+            if '{' in self.exponent:
+                expressionInExponent = self.exponent.replace('{', '').replace('}', '')
+                self.exponent = ArithmeticExpression(expressionInExponent)
+
+
 
 def parseLatex(latexString: str):
     latexString = latexString.replace('\left(', '(').replace('\\right)', ')').replace('\cdot', '*').replace('\\pi', f'{pi}')\
@@ -272,15 +488,19 @@ def latexify(expression):
     return expression
 
 
+MAX_SIZE_OF_NUM_BEFORE_CONVERTED_TO_STANDARD_FORM = 10**20
 
 def evaluateArithmetic(expression, stepCounter=None, Steps=None, returnStepsAsArray=False):
-    if type(expression) != arithmeticExpression:
-        expression = arithmeticExpression(expression)
+    if type(expression) != ArithmeticExpression:
+        expression = ArithmeticExpression(expression)
     if Steps is None:
         Steps = {}
     if stepCounter is None:
         stepCounter = 0
     if expression.isSingleExpression():
+
+        if expression >= MAX_SIZE_OF_NUM_BEFORE_CONVERTED_TO_STANDARD_FORM:
+            expression = convertToStandardForm(str(expression))
         if returnStepsAsArray:
             stepsAsArray = []
             for step in Steps:
@@ -290,6 +510,8 @@ def evaluateArithmetic(expression, stepCounter=None, Steps=None, returnStepsAsAr
 
     allOperators = ['+','-','*','/']
     operation = expression.getOperationToPerform()
+
+    # expression = expression.convertOutOfStandardForm()
 
     if '++' in expression:
         simplifiedExpression = expression.replace('++', '+')
@@ -340,21 +562,101 @@ def evaluateArithmetic(expression, stepCounter=None, Steps=None, returnStepsAsAr
             'step': f'Apply PEMDAS: {expression} = {expressionWithOrder}',
             'simplification': f'{expressionWithOrder}'
         }
-        expression = arithmeticExpression(expressionWithOrder)
+        expression = ArithmeticExpression(expressionWithOrder)
         stepCounter += 1
         Steps.update({stepCounter: stepDictValue})
 
-    elif operation == 'arithmetic-exponent':
-        base = expression.split('^')[0]
-        exponent = expression.split('^')[1]
-        result = castToFloatOrInt(eval(f"{base}**{exponent}"), True)
+    elif operation == 'arithmetic-exponent-multiply':
+        allExponentsInExpression = expression.getAllExponentsInExpression()
+        baseToUse = Exponential(allExponentsInExpression[0]).base
+
+        exponents = []
+        for expression in allExponentsInExpression:
+            expression = Exponential(expression)
+            if expression.exponent.isSingleExpression():
+                exponents.append(f"{expression.exponent}")
+            else:
+                exponents.append(f"({expression.exponent})")
+
+        operation = '+'
+        newExponent = operation.join(exponents)
+
+        simplifiedExpression = ArithmeticExpression(f"{baseToUse}^{'{'}{newExponent}{'}'}")
+
         stepCounter += 1
         stepDictValue = {
-            'step': f'Calculate exponent: {expression} = {result}',
-            'simplification': result
+            'step': f"Apply rule exponent: a^b * a^c = a^{'{'}b+c{'}'}",
+            'simplification': f"{simplifiedExpression}"
         }
+
         Steps.update({stepCounter: stepDictValue})
-        return evaluateArithmetic(result, stepCounter, Steps, returnStepsAsArray)
+        return evaluateArithmetic(simplifiedExpression, stepCounter, Steps, returnStepsAsArray)
+
+
+
+
+    elif operation == 'arithmetic-exponent-single':
+        exponentIndex = indexOf(str(expression), '^')
+        exponentData = expression.splitExpression(exponentIndex, '^', binarySplit=False)
+
+        base = ArithmeticExpression(exponentData[0])
+        exponent = ArithmeticExpression(exponentData[1])
+
+        if base == 1:
+            result = '1'
+            stepCounter += 1
+            stepDictValue = {
+                'step': f'Apply rule exponent: 1^a = 1',
+                'simplification': f"{result}"
+            }
+            Steps.update({stepCounter: stepDictValue})
+            return evaluateArithmetic(ArithmeticExpression(result), stepCounter, Steps, returnStepsAsArray)
+
+
+        if '{' in exponent:
+            expressionInExponent = ArithmeticExpression(exponent.replace('{', '').replace('}', ''))
+            if expressionInExponent.isSingleExpression():
+                expressionInExponent = expressionInExponent.replace('{', '').replace('}', '')
+                if base.isSingleExpression():
+                    result = castToFloatOrInt(eval(f"{base}**{expressionInExponent}"), True)
+                    SF = convertToStandardForm
+                    stepCounter += 1
+                    stepDictValue = {
+                        'step': f'Calculate exponent: {expression} = {SF(result, True)}',
+                        'simplification': f"{SF(result, True)}"
+                    }
+                    Steps.update({stepCounter: stepDictValue})
+                    return evaluateArithmetic(ArithmeticExpression(result), stepCounter, Steps, returnStepsAsArray)
+            else:
+                Simplification = evaluateArithmetic(expressionInExponent, returnStepsAsArray=True)
+                result = Simplification[1]
+                stepsAsArray = Simplification[0]
+
+                for stepToAdd in stepsAsArray:
+                    stepDictValue = {
+                        'step': f"{stepToAdd['step']}",
+                        'simplification': expression.replace(f'{expressionInExponent}', f"{stepToAdd['simplification']}")
+                    }
+                    stepCounter += 1
+                    Steps.update({stepCounter: stepDictValue})
+
+                simplifiedExpression = expression.replace(f'{expressionInExponent}', result)
+                expression = simplifiedExpression
+
+                return evaluateArithmetic(expression, stepCounter, Steps, returnStepsAsArray)
+
+        else:
+            if base.isSingleExpression():
+                result = castToFloatOrInt(eval(f"{base}**{exponent}"), True)
+                SF = convertToStandardForm
+
+                stepCounter += 1
+                stepDictValue = {
+                    'step': f'Calculate exponent: {expression} = {SF(result, True)}',
+                    'simplification': f"{SF(result, True)}"
+                }
+                Steps.update({stepCounter: stepDictValue})
+                return evaluateArithmetic(ArithmeticExpression(result), stepCounter, Steps, returnStepsAsArray)
 
     elif operation == 'multiply-only':
         result = performOperation(expression, operation='multiply-only')
@@ -388,7 +690,7 @@ def evaluateArithmetic(expression, stepCounter=None, Steps=None, returnStepsAsAr
                     else:
                         break
 
-                currentExpressionToEvaluate = arithmeticExpression(currentExpressionToEvaluate)
+                currentExpressionToEvaluate = ArithmeticExpression(currentExpressionToEvaluate)
                 Simplification = evaluateArithmetic(currentExpressionToEvaluate, returnStepsAsArray=True)
                 result = Simplification[1]
                 stepsAsArray = Simplification[0]
@@ -416,8 +718,11 @@ def evaluateArithmetic(expression, stepCounter=None, Steps=None, returnStepsAsAr
             firstTerm, secondTerm = Terms[0], Terms[1]
 
             if firstTerm != '' and secondTerm != '':
+                # firstTerm = f"{float(firstTerm):.20f}"
+                # secondTerm = f"{float(secondTerm):.20f}"
 
-                result = castToFloatOrInt(eval(f'float(firstTerm) {operator} float(secondTerm)'), True)
+                # result = castToFloatOrInt(f"{float(eval(f'{firstTerm} {operator} {secondTerm}')):.10f}", True)
+                result = castToFloatOrInt(eval(f"float(firstTerm) {operator} float(secondTerm)"), True)
                 simplifiedExpression = expression.replace(f'{firstTerm}{operator}{secondTerm}', result)
                 expression = simplifiedExpression
 
@@ -551,7 +856,7 @@ def splitExpression(expression, index, operator, binarySplit=True, operation=Non
 
                 return (firstTerm, secondTerm)
     else:
-        otherOperators = getRestricredOperators('-')
+        otherOperators = getRestrictedOperators('-')
         allOperators = ['+','-','*','/']
         for i in range(len(expression)):
             if i == index:
@@ -575,7 +880,7 @@ def splitExpression(expression, index, operator, binarySplit=True, operation=Non
 
                 return (firstTerm, secondTerm)
 
-def getRestricredOperators(restrictedOperator):
+def getRestrictedOperators(restrictedOperator):
     """ RETURNS ALL OPERATORS EXCEPT THE ONE PASS AS PARAMETER """
     allOperators = {'+', '-', '*', '/'}
     return allOperators.symmetric_difference(restrictedOperator)
@@ -657,6 +962,57 @@ def wrapStepInParen(stepExpression):
     else:
         return stepExpression
 
+def wrapExponentInParen(expression: str):
+    if '^' in expression:
+        allOperations = ['+','-','*','/','^']
+        indexOfExponent = indexOf(expression, '^')
+        """ GET THE BASE """
+        if expression[indexOfExponent - 1] != ')':
+            # BASE IS SINGLE EXPRESSION
+            i = indexOfExponent-1
+            """ GET THE NUMBER BEFORE '^' """
+            base = ''
+            while i >= 0 and expression[i] not in allOperations:
+                base += expression[i]
+                i -= 1
+            base = reverse(base)
+        else:
+            # BASE IS NOT SINGLE EXPRESSION
+            base = ''
+            expressionToTheLeftOfExponent = ArithmeticExpression(expression[:indexOfExponent])
+            indexWhereExponentEnds = expressionToTheLeftOfExponent.getIndexOfInnerMostParen()
+            for i in range(indexWhereExponentEnds, indexOfExponent):
+                base += expression[i]
+
+        exponentIsSingleExpression = False
+        # GET THE EXPONENT
+        if expression[indexOfExponent + 1] != '{':
+            exponentIsSingleExpression = True
+            exponent = ''
+            i = indexOfExponent+1
+            if i == len(expression)-1:
+                exponent = expression[indexOfExponent + 1]
+            else:
+                """ GET THE ENTER NUM AFTER '^' """
+                while i < len(expression) and expression[i] not in allOperations:
+                    exponent += expression[i]
+                    i += 1
+        else:
+            # EXPONENT IS NOT A SINGLE EXPRESSION
+            exponent = ''
+            i = indexOfExponent+2
+            while expression[i] != '}':
+                exponent += expression[i]
+                i += 1
+
+        if exponentIsSingleExpression:
+            expression = expression.replace(f"{base}^{exponent}", f"({base}^{exponent})")
+        else:
+            expression = expression.replace(f"{base}^{'{'}{exponent}{'}'}", f"({base}^{'{'}{exponent}{'}'})")
+
+
+        return expression
+
 def alreadyWrapped(expression):
     wrappedParentheses = 0
     if expression[0] == '(':
@@ -701,7 +1057,71 @@ def getNumOperation(expression, operation):
 
     return result
 
+def indexOf(iterable, searchFor):
+    for i, item in enumerate(iterable):
+        if item == searchFor:
+            return i
+    return None
 
+def convertToStandardForm(num: str, autoConvert=False):
+    try:
+        float(num)
+    except:
+        raise ValueError(f'{num} is not a valid number')
+
+    doConversion = True
+    if autoConvert:
+        if float(num) <= MAX_SIZE_OF_NUM_BEFORE_CONVERTED_TO_STANDARD_FORM:
+            doConversion = False
+
+
+    if doConversion:
+        if float(num) > 1:
+            standardForm = ''
+            decimalPlacesMoves = len(num)-1
+            for i in range(len(num)):
+                if i == 1:
+                    standardForm += '.'
+                if num[i] == '0':
+                    """ REMOVE TRAILING ZEROES IF ANY """
+                    charsToCheck = num[i:]
+                    for j in range(len(charsToCheck)):
+                        if charsToCheck[j] != '0':
+                            standardForm += charsToCheck
+                            break
+                    break
+                standardForm += num[i]
+
+            roundedStandardForm = str(round(float(standardForm), 5))
+
+            if len(standardForm) != len(roundedStandardForm):
+                roundedStandardForm += '...'
+
+            roundedStandardForm += f'e+{decimalPlacesMoves}'
+
+            return roundedStandardForm
+        else:
+            i = 2 # START i AT THE FIRST ZERO AFTER THE DECIMAL POINT
+            decimalPlacesMoves = 1
+            indexOfFirstNoneZeroDigit = None
+            while i < len(num):
+                if num[i] != '0':
+                    indexOfFirstNoneZeroDigit = i
+                    break
+                i += 1
+                decimalPlacesMoves += 1
+
+            standardForm = ''
+            charsToCheck = num[indexOfFirstNoneZeroDigit:]
+            for i in range(len(charsToCheck)):
+                if i == 1:
+                    standardForm += '.'
+                standardForm += charsToCheck[i]
+
+            standardForm += f'e-{decimalPlacesMoves}'
+            return standardForm
+    else:
+        return num
 
 # # OOP - Done
 # def getNumOpenParen(expression):
@@ -992,8 +1412,8 @@ def getNumOperation(expression, operation):
 def main():
     # print(simplify('((1+1)*2)')[0])
 
-    expression = arithmeticExpression('1+1')
-    print(evaluateArithmetic(expression))
+    expression = ArithmeticExpression('2^{2+1}*2^{3+2}*2^{4+3}*2^{1+4*3}')
+    print(evaluateArithmetic(expression)[0])
 
     # print(applyPEMDAS('1+2*-3*-4*523+9'))
 
