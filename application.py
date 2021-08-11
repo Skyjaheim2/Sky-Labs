@@ -10,20 +10,24 @@ from Methods import *
 def index():
     return render_template("index.html")
 
-@app.route("/solve", methods=["POST"])
-def solve():
+@app.route("/solve/<string:liveSolve>", methods=["POST"])
+def solve(liveSolve):
     userInput = request.form.get('userInput')
     print(f'Before parse: {userInput}')
     userInput = parseLatex(userInput)
     print(f'After parse: {userInput}')
 
+    try:
+        Simplification = evaluateArithmetic(userInput)
+    except:
+        return "Unable To Solve"
 
-    Simplification = evaluateArithmetic(userInput)
-    # print(Simplification)
     Steps, result, stepCounter = Simplification[0], Simplification[1], Simplification[2]
 
-    if Steps != -1:
+    if liveSolve == 'true':
+        return result
 
+    if Steps != -1:
 
         # CONVERT ALL STEPS TO LATEX
         for stepNum in Steps:

@@ -791,7 +791,7 @@ def addAndSubtractTerms(expression):
 def performOperation(expression, operation=None):
     if isSingleExpression(expression):
         return expression
-
+    expression = expression.replace('(', '').replace(')', '')
     allOperators = ['+','-','*','/']
     for i in range(len(expression)):
         if expression[i] in allOperators:

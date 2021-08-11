@@ -20,11 +20,20 @@
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
         font-size: 18px;
     }
+    #liveSolveSolutionContainer {
+        display: none;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        background-color: rgba(226, 226, 226, 0.45);
+        border-radius: 15px;
+        padding: 20px;
+
+    }
     .main-container {
         margin-left: 20%;
         margin-right: 20%;
     }
     .results-container {
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
         background-color: rgba(226, 226, 226, 0.45);
         /*height: 500px;*/
         border-radius: 15px;
@@ -81,7 +90,15 @@
         <label class="inputLabel" for="userInput">Enter Problem:</label>
         <p><span id="userInput"></span></p>
         <button id="solveBtn" type="button" class="btn btn-primary">Solve</button>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="liveSolveRadioBtn">
+            <label class="form-check-label inputLabel" for="liveSolveRadioBtn">
+                Live Solve
+            </label>
+        </div>
+        <br>
 
+        <div id="liveSolveSolutionContainer"></div>
         <div class="results-container">
             <div id="finalStep"></div>
             <div class="steps-heading">Steps</div>
@@ -247,7 +264,27 @@
         // UserInput
         document.querySelector('#userInput').addEventListener('keyup', function() {
             let enteredMath = answerMathField.latex(); // Get entered math in LaTeX format
-            // console.log(enteredMath)
+            let liveSolveRadioBtn = document.querySelector('#liveSolveRadioBtn')
+            let liveSolveSolutionsContainer = document.querySelector('#liveSolveSolutionContainer')
+            if (liveSolveRadioBtn.checked === true && enteredMath !== '') {
+                const request = new XMLHttpRequest()
+                request.open('POST', '/solve/true')
+                request.onload = () => {
+                    if (request.status === 200) {
+                        let solution = request.responseText
+                        if (solution !== 'Unable To Solve') {
+                            UI.addLatexToElement(liveSolveSolutionsContainer, solution)
+                        }
+                        else {
+                            liveSolveSolutionsContainer.textContent = 'Unable To Solve'
+                        }
+                    }
+                }
+
+                const data = new FormData()
+                data.set('userInput', enteredMath)
+                request.send(data)
+            }
         })
 
         /* ON-CLICK EVENTS */
@@ -259,7 +296,7 @@
             // console.log(enteredMath)
 
             const request = new XMLHttpRequest()
-            request.open('POST', `/solve`)
+            request.open('POST', `/solve/false`)
             request.onload = () => {
                 if (request.status === 200) {
                     let solution = request.responseText
@@ -287,6 +324,25 @@
             const data = new FormData()
             data.set('userInput', enteredMath)
             request.send(data)
+        })
+
+        // Live Solve Button
+        document.querySelector('#liveSolveRadioBtn').addEventListener('click', function()  {
+            let solveBtn = document.querySelector('#solveBtn')
+            let resultsContainer = document.querySelector('.results-container')
+            let liveSolveSolutionContainer = document.querySelector('#liveSolveSolutionContainer')
+
+
+            if (this.checked) {
+                solveBtn.style.display = 'none'
+                resultsContainer.style.display = 'none'
+                liveSolveSolutionContainer.style.display = 'block'
+            }
+            else {
+                solveBtn.style.display = 'block'
+                resultsContainer.style.display = 'block'
+                liveSolveSolutionContainer.style.display = 'none'
+            }
         })
 
 
