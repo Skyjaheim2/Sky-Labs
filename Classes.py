@@ -1,5 +1,5 @@
 from math import floor
-from Methods import getAllOperations, isDigit, getNumOpenParen, reverse, getRestrictedOperators, getNextOperator, evaluateArithmetic
+from Methods import isDigit, reverse, getRestrictedOperators, getNextOperator, evaluateArithmetic
 
 # class arithmeticExpression:
 #     def __init__(self, expression):

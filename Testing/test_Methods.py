@@ -99,6 +99,27 @@ class TestCalc(unittest.TestCase):
                 'expression': '123',
                 'result': 'no-operation',
             },
+            {
+                'expression': 'sqrt{2}',
+                'result': 'radical',
+            },
+            {
+                'expression': 'sqrt{5*3+2}',
+                'result': 'radical',
+            },
+            {
+                'expression': '1+sqrt{2}',
+                'result': 'general-arithmetic',
+            },
+            {
+                'expression': '5*2+sqrt{1+2+3}',
+                'result': 'general-arithmetic',
+            },
+            {
+                'expression': 'sqrt{(5+3*2)^2}',
+                'result': 'radical',
+            }
+
         ]
 
         for item in expressionAndResults:
@@ -418,7 +439,78 @@ class TestCalc(unittest.TestCase):
                           8: {'step': 'Add and subtract [left to right]: 3+5+7+13 = 28', 'simplification': '2^{28}'},
                           9: {'step': 'Calculate exponent: 2^{28} = 268435456', 'simplification': '268435456'}},
             },
-
+            # RADICALS
+            {
+                'expression': 'sqrt{2}',
+                'result': '1.41421',
+                'steps': {1: {'step': 'Simplify Radical: sqrt{2} = 1.41421', 'simplification': '1.41421'}},
+            },
+            {
+                'expression': '1+sqrt{2}',
+                'result': '2.41421',
+                'steps': {1: {'step': 'Apply PEMDAS: 1+sqrt{2} = 1+(sqrt{2})', 'simplification': '1+(sqrt{2})'},
+                          2: {'step': 'Simplify Radical: (sqrt{2}) = (1.41421)', 'simplification': '1+(1.41421)'},
+                          3: {'step': 'Add the first and second term: 1+1.41421 = 2.41421', 'simplification': '2.41421'}},
+            },
+            {
+                'expression': 'sqrt{3}+5',
+                'result': '6.73205',
+                'steps': {1: {'step': 'Apply PEMDAS: sqrt{3}+5 = (sqrt{3})+5', 'simplification': '(sqrt{3})+5'},
+                          2: {'step': 'Simplify Radical: (sqrt{3}) = (1.73205)', 'simplification': '(1.73205)+5'},
+                          3: {'step': 'Add the first and second term: 1.73205+5 = 6.73205', 'simplification': '6.73205'}},
+            },
+            {
+                'expression': '5+3*2+sqrt{7+5*21}',
+                'result': '21.58301',
+                'steps': {1: {'step': 'Apply PEMDAS: 5+3*2+sqrt{7+5*21} = 5+3*2+(sqrt{7+5*21})', 'simplification': '5+3*2+(sqrt{7+5*21})'},
+                          2: {'step': 'Apply PEMDAS: (7+5*21) = (7+(5*21))', 'simplification': '5+3*2+(sqrt{7+(5*21)})'},
+                          3: {'step': 'Multiply the first and second term: (5*21) = (105)', 'simplification': '5+3*2+(sqrt{7+(105)})'},
+                          4: {'step': 'Add the first and second term: (7+105) = (112)', 'simplification': '5+3*2+(sqrt{112})'},
+                          5: {'step': 'Simplify Radical: (sqrt{112}) = (10.58301)', 'simplification': '5+3*2+(10.58301)'},
+                          6: {'step': 'Apply PEMDAS: 5+3*2+10.58301 = 5+(3*2)+10.58301', 'simplification': '5+(3*2)+10.58301'},
+                          7: {'step': 'Multiply the first and second term: (3*2) = (6)', 'simplification': '5+(6)+10.58301'},
+                          8: {'step': 'Add and subtract [left to right]: 5+6+10.58301 = 21.58301', 'simplification': '21.58301'}},
+            },
+            {
+                'expression': '5+3*2+sqrt{7+5*21}+(8+4*2)',
+                'result': '37.58301',
+                'steps': {1: {'step': 'Apply PEMDAS: (8+4*2) = (8+(4*2))', 'simplification': '5+3*2+sqrt{7+5*21}+(8+(4*2))'},
+                          2: {'step': 'Multiply the first and second term: (4*2) = (8)', 'simplification': '5+3*2+sqrt{7+5*21}+(8+(8))'},
+                          3: {'step': 'Add the first and second term: (8+8) = (16)', 'simplification': '5+3*2+sqrt{7+5*21}+(16)'},
+                          4: {'step': 'Apply PEMDAS: 5+3*2+sqrt{7+5*21}+16 = 5+3*2+(sqrt{7+5*21})+16', 'simplification': '5+3*2+(sqrt{7+5*21})+16'},
+                          5: {'step': 'Apply PEMDAS: (7+5*21) = (7+(5*21))', 'simplification': '5+3*2+(sqrt{7+(5*21)})+16'},
+                          6: {'step': 'Multiply the first and second term: (5*21) = (105)', 'simplification': '5+3*2+(sqrt{7+(105)})+16'},
+                          7: {'step': 'Add the first and second term: (7+105) = (112)', 'simplification': '5+3*2+(sqrt{112})+16'},
+                          8: {'step': 'Simplify Radical: (sqrt{112}) = (10.58301)', 'simplification': '5+3*2+(10.58301)+16'},
+                          9: {'step': 'Apply PEMDAS: 5+3*2+10.58301+16 = 5+(3*2)+10.58301+16', 'simplification': '5+(3*2)+10.58301+16'},
+                          10: {'step': 'Multiply the first and second term: (3*2) = (6)', 'simplification': '5+(6)+10.58301+16'},
+                          11: {'step': 'Add and subtract [left to right]: 5+6+10.58301+16 = 37.58301', 'simplification': '37.58301'}},
+            },
+            {
+                'expression': 'sqrt{2^{3.141592653589793}}',
+                'result': '2.97069',
+                'steps': {1: {'step': 'Calculate exponent: 2^{3.141592653589793} = 8.82498', 'simplification': 'sqrt{8.82498}'},
+                          2: {'step': 'Simplify Radical: sqrt{8.82498} = 2.97069', 'simplification': '2.97069'}},
+            },
+            {
+                'expression': 'sqrt{(5+3*2)^2}',
+                'result': '11',
+                'steps': {1: {'step': 'Apply PEMDAS: (5+3*2) = (5+(3*2))', 'simplification': 'sqrt{(5+(3*2))^2}'},
+                          2: {'step': 'Multiply the first and second term: (3*2) = (6)', 'simplification': 'sqrt{(5+(6))^2}'},
+                          3: {'step': 'Add the first and second term: (5+6) = (11)', 'simplification': 'sqrt{(11)^2}'},
+                          4: {'step': 'Calculate exponent: 11^2 = 121', 'simplification': 'sqrt{121}'},
+                          5: {'step': 'Simplify Radical: sqrt{121} = 11', 'simplification': '11'}},
+            },
+            {
+                'expression': 'sqrt{(5+3*2)^{1+2+3}}',
+                'result': '1331',
+                'steps': {1: {'step': 'Add and subtract [left to right]: 1+2+3 = 6', 'simplification': 'sqrt{(5+3*2)^{6}}'},
+                          2: {'step': 'Apply PEMDAS: (5+3*2) = (5+(3*2))', 'simplification': 'sqrt{(5+(3*2))^{6}}'},
+                          3: {'step': 'Multiply the first and second term: (3*2) = (6)', 'simplification': 'sqrt{(5+(6))^{6}}'},
+                          4: {'step': 'Add the first and second term: (5+6) = (11)', 'simplification': 'sqrt{(11)^{6}}'},
+                          5: {'step': 'Calculate exponent: 11^{6} = 1771561', 'simplification': 'sqrt{1771561}'},
+                          6: {'step': 'Simplify Radical: sqrt{1771561} = 1331', 'simplification': '1331'}},
+            },
             # PEMDAS
             {
                 'expression': '1+2+3*5',

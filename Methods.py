@@ -1,4 +1,4 @@
-from math import floor, pi, e
+from math import floor, pi, e, sqrt
 
 
 class ArithmeticExpression:
@@ -12,6 +12,22 @@ class ArithmeticExpression:
 
         if len(allOperations) == 0 and self.isSingleExpression():
             return 'no-operation'
+
+        if 'sqrt' in self.expression:
+            isRadicalOnly = True
+            seenTerms = set()
+            for term in self.expression:
+                if term not in 'sqrt':
+                    seenTerms.add(term)
+                if term == '}':
+                    seenTerms.clear()
+                if term in ['+','-','*','/'] and '{' not in seenTerms:
+                    isRadicalOnly = False
+
+            if isRadicalOnly:
+                return 'radical'
+            else:
+                return 'general-arithmetic'
 
         if '^' in self.expression:
             operationsInfo = self.getOperationsOnExponent(returnWithCounter=True)
@@ -89,7 +105,6 @@ class ArithmeticExpression:
 
                     return 'arithmetic-exponent-single' if isSingleExponent else 'general-arithmetic'
 
-
         if ('+' in allOperations or '-' in allOperations) and ('*' not in allOperations and '/' not in allOperations):
             numberOfAdditions = self.getNumOperation('+', self.expression)
             numberOfSubtractions = self.getNumOperation('-', self.expression)
@@ -145,6 +160,9 @@ class ArithmeticExpression:
         for operation in allPossibleOperations:
             if operation in expression:
                 allOperationsInExpression.add(operation)
+
+        if 'sqrt' in expression:
+            return False
 
         if '...e' in expression:
             if getNumOperation(expression, '+') == 1 or getNumOperation(expression, '-') == 1:
@@ -258,6 +276,9 @@ class ArithmeticExpression:
     def applyPEMDAS(self):
         newExpression = self.expression
 
+        if 'sqrt' in newExpression:
+            newExpression = wrapRadicalInParen(self.expression)
+            return ArithmeticExpression(newExpression)
         if '^' in newExpression:
             newExpression = wrapExponentInParen(self.expression)
             return ArithmeticExpression(newExpression)
@@ -475,16 +496,34 @@ class Exponential:
                 expressionInExponent = self.exponent.replace('{', '').replace('}', '')
                 self.exponent = ArithmeticExpression(expressionInExponent)
 
+class Radical(ArithmeticExpression):
+    def __init__(self, expression):
+        super().__init__(expression)
+        if type(expression) != ArithmeticExpression:
+            self.expression = ArithmeticExpression(expression)
+        else:
+            self.expression = expression
+
+    def getExpressionInsideRadical(self):
+        expressionInside = ''
+        for i in range(len(self.expression)):
+            if self.expression[i] == '{' and self.expression[:i] == 'sqrt':
+                j = i+1
+                while j != len(self.expression)-1:
+                    expressionInside += self.expression[j]
+                    j += 1
+
+        return ArithmeticExpression(expressionInside)
 
 
 def parseLatex(latexString: str):
     latexString = latexString.replace('\left(', '(').replace('\\right)', ')').replace('\cdot', '*').replace('\\pi', f'{pi}')\
-                             .replace('e', f'{e}')
+                             .replace('e', f'{e}').replace('\sqrt', 'sqrt')
     return latexString
 
 def latexify(expression):
     expression = expression.replace('(', '\left(').replace(')', '\\right)').replace('*', '\cdot').replace(f'{pi}', '\pi')\
-                           .replace(f'{e}', 'e')
+                           .replace(f'{e}', 'e').replace('sqrt', '\\sqrt')
     return expression
 
 
@@ -566,6 +605,41 @@ def evaluateArithmetic(expression, stepCounter=None, Steps=None, returnStepsAsAr
         stepCounter += 1
         Steps.update({stepCounter: stepDictValue})
 
+    elif operation == 'radical':
+        expression = Radical(expression)
+        expressionInsideRadical = expression.getExpressionInsideRadical()
+
+        if expressionInsideRadical.isSingleExpression():
+            simplifiedExpression = castToFloatOrInt(sqrt(float(str(expressionInsideRadical))), True)
+
+            stepCounter += 1
+            stepDictValue = {
+                'step': f"Simplify Radical: sqrt{'{'}{expressionInsideRadical}{'}'} = {simplifiedExpression}",
+                'simplification': f"{simplifiedExpression}"
+            }
+
+            Steps.update({stepCounter: stepDictValue})
+            return evaluateArithmetic(simplifiedExpression, stepCounter, Steps, returnStepsAsArray)
+
+        else:
+            Simplification = evaluateArithmetic(expressionInsideRadical, returnStepsAsArray=True)
+            result = Simplification[1]
+            stepsAsArray = Simplification[0]
+
+            for stepToAdd in stepsAsArray:
+                stepDictValue = {
+                    'step': stepToAdd['step'],
+                    'simplification': expression.replace(f"{expressionInsideRadical}", f"{stepToAdd['simplification']}")
+                }
+                stepCounter += 1
+                Steps.update({stepCounter: stepDictValue})
+
+            simplifiedExpression = expression.replace(f"{expressionInsideRadical}", result)
+            return evaluateArithmetic(simplifiedExpression, stepCounter, Steps, returnStepsAsArray)
+
+
+
+
     elif operation == 'arithmetic-exponent-multiply':
         allExponentsInExpression = expression.getAllExponentsInExpression()
         baseToUse = Exponential(allExponentsInExpression[0]).base
@@ -591,8 +665,6 @@ def evaluateArithmetic(expression, stepCounter=None, Steps=None, returnStepsAsAr
 
         Steps.update({stepCounter: stepDictValue})
         return evaluateArithmetic(simplifiedExpression, stepCounter, Steps, returnStepsAsArray)
-
-
 
 
     elif operation == 'arithmetic-exponent-single':
@@ -1013,6 +1085,22 @@ def wrapExponentInParen(expression: str):
 
         return expression
 
+def wrapRadicalInParen(expression: str):
+    wrappedExpression = ''
+    addedClosingParen = False
+    for i in range(len(expression)):
+        if expression[i:i+4] == 'sqrt':
+            wrappedExpression += '('
+        if i > 0 and expression[i-1] == '}':
+            wrappedExpression += ')'
+            addedClosingParen = True
+        wrappedExpression += expression[i]
+
+    if not addedClosingParen:
+        wrappedExpression += ')'
+
+    return wrappedExpression
+
 def alreadyWrapped(expression):
     wrappedParentheses = 0
     if expression[0] == '(':
@@ -1412,7 +1500,7 @@ def convertToStandardForm(num: str, autoConvert=False):
 def main():
     # print(simplify('((1+1)*2)')[0])
 
-    expression = ArithmeticExpression('2^{2+1}*2^{3+2}*2^{4+3}*2^{1+4*3}')
+    expression = ArithmeticExpression('5+3*2+sqrt{7+5*21}')
     print(evaluateArithmetic(expression)[0])
 
     # print(applyPEMDAS('1+2*-3*-4*523+9'))
