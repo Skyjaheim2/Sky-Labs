@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- BOOTSTRAP -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <!-- MATH QUILL -->
     <link rel="stylesheet" href="{{ url_for('static', filename = 'mathquill.css') }}">
@@ -54,20 +58,603 @@
         font-size: 35px;
         font-weight: bold;
     }
+    #selectedSubjectTabHeading {
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: 30px;
+        font-weight: 400;
+        /*margin-left: 20%;*/
+        margin-bottom: 30px;
+        margin-top: 20px;
+    }
+    .container-2 {
+        /*display: flex;*/
+        /*flex-wrap: wrap;*/
+        margin: auto;
+        width: 805px;
+
+    }
     .inputLabel {
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
         font-size: 18px;
         font-weight: 500;
     }
+    .subject-tabs {
+        height: 55px;
+        background-color: #393737;
+        margin-bottom: 0;
+        padding-left: 19.4%;
+    }
+    .subject-tab-btn {
+        border-radius: 15px;
+        height: 50px;
+    }
+    .subject-topics {
+        display: none;
+        font-family: "Times New Roman", Symbola, serif;
+        position: absolute;
+        background-color: white;
+        left: 275px;
+        height: auto;
+        width: 410px;
+        /*width: auto;*/
+        border: 1px solid #c7c7c7;
+    }
+    .subject-option-btn {
+        width: 200px;
+        margin: 2px;
+
+    }
+    .btn-secondary {
+        position: relative;
+        margin-top: 5px;
+        font-family: "Times New Roman", Symbola, serif;
+        background-color: #393737;
+        border: none;
+    }
+    .symbolsContainer {
+        background-color: #e0dddd;
+        border-radius: 10px;
+        height: 200px;
+    }
+    .sidebar {
+        position: absolute;
+        background-color: #e0dddd;
+        top: 32%;
+        border-radius: 10px;
+        width: 205px;
+        min-height: 500px;
+        /*height: auto;*/
+    }
+    .topics-btn {
+        width: 200px;
+    }
+    .dropdown-item {
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: 15px;
+        border: 1px solid darkgray;
+        border-radius: 10px;
+        margin-bottom: 5px;
+    }
+    /* dropdown-item background */
+    .show {
+        border-radius: 10px;
+
+    }
 </style>
 {% block style %}
 {% endblock %}
 <body>
+    <div id="mainHeading"><span style="color: #007bff">Sky</span>Labs</div>
+
+    <div class="container-1">
+        <div class="subject-tabs">
+            <div class="btn-group">
+                <button id="algebraSubjectTabBtn" class="btn btn-secondary subject-tab-btn" data-subject="algebra">Algebra</button>
+                <button id="discreteMathSubjectTabBtn" class="btn btn-secondary subject-tab-btn" data-subject="discreteMath">Discrete Math</button>
+                <button id="calculusSubjectTabBtn" class="btn btn-secondary subject-tab-btn" data-subject="calculus">Calculus</button>
+                <button id="probabilitySubjectTabBtn" class="btn btn-secondary subject-tab-btn" data-subject="probability">Probability</button>
+                <button id="physicsSubjectTabBtn" class="btn btn-secondary subject-tab-btn" data-subject="physics">Physics</button>
+            </div>
+
+        </div>
+
+<!--        <div class="subject-topics"><button class="btn btn-light subject-option-btn">Basic Operation</button><button class="btn btn-light subject-option-btn">Equations</button><button class="btn btn-light subject-option-btn">Summation</button><button class="btn btn-light subject-option-btn">Pi (Product) Notation</button><button class="btn btn-light subject-option-btn">Polynomials</button></div>-->
+    <div class="subject-topics"></div>
+    </div>
+
+    <div class="container-2">
+        <div id="selectedSubjectTabHeading"></div>
+        <div class="symbolsContainer">
+
+        </div>
+    </div>
+
+    <div class="sidebar">
+<!--        <div class="dropdown">-->
+<!--            <button style="background-color: darkgray; color: black" class="btn btn-secondary topics-btn" type="button" id="" aria-haspopup="true" aria-expanded="false">-->
+<!--                Basic Operations-->
+<!--            </button>-->
+<!--        </div>-->
+
+<!--        <div class="dropdown">-->
+<!--            <button style="background-color: darkgray; color: black" class="btn btn-secondary dropdown-toggle topics-btn" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                Equations-->
+<!--            </button>-->
+<!--            <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="dropdownMenuButton2">-->
+<!--                <a class="dropdown-item" href="#">Logarithmic</a>-->
+<!--                <a class="dropdown-item" href="#">Exponential</a>-->
+<!--                <a class="dropdown-item" href="#">Linear</a>-->
+<!--                <a class="dropdown-item" href="#">Radical</a>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="dropdown">-->
+<!--            <button style="background-color: darkgray; color: black" class="btn btn-secondary dropdown-toggle topics-btn" type="button" id="foo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                Summation-->
+<!--            </button>-->
+<!--            <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="foo">-->
+<!--                <a class="dropdown-item" href="#">Double Summation</a>-->
+<!--                <a class="dropdown-item" href="#">Triple Summation</a>-->
+<!--            </div>-->
+<!--        </div>-->
+    </div>
     {% block body %}
     {% endblock %}
+
 </body>
 
-<script></script>
+<script>
+    class BaseUI {
+        static loadDefaultOptions(defaultSubject) {
+            // Load Default Subject Tab
+            let defaultSubjectTabBtn = document.querySelector(`#${defaultSubject}SubjectTabBtn`)
+            let subjectTopicsContainer = document.querySelector('.subject-topics')
+            let subjectOptions = subjectTabsUI.getSubjectOptions()
+
+            subjectOptions[defaultSubject].forEach((topic) => {
+                subjectTopicsContainer.innerHTML += `<button class="btn btn-light subject-option-btn">${topic}</button>`
+            })
+            subjectTabsUI.subjectTabBtnSelected(defaultSubjectTabBtn)
+
+        }
+
+    }
+    
+    class subjectTabsUI {
+        static subjectTabBtnSelected(btnObj) {
+            let subjectTabHeading = document.querySelector('#selectedSubjectTabHeading')
+            let allBtnObjects = document.querySelectorAll('.subject-tab-btn')
+            allBtnObjects.forEach((btn) => {
+                if (btn !== btnObj) {
+                    btn.style.backgroundColor = ''
+                }
+                else {
+                    btn.style.backgroundColor = 'black'
+                }
+            })
+            subjectTabHeading.textContent = btnObj.textContent
+            this.loadSideBarBtn(btnObj.dataset.subject)
+
+        }
+        static showSubjectTopics() {
+            let subjectOptionsContainer = document.querySelector('.subject-topics')
+            subjectOptionsContainer.style.display = 'flex'
+            subjectOptionsContainer.style.flexWrap = 'wrap'
+        }
+        static removeSubjectTopics() {
+            let subjectOptionsContainer = document.querySelector('.subject-topics')
+            subjectOptionsContainer.style.display = 'none'
+        }
+        static populateSubjectOptions(Topics) {
+            let subjectOptionsDiv = document.querySelector('.subject-topics')
+
+            let htmlToAdd = ''
+            Topics.forEach((topic) => {
+                htmlToAdd += `<button class="btn btn-light subject-option-btn">${topic}</button>`
+            })
+            subjectOptionsDiv.innerHTML = htmlToAdd
+        }
+        static loadSideBarBtn(subject) {
+            let sideBar = document.querySelector('.sidebar')
+            let subjectTopicsContainer = document.querySelector('.subject-topics')
+
+            let sideBarBtnHtml = ''
+
+            subjectTopicsContainer.childNodes.forEach((btn) => {
+                let topic = btn.textContent
+                sideBarBtnHtml +=  `
+                    <div class="dropdown">
+                        <button style="background-color: darkgray; color: black" class="btn btn-secondary dropdown-toggle topics-btn" type="button" id="${topic}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            ${topic}
+                        </button>
+                        ${subjectTabsUI.getTopicsExtension(subject, topic)}
+                    </div>
+                `
+            })
+            sideBar.innerHTML = sideBarBtnHtml
+        }
+
+        static getTopicsExtension(subject, topic) {
+            console.log(subject)
+            switch (subject) {
+                case 'algebra':
+                    switch (topic) {
+                        case 'Basic Operations':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}"></div>
+                            `
+                        case 'Equations':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Logarithmic</a>
+                                    <a class="dropdown-item" href="#">Exponential</a>
+                                    <a class="dropdown-item" href="#">Linear</a>
+                                    <a class="dropdown-item" href="#">Radical</a>
+                                </div>
+                            `
+                        case 'Summation':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Double Summation</a>
+                                    <a class="dropdown-item" href="#">Triple Summation</a>
+                                </div>
+                            `
+                        case 'Pi (Product Notation)':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+
+                                </div>
+                            `
+                        case 'Polynomials':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Properties</a>
+                                    <a class="dropdown-item" href="#">Add</a>
+                                    <a class="dropdown-item" href="#">Subtract</a>
+                                    <a class="dropdown-item" href="#">Multiply</a>
+                                    <a class="dropdown-item" href="#">Divide</a>
+                                    <a class="dropdown-item" href="#">Factor</a>
+                                    <a class="dropdown-item" href="#">LCM</a>
+                                </div>
+                            `
+                        case 'Rational Expressions':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Add</a>
+                                    <a class="dropdown-item" href="#">Subtract</a>
+                                    <a class="dropdown-item" href="#">Multiply</a>
+                                    <a class="dropdown-item" href="#">Reduce</a>
+                                </div>
+                            `
+                    }
+                    break
+                case 'discreteMath':
+                    switch (topic) {
+                        case 'Propositional Logic':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+
+                                </div>
+                            `
+                        case 'Rules of Inference':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+
+                                </div>
+                            `
+                        case 'Set Theory':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Cartesian Product</a>
+                                    <a class="dropdown-item" href="#">Power sets</a>
+                                    <a class="dropdown-item" href="#">Union</a>
+                                    <a class="dropdown-item" href="#">Intersection</a>
+                                    <a class="dropdown-item" href="#">Difference</a>
+                                    <a class="dropdown-item" href="#">Symmetric Difference</a>
+                                    <a class="dropdown-item" href="#">Computer Representation</a>
+                                </div>
+                            `
+                        case 'Induction':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+
+                                </div>
+                            `
+                        case 'Number Theory':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Division Algorithm</a>
+                                    <a class="dropdown-item" href="#">Euclidean Algorithm</a>
+                                    <a class="dropdown-item" href="#">Modular Arithmetic</a>
+                                    <a class="dropdown-item" href="#">Modular Exponentiation</a>
+                                    <a class="dropdown-item" href="#">Congruences</a>
+                                </div>
+                            `
+                        case 'Relations':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Properties</a>
+                                    <a class="dropdown-item" href="#">Combining Relations</a>
+                                </div>
+                            `
+
+
+                    }
+                    break
+                case 'calculus':
+                    switch (topic) {
+                        case 'Limits':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">One Variable</a>
+                                    <a class="dropdown-item" href="#">Multi Variable</a>
+                                    <a class="dropdown-item" href="#">One Sided</a>
+                                    <a class="dropdown-item" href="#">At Infinity</a>
+                                    <a class="dropdown-item" href="#">L'Hoptial's Rule</a>
+                                    <a class="dropdown-item" href="#">Squeeze Theorem</a>
+                                </div>
+                            `
+                        case 'Derivatives':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Sum/Diff Rule</a>
+                                    <a class="dropdown-item" href="#">Product Rule</a>
+                                    <a class="dropdown-item" href="#">Quotient Rule</a>
+                                    <a class="dropdown-item" href="#">Chain Rule</a>
+                                    <a class="dropdown-item" href="#">First Derivative</a>
+                                    <a class="dropdown-item" href="#">Higher Order Derivatives</a>
+                                    <a class="dropdown-item" href="#">Derivative At a Point</a>
+                                    <a class="dropdown-item" href="#">Partial Derivative</a>
+                                    <a class="dropdown-item" href="#">Implicit Derivative</a>
+                                    <a class="dropdown-item" href="#">Second Implicit Derivative</a>
+                                    <a class="dropdown-item" href="#">Derivative Using Definition</a>
+                                </div>
+                            `
+                        case 'Derivative Applications':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Equation of Tangent Line</a>
+                                    <a class="dropdown-item" href="#">Equation of Normal Line</a>
+                                    <a class="dropdown-item" href="#">Extreme Points</a>
+                                    <a class="dropdown-item" href="#">Linear Approximation</a>
+                                    <a class="dropdown-item" href="#">Quadratic Approximation</a>
+                                </div>
+                            `
+                        case 'Integrals':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Indefinite</a>
+                                    <a class="dropdown-item" href="#">Definite</a>
+                                    <a class="dropdown-item" href="#">Improper</a>
+                                    <a class="dropdown-item" href="#">Double Integrals</a>
+                                    <a class="dropdown-item" href="#">Triple Integrals</a>
+                                </div>
+                            `
+                        case 'Integral Applications':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Limit of Sum</a>
+                                    <a class="dropdown-item" href="#">Area Under Curve</a>
+                                    <a class="dropdown-item" href="#">Area Between Curves</a>
+                                    <a class="dropdown-item" href="#">Volume of Solid of Revolution</a>
+                                    <a class="dropdown-item" href="#">Function Average</a>
+                                    <a class="dropdown-item" href="#">Arc Length</a>
+                                </div>
+                            `
+                    }
+                    break
+                case 'probability':
+                    switch (topic) {
+                        case 'Combinations':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+
+                                </div>
+                            `
+                        case 'Permutations':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+
+                                </div>
+                            `
+                    }
+                    break
+                case 'physics':
+                    switch (topic) {
+                        case 'Kinematics':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">ID Kinematics</a>
+                                    <a class="dropdown-item" href="#">2D Kinematics</a>
+                                </div>
+                            `
+                        case 'Circular Motion':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Centripetal Force</a>
+                                    <a class="dropdown-item" href="#">Centripetal Velocity</a>
+                                    <a class="dropdown-item" href="#">Centripetal Acceleration</a>
+                                    <a class="dropdown-item" href="#">Tension in String</a>
+                                    <a class="dropdown-item" href="#">Period</a>
+                                    <a class="dropdown-item" href="#">Frequency</a>
+                                </div>
+                            `
+                        case 'Rotational Motion':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Angular Displacement</a>
+                                    <a class="dropdown-item" href="#">Angular Velocity</a>
+                                    <a class="dropdown-item" href="#">Angular Acceleration</a>
+                                    <a class="dropdown-item" href="#">Linear/Tangental Velocity</a>
+                                    <a class="dropdown-item" href="#">Linear/Tangental/ Acceleration</a>
+                                </div>
+                            `
+                        case 'Rotational Dynamics':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Torque</a>
+                                    <a class="dropdown-item" href="#">Moment of Inertia</a>
+                                    <a class="dropdown-item" href="#">Angular Momentum</a>
+                                </div>
+                            `
+                        case "Newton's 2nd Law":
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Dynamics Problem</a>
+                                </div>
+                            `
+                        case 'Momentum':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Linear Momentum</a>
+                                    <a class="dropdown-item" href="#">Angular Momentum</a>
+                                </div>
+                            `
+                        case 'Work and Energy':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Conservation of Energy</a>
+                                    <a class="dropdown-item" href="#">Work Energy Theorem</a>
+                                </div>
+                            `
+                        case 'Fluid Mechanics':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Properties of Fluids</a>
+                                    <a class="dropdown-item" href="#">Density</a>
+                                    <a class="dropdown-item" href="#">Pressure</a>
+                                    <a class="dropdown-item" href="#">Buoyant Forces</a>
+                                    <a class="dropdown-item" href="#">Apparent Weight</a>
+                                    <a class="dropdown-item" href="#">Continuity Equation</a>
+                                    <a class="dropdown-item" href="#">Bernoulli's Equation</a>
+                                </div>
+                            `
+                        case 'Temperature and KT':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Convert Between Scales</a>
+                                    <a class="dropdown-item" href="#">Ideal Gas Law</a>
+                                    <a class="dropdown-item" href="#">Thermal Expansion</a>
+                                    <a class="dropdown-item" href="#">Thermal Stress</a>
+                                    <a class="dropdown-item" href="#">Newton's Law of Cooling</a>
+                                    <a class="dropdown-item" href="#">Relative Humidity</a>
+                                    <a class="dropdown-item" href="#">Diffusion</a>
+                                    <a class="dropdown-item" href="#">Kinetic Theory</a>
+                                </div>
+                            `
+                        case 'Heat':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">Internal Energy of an Ideal Gas</a>
+                                    <a class="dropdown-item" href="#">Specific Heat</a>
+                                    <a class="dropdown-item" href="#">Latent Heat</a>
+                                    <a class="dropdown-item" href="#">Conduction</a>
+                                    <a class="dropdown-item" href="#">Radiation</a>
+                                    <a class="dropdown-item" href="#">Squeeze Theorem</a>
+                                </div>
+                            `
+                        case 'Laws of Thermodynamics':
+                            return `
+                                <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
+                                    <a class="dropdown-item" href="#">First Law of Theromodynamics</a>
+                                    <a class="dropdown-item" href="#">Thermodynamic Processes</a>
+                                    <a class="dropdown-item" href="#">Work</a>
+                                    <a class="dropdown-item" href="#">Efficiency</a>
+                                    <a class="dropdown-item" href="#">Coefficient of Performance (COP)</a>
+                                    <a class="dropdown-item" href="#">Entropy and The Second Law of Thermodynamics</a>
+                                </div>
+                            `
+
+                    }
+
+
+            }
+            return ''
+
+        }
+        static getSubjectOptions() {
+            return {
+                'algebra': ['Basic Operations', 'Equations', 'Summation', 'Pi (Product Notation)', 'Polynomials', 'Rational Expressions'],
+                'discreteMath': ['Propositional Logic', 'Rules of Inference', 'Set Theory', 'Induction', 'Number Theory', 'Relations'],
+                'calculus': ['Limits', 'Derivatives', 'Derivative Applications', 'Integrals', 'Integral Applications'],
+                'probability': ['Combinations', 'Permutations'],
+                'physics': ['Kinematics', 'Circular Motion', 'Rotational Motion', 'Rotational Dynamics', "Newton's 2nd Law", 'Momentum', 'Work and Energy', 'Fluid Mechanics', 'Temperature and KT', 'Heat', 'Laws of Thermodynamics']
+            }
+        }
+        
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        BaseUI.loadDefaultOptions('algebra')
+
+
+    })
+
+    /* ONCLICK EVENTS */
+
+    // Subject Tabs
+    document.querySelector('.subject-tabs').addEventListener('click', (e) => {
+        if (e.target.classList.contains('subject-tab-btn')) {
+            subjectTabsUI.subjectTabBtnSelected(e.target)
+        }
+    })
+
+    /* ON-HOVER EVENTS */
+
+    // Subject Tabs
+    document.querySelector('.subject-tabs').addEventListener('mouseover', (e) => {
+        let subjectOptionsDiv = document.querySelector('.subject-topics')
+
+        if (e.target.classList.contains('subject-tab-btn')) {
+            let btnObj = e.target
+            let btnSubjectPos = {
+                'algebra': '275px',
+                'discreteMath': '340px',
+                'calculus': '455px',
+                'probability': '535px',
+                'physics': '625px',
+            }
+            let subjectOptions = subjectTabsUI.getSubjectOptions()
+
+            switch (btnObj.textContent) {
+                case "Algebra":
+                    subjectOptionsDiv.style.left = btnSubjectPos['algebra']
+                    subjectTabsUI.populateSubjectOptions(subjectOptions['algebra'])
+                    break
+                case "Discrete Math":
+                    subjectOptionsDiv.style.left = btnSubjectPos['discreteMath']
+                    subjectTabsUI.populateSubjectOptions(subjectOptions['discreteMath'])
+                    break
+                case "Calculus":
+                    subjectOptionsDiv.style.left = btnSubjectPos['calculus']
+                    subjectTabsUI.populateSubjectOptions(subjectOptions['calculus'])
+                    break
+                case "Probability":
+                    subjectOptionsDiv.style.left = btnSubjectPos['probability']
+                    subjectTabsUI.populateSubjectOptions(subjectOptions['probability'])
+                    break
+                case "Physics":
+                    subjectOptionsDiv.style.left = btnSubjectPos['physics']
+                    subjectTabsUI.populateSubjectOptions(subjectOptions['physics'])
+                    break
+
+            }
+        }
+    })
+
+    // Container-1
+    document.querySelector('.container-1').addEventListener('mouseover', (e) => {
+        if (e.target.classList.contains('subject-option-btn') || e.target.classList.contains('subject-tab-btn') || e.target.className === 'subject-topics') {
+            subjectTabsUI.showSubjectTopics()
+        }
+        else {
+            subjectTabsUI.removeSubjectTopics()
+        }
+    })
+
+
+
+</script>
 
 <!--<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>-->
 <!--<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>-->
