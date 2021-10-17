@@ -302,16 +302,166 @@
             // <button className="btn btn-light symbol-btn">$ \frac{\square}{\square} $</button>
 
             let symbolsContainer = document.querySelector('.symbols-container')
-            let symbolsToAdd = ['x^2', 'x^{\\square}', '\\log_{\\square}', '\\sqrt{\\square}', '\\leq', '\\geq',
-                                '\\frac{\\square}{\\square}', '\\cdot', '\\div', 'x^{\\circ}', '\\pi', "(\\square)'",
-                                '\\frac{d}{dx}', '\\frac{\\partial}{\\partial x}', '\\int', '\\iint', '\\iiint',
-                                '\\int_{\\square}^{\\square}', '\\lim', '\\sum', '\\infty', '\\theta', 'f(x)', '\\ln',
-                                'e^{\\square}', '\\sin', '\\cos', '\\tan', '\\cot', '\\csc', '\\sec', '\\sinh', '\\cosh',
-                                '\\tanh', '\\arcsin', '\\arccos', '\\arctan']
 
-            symbolsToAdd.forEach((symbol) => {
+            let symbolsToAdd = [
+                {
+                    'symbol': 'x^2',
+                    'latex': '\\left( \\right)^2',
+                },
+                {
+                    'symbol': 'x^{\\square}',
+                    'latex': '\\left( \\right)^{}',
+                },
+                {
+                    'symbol': '\\log_{\\square}',
+                    'latex': '\\log_{}\\left( \\right)',
+                },
+                {
+                    'symbol': '\\sqrt{\\square}',
+                    'latex': '\\sqrt{}',
+                },
+                {
+                    'symbol': '\\leq',
+                    'latex': '\\leq',
+                },
+                {
+                    'symbol': '\\geq',
+                    'latex': '\\geq',
+                },
+                {
+                    'symbol': '\\frac{\\square}{\\square}',
+                    'latex': '\\frac{}{}',
+                },
+                {
+                    'symbol': '\\cdot',
+                    'latex': '\\cdot',
+                },
+                {
+                    'symbol': '\\div',
+                    'latex': '\\div',
+                },
+                {
+                    'symbol': 'x^{\\circ}',
+                    'latex': '\\left( \\right)^{\\circ}',
+                },
+                {
+                    'symbol': '\\pi',
+                    'latex': '\\pi',
+                },
+                {
+                    'symbol': "(\\square)'",
+                    'latex': "\\left( \\right)'",
+                },
+                {
+                    'symbol': '\\frac{d}{dx}',
+                    'latex': '\\frac{d}{dx}\\left( \\right)',
+                },
+                {
+                    'symbol': '\\frac{\\partial}{\\partial x}',
+                    'latex': '\\frac{\\partial}{\\partial x}\\left( \\right)',
+                },
+                {
+                    'symbol': '\\int',
+                    'latex': '\\int',
+                },
+                {
+                    'symbol': '\\iint',
+                    'latex': '\\int \\int',
+                },
+                {
+                    'symbol': '\\iiint',
+                    'latex': '\\int \\int \\int',
+                },
+                {
+                    'symbol': '\\int_{\\square}^{\\square}',
+                    'latex': '\\int_{}^{}',
+                },
+                {
+                    'symbol': '\\lim',
+                    'latex': '\\lim_{x \\to 0}\\left( \\right)',
+                },
+                {
+                    'symbol': '\\sum',
+                    'latex': '\\sum_{n=1}\\left( \\right)',
+                },
+                {
+                    'symbol': '\\infty',
+                    'latex': '\\infty',
+                },
+                {
+                    'symbol': '\\theta',
+                    'latex': '\\theta',
+                },
+                {
+                    'symbol': 'f(x)',
+                    'latex': 'f(x)',
+                },
+                {
+                    'symbol': '\\ln',
+                    'latex': '\\ln\\left( \\right)',
+                },
+                {
+                    'symbol': 'e^{\\square}',
+                    'latex': 'e^{}',
+                },
+                {
+                    'symbol': '\\sin',
+                    'latex': '\\sin\\left( \\right)',
+                },
+                {
+                    'symbol': '\\cos',
+                    'latex': '\\cos\\left( \\right)',
+                },
+                {
+                    'symbol': '\\tan',
+                    'latex': '\\tan\\left( \\right)',
+                },
+                {
+                    'symbol': '\\cot',
+                    'latex': '\\cot\\left( \\right)',
+                },
+                {
+                    'symbol': '\\csc',
+                    'latex': '\\csc\\left( \\right)',
+                },
+                {
+                    'symbol': '\\sec',
+                    'latex': '\\sec\\left( \\right)',
+                },
+                {
+                    'symbol': '\\sinh',
+                    'latex': '\\sinh\\left( \\right)',
+                },
+                {
+                    'symbol': '\\cosh',
+                    'latex': '\\cosh\\left( \\right)',
+                },
+                {
+                    'symbol': '\\tanh',
+                    'latex': '\\tanh\\left( \\right)',
+                },
+                {
+                    'symbol': '\\arcsin',
+                    'latex': '\\arcsin\\left( \\right)',
+                },
+                {
+                    'symbol': '\\arccos',
+                    'latex': '\\arccos\\left( \\right)',
+                },
+                {
+                    'symbol': '\\arctan',
+                    'latex': '\\arctan\\left( \\right)',
+                },
+
+            ]
+
+            symbolsToAdd.forEach((item) => {
+                let symbol = item['symbol']
+                let latex = item['latex']
+
                 let symbolButton = document.createElement('button')
                 symbolButton.className = 'btn btn-light symbol-btn'
+                symbolButton.dataset.latex = latex
 
                 symbolsContainer.appendChild(symbolButton)
                 UI.addLatexToElement(symbolButton, symbol)
@@ -403,8 +553,6 @@
     }
 
         static getTopicsExtension2(subject, topic) {
-            console.log(subject)
-            console.log(topic)
             let topicsExtension = {
                 'algebra': {
                     'Basic-Operations': [''],
@@ -447,7 +595,7 @@
                     'Laws-of-Thermodynamics': ['First Law of Thermodynamics', 'Thermodynamic Processes', 'Work', 'Efficiency', 'Coefficient of Performance (COP)', 'Entropy and The Second Law of Thermodynamics']
                 }
             }
-            console.log(topicsExtension[subject][topic])
+
             let htmlToReturn = ''
             topicsExtension[subject][topic].forEach((extension) => {
                 htmlToReturn += `

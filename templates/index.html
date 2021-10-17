@@ -233,7 +233,7 @@
             charsThatBreakOutOfSupSub: '=',
             autoSubscriptNumerals: true,
             autoCommands: 'pi theta sqrt sum int',
-            autoOperatorNames: 'sin cos',
+            autoOperatorNames: 'sin cos tan sinh cosh tanh arcsin arccos arctan ln log csc sec cot',
             maxDepth: 10,
         }
 
@@ -255,8 +255,10 @@
                     alert('enter')
                 }
             }
-
         });
+
+        // answerMathField.write('\\int(5x+3)dx')
+
         /* ON-KEY UP EVENTS */
 
         // UserInput
@@ -286,6 +288,14 @@
         })
 
         /* ON-CLICK EVENTS */
+
+        // Symbol Buttons
+        document.querySelectorAll('.symbol-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                let latexToAdd = btn.dataset.latex
+                answerMathField.write(latexToAdd)
+            })
+        })
 
         // Solve Button
         document.querySelector('#solveBtn').addEventListener('click', () => {
