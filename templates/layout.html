@@ -66,13 +66,6 @@
         margin-bottom: 30px;
         margin-top: 20px;
     }
-    .container-2 {
-        /*display: flex;*/
-        /*flex-wrap: wrap;*/
-        margin: auto;
-        width: 805px;
-
-    }
     .inputLabel {
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
         font-size: 18px;
@@ -117,21 +110,13 @@
         border-radius: 10px;
         height: 150px;
         margin-bottom: 20px;
+        margin-top: 10px;
     }
-    .sidebar {
-        position: absolute;
-        background-color: #e0dddd;
-        top: 32%;
-        border-radius: 10px;
-        width: 205px;
-        min-height: 500px;
-        /*height: auto;*/
-    }
-    #Side_Bar {
+    #sidebar {
         border-radius: 10px;
         background-color: #e0dddd;
-        position: absolute;
-        top: 32%;
+        /*position: absolute;*/
+        /*top: 32%;*/
 
     }
     .topics-btn {
@@ -140,6 +125,7 @@
         /*font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;*/
         padding: 5px 10px;
         margin-left: 10px;
+        margin-right: 10px;
         border: none;
         /*border-top: 1px solid darkgray;*/
         font-size: 15px;
@@ -152,133 +138,85 @@
     .symbol-btn {
         margin: 5px;
     }
-    .dropdown-item {
-        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-        font-size: 15px;
-        border: 1px solid darkgray;
-        border-radius: 10px;
-        margin-bottom: 5px;
+    .topic-extension-item {
+        text-decoration: none;
+        color: black;
+        cursor: pointer;
     }
-    /* dropdown-item background */
-    .show {
-        border-radius: 10px;
+    .topic-extension-item:hover {
+        color: black;
     }
-    .foo-topics {
+    .topic-extension-heading {
+        font-family: "Times New Roman", Symbola, serif;
+        color: #848484;
+        /*font-weight: 0;*/
+        /*font-size: 30px;*/
+        /*font-weight: 350;*/
+    }
+    .heading-container {
+        width: 100%;
+    }
+    .subject-heading-container {
+        width: 100%;
+        margin-left: 10px;
+    }
+    .sidebar-container {
+        margin-left: 10px;
+        /*padding: 10px;*/
+
+    }
+    .container-1 {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .container-2 {
+        margin-left: 5%;
+        width: 805px;
 
     }
 </style>
 {% block style %}
 {% endblock %}
 <body>
-    <div id="mainHeading"><span style="color: #007bff">Sky</span>Labs</div>
 
     <div class="container-1">
-        <div class="subject-tabs">
-            <div class="btn-group">
-                <button id="algebraSubjectTabBtn" class="btn btn-secondary subject-tab-btn" data-subject="algebra">Algebra</button>
-                <button id="discreteMathSubjectTabBtn" class="btn btn-secondary subject-tab-btn" data-subject="discreteMath">Discrete Math</button>
-                <button id="calculusSubjectTabBtn" class="btn btn-secondary subject-tab-btn" data-subject="calculus">Calculus</button>
-                <button id="probabilitySubjectTabBtn" class="btn btn-secondary subject-tab-btn" data-subject="probability">Probability</button>
-                <button id="physicsSubjectTabBtn" class="btn btn-secondary subject-tab-btn" data-subject="physics">Physics</button>
+
+        <div class="heading-container">
+            <div id="mainHeading"><span style="color: #007bff">Sky</span>Labs</div>
+
+            <div class="subject-tabs">
+                <div class="btn-group">
+                    <button id="algebraSubjectTabBtn" class="btn btn-secondary subject-tab-btn" data-subject="algebra">Algebra</button>
+                    <button id="discreteMathSubjectTabBtn" class="btn btn-secondary subject-tab-btn" data-subject="discreteMath">Discrete Math</button>
+                    <button id="calculusSubjectTabBtn" class="btn btn-secondary subject-tab-btn" data-subject="calculus">Calculus</button>
+                    <button id="probabilitySubjectTabBtn" class="btn btn-secondary subject-tab-btn" data-subject="probability">Probability</button>
+                    <button id="physicsSubjectTabBtn" class="btn btn-secondary subject-tab-btn" data-subject="physics">Physics</button>
+                </div>
+
             </div>
 
+            <!--        <div class="subject-topics"><button class="btn btn-light subject-option-btn">Basic Operation</button><button class="btn btn-light subject-option-btn">Equations</button><button class="btn btn-light subject-option-btn">Summation</button><button class="btn btn-light subject-option-btn">Pi (Product) Notation</button><button class="btn btn-light subject-option-btn">Polynomials</button></div>-->
+            <div class="subject-topics"></div>
         </div>
 
-<!--        <div class="subject-topics"><button class="btn btn-light subject-option-btn">Basic Operation</button><button class="btn btn-light subject-option-btn">Equations</button><button class="btn btn-light subject-option-btn">Summation</button><button class="btn btn-light subject-option-btn">Pi (Product) Notation</button><button class="btn btn-light subject-option-btn">Polynomials</button></div>-->
-    <div class="subject-topics"></div>
-    </div>
-
-    <div class="container-2">
-        <div id="selectedSubjectTabHeading"></div>
-        <div class="symbols-container">
-<!--            <button class="btn btn-light symbol-btn">$ x^2 $</button>-->
-<!--            <button class="btn btn-light symbol-btn">$ x^{\square} $</button>-->
-<!--            <button class="btn btn-light symbol-btn">$ \frac{\square}{\square} $</button>-->
+        <div class="subject-heading-container">
+            <div id="selectedSubjectTabHeading"></div>
         </div>
+
+        <div class="sidebar-container">
+            <div id="sidebar"></div>
+        </div>
+
+        <div class="container-2">
+            <div class="symbols-container"></div>
+
+            {% block body %}
+            {% endblock %}
+        </div>
+
+
     </div>
 
-    <div id="Side_Bar">
-        <!-- BASIC OPERATIONS -->
-<!--        <p>-->
-<!--            <a class="btn btn-light topics-btn" data-toggle="collapse" href="#Model" role="button" aria-expanded="false" aria-controls="collapseExample"-->
-<!--               style="">-->
-<!--                BASIC OPERATIONS   &nbsp;&nbsp; &nbsp;&nbsp; +-->
-<!--            </a>-->
-<!--        </p>-->
-<!--        <div class="collapse" id="Model">-->
-<!--            <div class="card card-body">-->
-<!--                <p style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;-->
-<!--                    font-size:small;">-->
-<!--                    Addition-->
-<!--                    <br>-->
-<!--                    <br>-->
-<!--                    Subtraction-->
-<!--                </p>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; EQUATIONS &ndash;&gt;-->
-<!--        <p>-->
-<!--            <a class="btn btn-light topics-btn" data-toggle="collapse" href="#Storage" role="button" aria-expanded="false" aria-controls="collapseExample"-->
-<!--               style="">-->
-<!--                EQUATIONS  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;+-->
-<!--            </a>-->
-<!--        </p>-->
-<!--        <div class="collapse" id="Storage">-->
-<!--            <div class="card card-body">-->
-<!--                <p style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;-->
-<!--                    font-size: small;">-->
-<!--                    Linear-->
-<!--                    <br>-->
-<!--                    <br>-->
-<!--                    Quadratic-->
-<!--                    <br>-->
-<!--                    <br>-->
-<!--                    Logarithmic-->
-<!--                    <br>-->
-<!--                    <br>-->
-<!--                    Exponential-->
-
-<!--                </p>-->
-<!--            </div>-->
-<!--        </div>-->
-    </div>
-
-
-
-
-
-<!--    <div class="sidebar">-->
-<!--        <div class="dropdown">-->
-<!--            <button style="background-color: darkgray; color: black" class="btn btn-secondary topics-btn" type="button" id="" aria-haspopup="true" aria-expanded="false">-->
-<!--                Basic Operations-->
-<!--            </button>-->
-<!--        </div>-->
-
-<!--        <div class="dropdown">-->
-<!--            <button style="background-color: darkgray; color: black" class="btn btn-secondary dropdown-toggle topics-btn" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
-<!--                Equations-->
-<!--            </button>-->
-<!--            <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="dropdownMenuButton2">-->
-<!--                <a class="dropdown-item" href="#">Logarithmic</a>-->
-<!--                <a class="dropdown-item" href="#">Exponential</a>-->
-<!--                <a class="dropdown-item" href="#">Linear</a>-->
-<!--                <a class="dropdown-item" href="#">Radical</a>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--        <div class="dropdown">-->
-<!--            <button style="background-color: darkgray; color: black" class="btn btn-secondary dropdown-toggle topics-btn" type="button" id="foo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
-<!--                Summation-->
-<!--            </button>-->
-<!--            <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="foo">-->
-<!--                <a class="dropdown-item" href="#">Double Summation</a>-->
-<!--                <a class="dropdown-item" href="#">Triple Summation</a>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-    {% block body %}
-    {% endblock %}
 
 </body>
 
@@ -467,6 +405,24 @@
                 UI.addLatexToElement(symbolButton, symbol)
             })
         }
+        static extensionTopicClicked(mainTopic, extensionTopic) {
+            let mainHeading = document.querySelector('#selectedSubjectTabHeading')
+
+            if (mainHeading.innerHTML.includes('topic-extension-heading')) {
+                let topicExtensionHeading = document.querySelector('.topic-extension-heading')
+                topicExtensionHeading.innerHTML = `${mainTopic}→${extensionTopic}`
+
+            }
+            else {
+                mainHeading.innerHTML += `<span class="topic-extension-heading"> ${mainTopic}→${extensionTopic}</span>`
+            }
+
+            // mainHeading.innerHTML += `<span class="topic-extension-heading"> ${mainTopic}→${extensionTopic}</span>`
+
+
+
+
+        }
     }
     
     class subjectTabsUI {
@@ -481,7 +437,7 @@
                     btn.style.backgroundColor = 'black'
                 }
             })
-            subjectTabHeading.textContent = btnObj.textContent
+            subjectTabHeading.innerHTML = `${btnObj.textContent}`
             // this.loadSideBarBtn(btnObj.dataset.subject)
             this.loadSideBarBtn2(btnObj.dataset.subject)
 
@@ -524,7 +480,7 @@
             sideBar.innerHTML = sideBarBtnHtml
         }
         static loadSideBarBtn2(subject) {
-            let sideBar = document.querySelector('#Side_Bar')
+            let sideBar = document.querySelector('#sidebar')
             let subjectTopicsContainer = document.querySelector('.subject-topics')
 
             let sideBarBtnHtml = ''
@@ -599,7 +555,7 @@
             let htmlToReturn = ''
             topicsExtension[subject][topic].forEach((extension) => {
                 htmlToReturn += `
-                    ${extension}
+                    <a class="topic-extension-item">${extension}</a>
                     <br>
                     <br>
                 `
@@ -1232,6 +1188,15 @@
             subjectTabsUI.subjectTabBtnSelected(e.target)
         }
     })
+    // Topic Extension Item
+    document.querySelector('#sidebar').addEventListener('click', (e) => {
+        if (e.target.className === 'topic-extension-item') {
+            let extensionTopic = e.target.textContent
+            let mainTopic = e.target.parentElement.parentElement.parentElement.previousElementSibling.textContent
+            mainTopic = replaceAll(replaceAll(mainTopic.trim(), '\\n', ''), '+ ', '')
+            BaseUI.extensionTopicClicked(mainTopic, extensionTopic)
+        }
+    })
 
     /* ON-HOVER EVENTS */
 
@@ -1277,7 +1242,7 @@
     })
 
     // Container-1
-    document.querySelector('.container-1').addEventListener('mouseover', (e) => {
+    document.querySelector('.heading-container').addEventListener('mouseover', (e) => {
         if (e.target.classList.contains('subject-option-btn') || e.target.classList.contains('subject-tab-btn') || e.target.className === 'subject-topics') {
             subjectTabsUI.showSubjectTopics()
         }
