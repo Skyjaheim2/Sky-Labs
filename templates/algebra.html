@@ -1,0 +1,305 @@
+{% extends "layout.html" %}
+
+{% block head %}
+{% endblock %}
+
+{% block style %}
+<style>
+    #solveBtn {
+        margin-bottom: 10px;
+    }
+    #userInput {
+        padding: 5px;
+        font-size: 25px;
+        min-height: 35px;
+        width: 800px;
+        border-radius: 10px;
+        margin-bottom: 5px;
+    }
+
+    #liveSolveSolutionContainer {
+        display: none;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        background-color: rgba(226, 226, 226, 0.45);
+        border-radius: 15px;
+        padding: 20px;
+
+    }
+
+
+
+
+</style>
+{% endblock %}
+
+
+{% block subject_features %}
+<div>$ $</div>
+<label class="inputLabel" for="userInput">Enter Algebra Problem:</label>
+<p><span id="userInput"></span></p>
+<button id="solveBtn" type="button" class="btn btn-primary">Solve</button>
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" value="" id="liveSolveRadioBtn">
+    <label class="form-check-label inputLabel" for="liveSolveRadioBtn">
+        Live Solve
+    </label>
+</div>
+<br>
+
+<div id="liveSolveSolutionContainer"></div>
+{% endblock %}
+
+{% block script %}
+
+<script>
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        var MQ = MathQuill.getInterface(2)
+        var config = {
+            spaceBehavesLikeTab: false,
+            leftRightIntoCmdGoes: 'up',
+            restrictMismatchedBrackets: true,
+            sumStartsWithNEquals: true,
+            supSubsRequireOperand: true,
+            charsThatBreakOutOfSupSub: '=',
+            autoSubscriptNumerals: true,
+            autoCommands: 'pi theta sqrt sum int',
+            autoOperatorNames: 'sin cos tan sinh cosh tanh arcsin arccos arctan ln log csc sec cot',
+            maxDepth: 10,
+        }
+
+        var userInput = document.getElementById('userInput');
+
+        var answerMathField = MQ.MathField(userInput, config, {
+            handlers: {
+                edit: function() {},
+                upOutOf: function(mathField) {},
+                moveOutOf: function(dir, mathField) {
+                    if (dir === MQ.L) {
+
+                    }
+                    else {
+
+                    }
+                },
+                enter: function () {
+                    alert('enter')
+                }
+            }
+        });
+
+        // answerMathField.write('\\wp')
+        // answerMathField.latex('\\left\\{ \\right\\}')
+        // answerMathField.typedText('cartesian product ')
+
+        BaseUI.loadDefaultOptions('algebra')
+
+        /* ON-KEY UP EVENTS */
+
+        // UserInput
+        document.querySelector('#userInput').addEventListener('keyup', function() {
+            let enteredMath = answerMathField.latex(); // Get entered math in LaTeX format
+            let liveSolveRadioBtn = document.querySelector('#liveSolveRadioBtn')
+            let liveSolveSolutionsContainer = document.querySelector('#liveSolveSolutionContainer')
+            if (liveSolveRadioBtn.checked === true && enteredMath !== '') {
+                const request = new XMLHttpRequest()
+                request.open('POST', '/solve/true')
+                request.onload = () => {
+                    if (request.status === 200) {
+                        let solution = request.responseText
+                        if (solution !== 'Unable To Solve') {
+                            StepsUI.addLatexToElement(liveSolveSolutionsContainer, solution)
+                        }
+                        else {
+                            liveSolveSolutionsContainer.textContent = 'Unable To Solve'
+                        }
+                    }
+                }
+
+                const data = new FormData()
+                data.set('userInput', enteredMath)
+                request.send(data)
+            }
+        })
+
+        /* ON-CLICK EVENTS */
+
+        // Symbol Buttons
+        document.querySelectorAll('.symbol-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                let latexToAdd = btn.dataset.latex
+                answerMathField.write(latexToAdd)
+            })
+        })
+        // Sidebar
+        document.querySelector('#sidebar').addEventListener('click', (e) => {
+
+            if (e.target.className === 'topic-extension-item') {
+                let mainTopic = e.target.parentElement.parentElement.parentElement.previousElementSibling.textContent
+                mainTopic = replaceAll(replaceAll(mainTopic.trim(), '\\n', ''), '+ ', '').trim()
+                let topicExtension = e.target.textContent
+
+                switch (mainTopic) {
+                    case 'Basic Operations':
+                        switch (topicExtension) {
+
+                        }
+                        break
+                    case 'Equations':
+                        switch (topicExtension) {
+                            case 'Linear':
+                                answerMathField.latex('mx+b=c')
+                                break
+                            case 'Quadratic':
+                                answerMathField.latex('ax^2 + bx + c = 0')
+                                break
+                            case 'Logarithmic':
+                                answerMathField.latex('\\log_{b}\\left(ax\\right)=c')
+                                break
+                            case 'Exponential':
+                                answerMathField.latex('a^{x}=c')
+                                break
+                        }
+                        break
+                    case 'Summation':
+                        switch (topicExtension) {
+                            case 'Single Summation':
+                                answerMathField.latex('\\sum_{i=1}^{}\\left( \\right)')
+                                break
+                            case 'Double Summation':
+                                answerMathField.latex('\\sum_{i=1}^{}\\sum_{j=1}^{}\\left( \\right)')
+                                break
+                            case 'Triple Summation':
+                                answerMathField.latex('\\sum_{i=1}^{}\\sum_{j=1}^{}\\sum_{k=1}^{}\\left( \\right)')
+                        }
+                        break
+                    case 'Pi Product Notation':
+                        switch (topicExtension) {
+                            case 'Single Product':
+                                answerMathField.latex('\\prod_{i=1}^{}\\left( \\right)')
+                                break
+                            case 'Double Product':
+                                answerMathField.latex('\\prod_{i=1}^{}\\prod_{j=1}^{}\\left( \\right)')
+                                break
+                            case 'Triple Product':
+                                answerMathField.latex('\\prod_{i=1}^{}\\prod_{j=1}^{}\\prod_{k=1}^{}\\left( \\right)')
+
+                        }
+                        break
+                    case 'Polynomials':
+                        switch (topicExtension) {
+                            case 'Properties':
+                                answerMathField.latex('properties\\ f(x)=')
+                                break
+                            case 'Add':
+                                answerMathField.latex('\\left( \\right) + \\left( \\right)')
+                                break
+                            case 'Subtract':
+                                answerMathField.latex('\\left( \\right) - \\left( \\right)')
+                                break
+                            case 'Multiply':
+                                answerMathField.latex('\\left( \\right) \\cdot \\left( \\right)')
+                                break
+                            case 'Divide':
+                                answerMathField.latex('\\frac{}{}')
+                                break
+                            case 'Factor':
+                                answerMathField.latex('factor\\ f(x)=')
+                                break
+                        }
+                        break
+                    case 'Rational Expressions':
+                        switch (topicExtension) {
+                            case 'Add':
+                                answerMathField.latex('\\frac{}{}+\\frac{}{}')
+                                break
+                            case 'Subtract':
+                                answerMathField.latex('\\frac{}{}-\\frac{}{}')
+                                break
+                            case 'Multiply':
+                                answerMathField.latex('\\frac{}{}\\cdot\\frac{}{}')
+                                break
+                            case 'Divide':
+                                answerMathField.latex('\\frac{\\frac{}{}}{\\frac{}{}}')
+                                break
+                            case 'LCM':
+                                answerMathField.latex('lcm\\ \\frac{}{},\\frac{}{}')
+                                break
+                            case 'Reduce':
+                                answerMathField.latex('reduce\\ \\frac{}{}')
+                                break
+                            case 'Rationalize':
+                                answerMathField.latex('rationalize\\ \\frac{}{}')
+                                break
+                        }
+                }
+            }
+        })
+
+        // Solve Button
+        document.querySelector('#solveBtn').addEventListener('click', () => {
+            let enteredMath = answerMathField.latex()
+            let finalStepDiv = document.querySelector('#finalStep')
+            // console.log(enteredMath)
+
+            let selectedTopic = BaseUI.getSelectedTopic()
+            let subjectAndTopic = {'subject': 'discreteMath', 'selectedTopic': selectedTopic}
+
+            const request = new XMLHttpRequest()
+            request.open('POST', `/solve/false`)
+            request.onload = () => {
+                if (request.status === 200) {
+                    let solution = request.responseText
+                    if (solution !== 'Unable To Solve') {
+                        solution = JSON.parse(solution)
+                        let numSteps = Object.keys(solution).length;
+                        let finalStepLatex = solution[numSteps]
+                        // console.log(solution)
+                        // console.log(finalStepLatex)
+                        // Add final step to DOM
+                        StepsUI.addLatexToElement(finalStepDiv, finalStepLatex)
+                        StepsUI.displayStepsHeading()
+                        // Add all steps to DOM
+                        StepsUI.showAllSteps(solution, enteredMath)
+
+
+                        // console.log(solution)
+                        // console.log(finalStepLatex)
+                    }
+                    else {
+
+                    }
+                }
+            }
+            const data = new FormData()
+            data.set('userInput', enteredMath)
+            data.set('subjectAndTopic', JSON.stringify(subjectAndTopic))
+            request.send(data)
+        })
+
+        // Live Solve Button
+        document.querySelector('#liveSolveRadioBtn').addEventListener('click', function()  {
+            let solveBtn = document.querySelector('#solveBtn')
+            let resultsContainer = document.querySelector('.results-container')
+            let liveSolveSolutionContainer = document.querySelector('#liveSolveSolutionContainer')
+
+
+            if (this.checked) {
+                solveBtn.style.display = 'none'
+                resultsContainer.style.display = 'none'
+                liveSolveSolutionContainer.style.display = 'block'
+            }
+            else {
+                solveBtn.style.display = 'block'
+                resultsContainer.style.display = 'block'
+                liveSolveSolutionContainer.style.display = 'none'
+            }
+        })
+
+    })
+
+
+</script>
+
+{% endblock %}

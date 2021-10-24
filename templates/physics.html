@@ -34,18 +34,19 @@
 
 
 {% block subject_features %}
-    <label class="inputLabel" for="userInput">Enter Problem:</label>
-    <p><span id="userInput"></span></p>
-    <button id="solveBtn" type="button" class="btn btn-primary">Solve</button>
-    <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="" id="liveSolveRadioBtn">
-        <label class="form-check-label inputLabel" for="liveSolveRadioBtn">
-            Live Solve
-        </label>
-    </div>
-    <br>
+<div>$ $</div>
+<label class="inputLabel" for="userInput">Enter Physics Problem:</label>
+<p><span id="userInput"></span></p>
+<button id="solveBtn" type="button" class="btn btn-primary">Solve</button>
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" value="" id="liveSolveRadioBtn">
+    <label class="form-check-label inputLabel" for="liveSolveRadioBtn">
+        Live Solve
+    </label>
+</div>
+<br>
 
-    <div id="liveSolveSolutionContainer"></div>
+<div id="liveSolveSolutionContainer"></div>
 {% endblock %}
 
 {% block script %}
@@ -88,7 +89,11 @@
             }
         });
 
-        // answerMathField.write('\\int(5x+3)dx')
+        // answerMathField.write('\\wp')
+        // answerMathField.latex('\\left\\{ \\right\\}')
+        // answerMathField.typedText('cartesian product ')
+
+        BaseUI.loadDefaultOptions('physics')
 
         /* ON-KEY UP EVENTS */
 
@@ -127,14 +132,95 @@
                 answerMathField.write(latexToAdd)
             })
         })
+        // Sidebar
+        document.querySelector('#sidebar').addEventListener('click', (e) => {
+            // console.log(e.target)
+            // console.log(e.target.classList.contains('topics-btn'))
+
+            if (e.target.className === 'topic-extension-item') {
+                // console.log(e.target.parentElement.parentElement.parentElement.previousElementSibling.textContent)
+                let mainTopic = e.target.parentElement.parentElement.parentElement.previousElementSibling.textContent
+                mainTopic = replaceAll(replaceAll(mainTopic.trim(), '\\n', ''), '+ ', '').trim()
+                console.log(mainTopic === 'Set Theory')
+                let topicExtension = e.target.textContent
+
+                switch (mainTopic) {
+                    case 'Propositional Logic':
+                        switch (topicExtension) {
+
+                        }
+                        break
+                    case 'Set Theory':
+                        switch (topicExtension) {
+                            case 'Cartesian Product':
+                                answerMathField.latex('\\left\\{ \\right\\} \\times \\left\\{ \\right\\}')
+                                break
+                            case 'Power Sets':
+                                answerMathField.latex('\\wp \\left( \\right)')
+                                break
+                            case 'Intersection':
+                                answerMathField.latex('\\left\\{ \\right\\} \\cap \\left\\{ \\right\\}')
+                                break
+                            case 'Union':
+                                answerMathField.latex('\\left\\{ \\right\\} \\cup \\left\\{ \\right\\}')
+                                break
+                            case 'Difference':
+                                answerMathField.latex('\\left\\{ \\right\\} - \\left\\{ \\right\\}')
+                                break
+                            case 'Symmetric Difference':
+                                answerMathField.latex('\\left\\{ \\right\\} \\triangle \\left\\{ \\right\\}')
+                                break
+                            case 'Computer Representation':
+                                answerMathField.latex('U=\\left\\{ \\right\\} A=\\left\\{ \\right\\}')
+                                break
+                        }
+                        break
+                    case 'Induction':
+                        switch (topicExtension) {
+
+                        }
+                        break
+                    case 'Number Theory':
+                        switch (topicExtension) {
+                            case 'Division Algorithm':
+                                answerMathField.latex('\\frac{a}{d}')
+                                break
+                            case 'Euclidean Algorithm':
+                                answerMathField.latex('gcd \\ (a,b)')
+                                break
+                            case 'Arithmetic Modulo m':
+                                answerMathField.latex('{a+}_{m}b')
+                                break
+                            case 'Modular Exponentiation':
+                                answerMathField.latex('b^{n} \\ mod \\ m')
+                                break
+                            case 'Congruences':
+                                answerMathField.latex('a \\equiv b \\ (mod \\ m)')
+                                break
+                        }
+                        break
+                    case 'Relations':
+                        switch (topicExtension) {
+                            case 'Properties':
+                                answerMathField.latex('R = \\left\\{ \\right\\}')
+                                break
+                            case 'Combining Relations':
+                                answerMathField.latex('\\left\\{ \\right\\} \\cup \\left\\{ \\right\\}')
+                                break
+                        }
+                        break
+                }
+            }
+        })
 
         // Solve Button
         document.querySelector('#solveBtn').addEventListener('click', () => {
             let enteredMath = answerMathField.latex()
             let finalStepDiv = document.querySelector('#finalStep')
             // console.log(enteredMath)
+
             let selectedTopic = BaseUI.getSelectedTopic()
-            let subjectAndTopic = {'subject': 'Algebra', 'selectedTopic': selectedTopic}
+            let subjectAndTopic = {'subject': 'discreteMath', 'selectedTopic': selectedTopic}
 
             const request = new XMLHttpRequest()
             request.open('POST', `/solve/false`)
@@ -164,7 +250,7 @@
             }
             const data = new FormData()
             data.set('userInput', enteredMath)
-            data.set('subjectAndTopic', subjectAndTopic)
+            data.set('subjectAndTopic', JSON.stringify(subjectAndTopic))
             request.send(data)
         })
 
@@ -187,8 +273,8 @@
             }
         })
 
-
     })
+
 
 
 

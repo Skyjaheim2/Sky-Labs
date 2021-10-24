@@ -52,6 +52,7 @@
 </head>
 
 <style>
+
     #mainHeading {
         text-align: center;
         font-family: 'Times New Roman', Times, serif;
@@ -174,6 +175,57 @@
         width: 805px;
 
     }
+    /* STEPS */
+    .main-container {
+        /*margin-left: 20%;*/
+        /*margin-right: 20%;*/
+    }
+    .results-container {
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        background-color: rgba(226, 226, 226, 0.45);
+        /*height: 500px;*/
+        border-radius: 15px;
+        /*font-size: 30px;*/
+        padding: 20px;
+    }
+    #finalStep {
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: 18px;
+    }
+    .final-result {
+        font-size: 20px;
+    }
+    .steps-heading {
+        display: none;
+        margin-top: 10px;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: 25px;
+        font-weight: 600;
+    }
+    .steps-container {
+        background-color: white;
+        padding: 10px;
+        border-radius: 10px;
+        /*height: 400px;*/
+    }
+    .step-description {
+        background-color: rgba(226, 226, 226, 0.45);
+        font-family: "Times New Roman", Symbola, serif;
+        font-size: 18px;
+        padding: 5px;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        /*margin-top: 50px;*/
+    }
+    .step-info {
+        margin-bottom: 15px;
+    }
+    .final-step {
+        margin-top: 10px;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+    }
 </style>
 {% block style %}
 {% endblock %}
@@ -210,6 +262,25 @@
         <div class="container-2">
             <div class="symbols-container"></div>
 
+            <div class="main-container">
+                {% block subject_features %}
+                {% endblock %}
+
+                <div class="results-container">
+                    <div id="finalStep"></div>
+                    <div class="steps-heading">Steps</div>
+                    <div class="steps-container">
+                        <!--                <div class="step-description">Simplify inside the brackets: $ (1+1)=2 $</div>-->
+                        <!--                <div class="step-info">$ \left(\left(1+1\right)\cdot 2\right) = (2 \cdot 2) $</div>-->
+
+                        <!--                <div class="step-description">Simplify inside the brackets: $ (2 \cdot 2)=4 $</div>-->
+                        <!--                <div class="final-step">Solution: $ 4 $</div>-->
+
+                    </div>
+
+                </div>
+            </div>
+
             {% block body %}
             {% endblock %}
         </div>
@@ -221,6 +292,102 @@
 </body>
 
 <script>
+    class StepsUI {
+        static displayResult(resultText) {
+            let resultContainer = document.querySelector('.results-container')
+            let resultDiv = document.createElement('div')
+            resultDiv.textContent = resultText
+            resultContainer.appendChild(resultDiv)
+        }
+        static displayStepsHeading() {
+            let stepsHeading = document.querySelector('.steps-heading')
+            stepsHeading.style.display = 'block'
+        }
+        static addLatexToElement(element, latexString) {
+            katex.render(String.raw`${latexString}`, element, {
+                throwOnError: false
+            });
+        }
+        static showAllSteps(solution, enteredExpression) {
+            let stepsContainer = document.querySelector('.steps-container')
+            let allSimplifications = extractAllSimplificationsFromSolution(solution)
+            let stepCounter = 1
+
+            /* Clear any previous steps */
+            stepsContainer.innerHTML = ''
+
+            for (let stepNum in solution) {
+                let currentStep = new Step(solution[stepNum])
+
+
+                if (!(currentStep.isFinalStep)) {
+                    let latexStepDescriptionSpan = document.createElement('span')
+                    let latexStepInfoSpan = document.createElement('span')
+
+                    /* Create step description */
+                    let stepDescriptionDiv = document.createElement('div')
+                    stepDescriptionDiv.className = 'step-description'
+                    stepDescriptionDiv.textContent = `${currentStep.description}: `
+                    stepDescriptionDiv.appendChild(latexStepDescriptionSpan)
+                    /* Create step info */
+                    let stepInfoDiv = document.createElement('div')
+                    stepInfoDiv.className = 'step-info'
+                    stepInfoDiv.appendChild(latexStepInfoSpan)
+
+                    /* Add step description and step info to stepsContainer */
+                    stepsContainer.appendChild(stepDescriptionDiv)
+                    stepsContainer.appendChild(stepInfoDiv)
+
+
+                    /* Add latex */
+                    StepsUI.addLatexToElement(latexStepDescriptionSpan, currentStep.result)
+                    if (stepCounter === 1) {
+                        StepsUI.addLatexToElement(latexStepInfoSpan, `${enteredExpression} = ${currentStep.simplification}`)
+                    }
+                    else {
+                        /* Show the the previous simplification for currentStep step-info */
+                        StepsUI.addLatexToElement(latexStepInfoSpan, `${allSimplifications[stepCounter-1]} = ${allSimplifications[stepNum]}`)
+                    }
+
+                }
+                else {
+                    let lastStepInfoDiv = stepsContainer.lastElementChild
+                    lastStepInfoDiv.className = 'final-step'
+                    lastStepInfoDiv.textContent = 'Solution: '
+
+                    let latexFinalStepSpan = document.createElement('span')
+
+                    lastStepInfoDiv.appendChild(latexFinalStepSpan)
+
+                    StepsUI.addLatexToElement(latexFinalStepSpan, solution[stepCounter])
+
+                }
+                stepCounter += 1
+            }
+
+        }
+        static getUserInput() {
+            return document.querySelector('#userInput').value
+        }
+
+    }
+    class Step {
+        constructor(stepDict) {
+            if (typeof stepDict === 'object' && typeof stepDict !== null) {
+                this.simplification = stepDict['simplification']
+                this.step = stepDict['step']
+                this.isFinalStep = false
+                this.description = this.step.split(': ')[0]
+                this.result = this.step.split(': ')[1]
+
+            }
+            else {
+                this.simplification = stepDict
+                this.step = stepDict
+                this.isFinalStep = true
+            }
+        }
+    }
     class BaseUI {
         static loadDefaultOptions(defaultSubject) {
             // Load Default Subject Tab
@@ -402,19 +569,23 @@
                 symbolButton.dataset.latex = latex
 
                 symbolsContainer.appendChild(symbolButton)
-                UI.addLatexToElement(symbolButton, symbol)
+                StepsUI.addLatexToElement(symbolButton, symbol)
             })
         }
         static extensionTopicClicked(mainTopic, extensionTopic) {
             let mainHeading = document.querySelector('#selectedSubjectTabHeading')
+            let delimiter
+            if (extensionTopic !== '')
+                delimiter = '→'
+            else
+                delimiter = ''
 
             if (mainHeading.innerHTML.includes('topic-extension-heading')) {
                 let topicExtensionHeading = document.querySelector('.topic-extension-heading')
-                topicExtensionHeading.innerHTML = `${mainTopic}→${extensionTopic}`
-
+                topicExtensionHeading.innerHTML = `${mainTopic}${delimiter}${extensionTopic}`
             }
             else {
-                mainHeading.innerHTML += `<span class="topic-extension-heading"> ${mainTopic}→${extensionTopic}</span>`
+                mainHeading.innerHTML += `<span class="topic-extension-heading"> ${mainTopic}${delimiter}${extensionTopic}</span>`
             }
 
             // mainHeading.innerHTML += `<span class="topic-extension-heading"> ${mainTopic}→${extensionTopic}</span>`
@@ -423,8 +594,11 @@
 
 
         }
+        static getSelectedTopic() {
+            let selectedSubjectHeading = document.querySelector('#selectedSubjectTabHeading')
+            return selectedSubjectHeading.children[0].textContent.trim()
+        }
     }
-    
     class subjectTabsUI {
         static subjectTabBtnSelected(btnObj) {
             let subjectTabHeading = document.querySelector('#selectedSubjectTabHeading')
@@ -487,55 +661,73 @@
 
             subjectTopicsContainer.childNodes.forEach((btn) => {
                 let topic = btn.textContent
+                let extensionTopics = this.getTopicsExtension2(subject, topic)
+
+                let extendTopicsSymbol
+                let extensionTopicsHtml
+
+                if (extensionTopics.length === 124) {
+                    extendTopicsSymbol = '&nbsp;&nbsp;'
+                    extensionTopicsHtml = ''
+                }
+                else {
+                    extendTopicsSymbol = '+'
+                    extensionTopicsHtml = `
+                        <div class="collapse" id="${topic}">
+                            <div class="card card-body extension-topics-container">
+                                <p style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+                                    font-size:small;">
+                                    ${extensionTopics}
+                                </p>
+                            </div>
+                        </div>
+                    `
+                }
                 sideBarBtnHtml +=  `
                     <p>
                         <a class="btn btn-light topics-btn" data-toggle="collapse" href="#${topic}" role="button" aria-expanded="false" aria-controls="collapseExample"
                            style="">
-                            +&nbsp; ${replaceAll(topic, '-', ' ')}
+                            ${extendTopicsSymbol}&nbsp; ${replaceAll(topic, '-', ' ')}
                         </a>
                     </p>
-                    <div class="collapse" id="${topic}">
-                        <div class="card card-body extension-topics-container">
-                            <p style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-                                font-size:small;">
-                                ${this.getTopicsExtension2(subject, topic)}
-                            </p>
-                        </div>
-                    </div>
+                    ${extensionTopicsHtml}
                 `
             })
             sideBar.innerHTML = sideBarBtnHtml
 
     }
-
         static getTopicsExtension2(subject, topic) {
             let topicsExtension = {
                 'algebra': {
-                    'Basic-Operations': [''],
+                    'Basic-Operations': ['Addition', 'Subtraction', 'Multiplication', 'Division'],
                     'Equations': ['Linear', 'Quadratic', 'Logarithmic', 'Exponential'],
-                    'Summation': ['Double Summation', 'Triple Summation'],
-                    'Pi-Product-Notation': [''],
-                    'Polynomials': ['Properties', 'Add', 'Subtract', 'Multiply', 'Divide', 'Factor', 'LCM'],
-                    'Rational-Expressions': ['Add', 'Subtract', 'Multiply', 'Reduce']
+                    'Summation': ['Single Summation', 'Double Summation', 'Triple Summation'],
+                    'Pi-Product-Notation': ['Single Product', 'Double Product', 'Triple Product'],
+                    'Polynomials': ['Properties', 'Add', 'Subtract', 'Multiply', 'Divide', 'Factor'],
+                    'Rational-Expressions': ['Add', 'Subtract', 'Multiply', 'Divide', 'LCM', 'Reduce']
                 },
                 'discreteMath': {
-                    'Propositional-Logic': [''],
-                    'Rules-of-Inference': [''],
+                    'Propositional-Logic': ['Truth Table', 'Logical Equivalence', 'Rules of Inference'],
                     'Set-Theory': ['Cartesian Product', 'Power Sets', 'Union', 'Intersection', 'Difference', 'Symmetric Difference', 'Computer Representation'],
-                    'Induction': [''],
-                    'Number-Theory': ['Division Algorithm', 'Euclidean Algorithm', 'Modular Arithmetic', 'Modular Exponentiation', 'Congruences'],
+                    'Induction': ['Prove Summation Formulas'],
+                    'Number-Theory': ['Division Algorithm', 'Euclidean Algorithm', 'Arithmetic Modulo m', 'Modular Exponentiation', 'Congruences'],
                     'Relations': ['Properties', 'Combining Relations']
                 },
                 'calculus': {
                     'Limits': ['One Variable', 'Multi Variable', 'One Sided', 'At Infinity', "L'Hopital's Rule", 'Squeeze Theorem'],
                     'Derivatives': ['Sum/Diff Rule', 'Product Rule', 'Quotient Rule', 'Chain Rule', 'First Derivative', 'Higher Order Derivatives', 'Derivative At a Point', 'Partial Derivative', 'Implicit Derivative', 'Second Implicit Derivative', 'Derivative Using Definition'],
-                    'Derivative-Applications': ['Equation of Tangent Line', 'Equation of Normal Line', 'Extreme Points', 'Linear Approximation', 'Quadratic Approximation'],
-                    'Integrals': ['Indefinite', 'Definite', 'Improper', 'Double Integrals', 'Triple Integrals'],
-                    'Integral-Applications': ['Limit of Sum', 'Area Under Curve', 'Area Between Curves', 'Volume of Solid of Revolution', 'Function Average', 'Arc Length'],
+                    'Derivative-Applications': ['Equation of Tangent Line', 'Equation of Normal Line', 'Extreme Points', 'Linear Approximation', 'Quadratic Approximation', 'Related Rates', 'Optimization'],
+                    'Integrals': ['Indefinite', 'Definite', 'Improper', 'Double Integrals', 'Triple Integrals', 'Numerical Integration'],
+                    'Integral-Applications': ['Limit of Sum', 'Area Under Curve', 'Area Between Curves', 'Volume of Solid of Revolution', 'Function Average', 'Arc Length', 'Surface Area'],
                 },
                 'probability': {
+                    'Distributions': ['Normal Distribution', 'Exponential Distributions'],
+                    'Expected Value': [''],
+                    'Variance': [''],
+                    'Bayes Theorem': [''],
                     'Combinations': [''],
                     'Permutations': [''],
+
                 },
                 'physics': {
                     'Kinematics': ['1D Kinematics', '2D Kinematics'],
@@ -562,304 +754,6 @@
             })
             return htmlToReturn
 
-            // switch (subject) {
-            //     case 'algebra':
-            //         switch (topic) {
-            //             case 'Basic Operations':
-            //                 return `
-            //
-            //                 `
-            //             case 'Equations':
-            //                 return `
-            //                     Linear
-            //                     <br>
-            //                     <br>
-            //                     Quadratic
-            //                     <br>
-            //                     <br>
-            //                     Logarithmic
-            //                     <br>
-            //                     <br>
-            //                     Exponential
-            //                 `
-            //             case 'Summation':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Double Summation</a>
-            //                         <a class="dropdown-item" href="#">Triple Summation</a>
-            //                     </div>
-            //                 `
-            //             case 'Pi (Product Notation)':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //
-            //                     </div>
-            //                 `
-            //             case 'Polynomials':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Properties</a>
-            //                         <a class="dropdown-item" href="#">Add</a>
-            //                         <a class="dropdown-item" href="#">Subtract</a>
-            //                         <a class="dropdown-item" href="#">Multiply</a>
-            //                         <a class="dropdown-item" href="#">Divide</a>
-            //                         <a class="dropdown-item" href="#">Factor</a>
-            //                         <a class="dropdown-item" href="#">LCM</a>
-            //                     </div>
-            //                 `
-            //             case 'Rational-Expressions':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Add</a>
-            //                         <a class="dropdown-item" href="#">Subtract</a>
-            //                         <a class="dropdown-item" href="#">Multiply</a>
-            //                         <a class="dropdown-item" href="#">Reduce</a>
-            //                     </div>
-            //                 `
-            //         }
-            //         break
-            //     case 'discreteMath':
-            //         switch (topic) {
-            //             case 'Propositional Logic':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //
-            //                     </div>
-            //                 `
-            //             case 'Rules of Inference':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //
-            //                     </div>
-            //                 `
-            //             case 'Set Theory':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Cartesian Product</a>
-            //                         <a class="dropdown-item" href="#">Power sets</a>
-            //                         <a class="dropdown-item" href="#">Union</a>
-            //                         <a class="dropdown-item" href="#">Intersection</a>
-            //                         <a class="dropdown-item" href="#">Difference</a>
-            //                         <a class="dropdown-item" href="#">Symmetric Difference</a>
-            //                         <a class="dropdown-item" href="#">Computer Representation</a>
-            //                     </div>
-            //                 `
-            //             case 'Induction':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //
-            //                     </div>
-            //                 `
-            //             case 'Number Theory':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Division Algorithm</a>
-            //                         <a class="dropdown-item" href="#">Euclidean Algorithm</a>
-            //                         <a class="dropdown-item" href="#">Modular Arithmetic</a>
-            //                         <a class="dropdown-item" href="#">Modular Exponentiation</a>
-            //                         <a class="dropdown-item" href="#">Congruences</a>
-            //                     </div>
-            //                 `
-            //             case 'Relations':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Properties</a>
-            //                         <a class="dropdown-item" href="#">Combining Relations</a>
-            //                     </div>
-            //                 `
-            //
-            //
-            //         }
-            //         break
-            //     case 'calculus':
-            //         switch (topic) {
-            //             case 'Limits':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">One Variable</a>
-            //                         <a class="dropdown-item" href="#">Multi Variable</a>
-            //                         <a class="dropdown-item" href="#">One Sided</a>
-            //                         <a class="dropdown-item" href="#">At Infinity</a>
-            //                         <a class="dropdown-item" href="#">L'Hoptial's Rule</a>
-            //                         <a class="dropdown-item" href="#">Squeeze Theorem</a>
-            //                     </div>
-            //                 `
-            //             case 'Derivatives':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Sum/Diff Rule</a>
-            //                         <a class="dropdown-item" href="#">Product Rule</a>
-            //                         <a class="dropdown-item" href="#">Quotient Rule</a>
-            //                         <a class="dropdown-item" href="#">Chain Rule</a>
-            //                         <a class="dropdown-item" href="#">First Derivative</a>
-            //                         <a class="dropdown-item" href="#">Higher Order Derivatives</a>
-            //                         <a class="dropdown-item" href="#">Derivative At a Point</a>
-            //                         <a class="dropdown-item" href="#">Partial Derivative</a>
-            //                         <a class="dropdown-item" href="#">Implicit Derivative</a>
-            //                         <a class="dropdown-item" href="#">Second Implicit Derivative</a>
-            //                         <a class="dropdown-item" href="#">Derivative Using Definition</a>
-            //                     </div>
-            //                 `
-            //             case 'Derivative Applications':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Equation of Tangent Line</a>
-            //                         <a class="dropdown-item" href="#">Equation of Normal Line</a>
-            //                         <a class="dropdown-item" href="#">Extreme Points</a>
-            //                         <a class="dropdown-item" href="#">Linear Approximation</a>
-            //                         <a class="dropdown-item" href="#">Quadratic Approximation</a>
-            //                     </div>
-            //                 `
-            //             case 'Integrals':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Indefinite</a>
-            //                         <a class="dropdown-item" href="#">Definite</a>
-            //                         <a class="dropdown-item" href="#">Improper</a>
-            //                         <a class="dropdown-item" href="#">Double Integrals</a>
-            //                         <a class="dropdown-item" href="#">Triple Integrals</a>
-            //                     </div>
-            //                 `
-            //             case 'Integral Applications':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Limit of Sum</a>
-            //                         <a class="dropdown-item" href="#">Area Under Curve</a>
-            //                         <a class="dropdown-item" href="#">Area Between Curves</a>
-            //                         <a class="dropdown-item" href="#">Volume of Solid of Revolution</a>
-            //                         <a class="dropdown-item" href="#">Function Average</a>
-            //                         <a class="dropdown-item" href="#">Arc Length</a>
-            //                     </div>
-            //                 `
-            //         }
-            //         break
-            //     case 'probability':
-            //         switch (topic) {
-            //             case 'Combinations':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //
-            //                     </div>
-            //                 `
-            //             case 'Permutations':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //
-            //                     </div>
-            //                 `
-            //         }
-            //         break
-            //     case 'physics':
-            //         switch (topic) {
-            //             case 'Kinematics':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">ID Kinematics</a>
-            //                         <a class="dropdown-item" href="#">2D Kinematics</a>
-            //                     </div>
-            //                 `
-            //             case 'Circular Motion':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Centripetal Force</a>
-            //                         <a class="dropdown-item" href="#">Centripetal Velocity</a>
-            //                         <a class="dropdown-item" href="#">Centripetal Acceleration</a>
-            //                         <a class="dropdown-item" href="#">Tension in String</a>
-            //                         <a class="dropdown-item" href="#">Period</a>
-            //                         <a class="dropdown-item" href="#">Frequency</a>
-            //                     </div>
-            //                 `
-            //             case 'Rotational Motion':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Angular Displacement</a>
-            //                         <a class="dropdown-item" href="#">Angular Velocity</a>
-            //                         <a class="dropdown-item" href="#">Angular Acceleration</a>
-            //                         <a class="dropdown-item" href="#">Linear/Tangental Velocity</a>
-            //                         <a class="dropdown-item" href="#">Linear/Tangental/ Acceleration</a>
-            //                     </div>
-            //                 `
-            //             case 'Rotational Dynamics':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Torque</a>
-            //                         <a class="dropdown-item" href="#">Moment of Inertia</a>
-            //                         <a class="dropdown-item" href="#">Angular Momentum</a>
-            //                     </div>
-            //                 `
-            //             case "Newton's 2nd Law":
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Dynamics Problem</a>
-            //                     </div>
-            //                 `
-            //             case 'Momentum':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Linear Momentum</a>
-            //                         <a class="dropdown-item" href="#">Angular Momentum</a>
-            //                     </div>
-            //                 `
-            //             case 'Work and Energy':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Conservation of Energy</a>
-            //                         <a class="dropdown-item" href="#">Work Energy Theorem</a>
-            //                     </div>
-            //                 `
-            //             case 'Fluid Mechanics':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Properties of Fluids</a>
-            //                         <a class="dropdown-item" href="#">Density</a>
-            //                         <a class="dropdown-item" href="#">Pressure</a>
-            //                         <a class="dropdown-item" href="#">Buoyant Forces</a>
-            //                         <a class="dropdown-item" href="#">Apparent Weight</a>
-            //                         <a class="dropdown-item" href="#">Continuity Equation</a>
-            //                         <a class="dropdown-item" href="#">Bernoulli's Equation</a>
-            //                     </div>
-            //                 `
-            //             case 'Temperature and KT':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Convert Between Scales</a>
-            //                         <a class="dropdown-item" href="#">Ideal Gas Law</a>
-            //                         <a class="dropdown-item" href="#">Thermal Expansion</a>
-            //                         <a class="dropdown-item" href="#">Thermal Stress</a>
-            //                         <a class="dropdown-item" href="#">Newton's Law of Cooling</a>
-            //                         <a class="dropdown-item" href="#">Relative Humidity</a>
-            //                         <a class="dropdown-item" href="#">Diffusion</a>
-            //                         <a class="dropdown-item" href="#">Kinetic Theory</a>
-            //                     </div>
-            //                 `
-            //             case 'Heat':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">Internal Energy of an Ideal Gas</a>
-            //                         <a class="dropdown-item" href="#">Specific Heat</a>
-            //                         <a class="dropdown-item" href="#">Latent Heat</a>
-            //                         <a class="dropdown-item" href="#">Conduction</a>
-            //                         <a class="dropdown-item" href="#">Radiation</a>
-            //                         <a class="dropdown-item" href="#">Squeeze Theorem</a>
-            //                     </div>
-            //                 `
-            //             case 'Laws of Thermodynamics':
-            //                 return `
-            //                     <div style="background-color: #e0dddd" class="dropdown-menu" aria-labelledby="${topic}">
-            //                         <a class="dropdown-item" href="#">First Law of Theromodynamics</a>
-            //                         <a class="dropdown-item" href="#">Thermodynamic Processes</a>
-            //                         <a class="dropdown-item" href="#">Work</a>
-            //                         <a class="dropdown-item" href="#">Efficiency</a>
-            //                         <a class="dropdown-item" href="#">Coefficient of Performance (COP)</a>
-            //                         <a class="dropdown-item" href="#">Entropy and The Second Law of Thermodynamics</a>
-            //                     </div>
-            //                 `
-            //
-            //         }
-            //
-            //
-            // }
-            // return ''
 
         }
         static getTopicsExtension(subject, topic) {
@@ -1162,9 +1056,9 @@
         static getSubjectOptions() {
             return {
                 'algebra': ['Basic-Operations', 'Equations', 'Summation', 'Pi-Product-Notation', 'Polynomials', 'Rational-Expressions'],
-                'discreteMath': ['Propositional-Logic', 'Rules-of-Inference', 'Set-Theory', 'Induction', 'Number-Theory', 'Relations'],
+                'discreteMath': ['Propositional-Logic', 'Set-Theory', 'Induction', 'Number-Theory', 'Relations'],
                 'calculus': ['Limits', 'Derivatives', 'Derivative-Applications', 'Integrals', 'Integral-Applications'],
-                'probability': ['Combinations', 'Permutations'],
+                'probability': ['Distributions', 'Expected Value', 'Variance', "Bayes Theorem", 'Combinations', 'Permutations'],
                 'physics': ['Kinematics', 'Circular-Motion', 'Rotational-Motion', 'Rotational-Dynamics', "Newtons-2nd-Law", 'Momentum', 'Work-and-Energy', 'Fluid-Mechanics', 'Temperature-and-KT', 'Heat', 'Laws-of-Thermodynamics'],
             }
         }
@@ -1174,7 +1068,8 @@
 
 
     document.addEventListener('DOMContentLoaded', () => {
-        BaseUI.loadDefaultOptions('algebra')
+
+        // BaseUI.loadDefaultOptions('algebra')
         BaseUI.loadSymbolsContainer()
 
 
@@ -1185,11 +1080,29 @@
     // Subject Tabs
     document.querySelector('.subject-tabs').addEventListener('click', (e) => {
         if (e.target.classList.contains('subject-tab-btn')) {
-            subjectTabsUI.subjectTabBtnSelected(e.target)
+            let subject = e.target.textContent
+            let routes = {
+                'Algebra': '/algebra',
+                'Discrete Math': '/discrete_math',
+                'Calculus': '/calculus',
+                'Probability': '/probability',
+                'Physics': '/physics',
+            }
+            window.location.href = routes[subject]
+            // subjectTabsUI.subjectTabBtnSelected(e.target)
+            // console.log('after')
+
+
+
         }
     })
     // Topic Extension Item
     document.querySelector('#sidebar').addEventListener('click', (e) => {
+        if (e.target.classList.contains('topics-btn')) {
+            let mainTopic = e.target.textContent
+            mainTopic = replaceAll(replaceAll(mainTopic.trim(), '\\n', ''), '+ ', '')
+            BaseUI.extensionTopicClicked(mainTopic, '')
+        }
         if (e.target.className === 'topic-extension-item') {
             let extensionTopic = e.target.textContent
             let mainTopic = e.target.parentElement.parentElement.parentElement.previousElementSibling.textContent
@@ -1197,6 +1110,7 @@
             BaseUI.extensionTopicClicked(mainTopic, extensionTopic)
         }
     })
+
 
     /* ON-HOVER EVENTS */
 
@@ -1240,7 +1154,6 @@
             }
         }
     })
-
     // Container-1
     document.querySelector('.heading-container').addEventListener('mouseover', (e) => {
         if (e.target.classList.contains('subject-option-btn') || e.target.classList.contains('subject-tab-btn') || e.target.className === 'subject-topics') {
@@ -1251,6 +1164,16 @@
         }
     })
 
+    function extractAllSimplificationsFromSolution(solution) {
+        let allSimplifications = {}
+        let i = 1
+        for (let stepNum in solution) {
+            allSimplifications[stepNum] = solution[stepNum]['simplification']
+
+        }
+        return allSimplifications
+
+    }
     function escapeRegExp(string) {
         return string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
     }

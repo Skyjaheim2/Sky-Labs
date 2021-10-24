@@ -1,0 +1,344 @@
+{% extends "layout.html" %}
+
+{% block head %}
+{% endblock %}
+
+{% block style %}
+<style>
+    #solveBtn {
+        margin-bottom: 10px;
+    }
+    #userInput {
+        padding: 5px;
+        font-size: 25px;
+        min-height: 35px;
+        width: 800px;
+        border-radius: 10px;
+        margin-bottom: 5px;
+    }
+
+    #liveSolveSolutionContainer {
+        display: none;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        background-color: rgba(226, 226, 226, 0.45);
+        border-radius: 15px;
+        padding: 20px;
+
+    }
+
+
+</style>
+{% endblock %}
+
+
+{% block subject_features %}
+<div>$ $</div>
+<label class="inputLabel" for="userInput">Enter Calculus Problem:</label>
+<p><span id="userInput"></span></p>
+<button id="solveBtn" type="button" class="btn btn-primary">Solve</button>
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" value="" id="liveSolveRadioBtn">
+    <label class="form-check-label inputLabel" for="liveSolveRadioBtn">
+        Live Solve
+    </label>
+</div>
+<br>
+
+<div id="liveSolveSolutionContainer"></div>
+{% endblock %}
+
+{% block script %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        var MQ = MathQuill.getInterface(2)
+        var config = {
+            spaceBehavesLikeTab: false,
+            leftRightIntoCmdGoes: 'up',
+            restrictMismatchedBrackets: true,
+            sumStartsWithNEquals: true,
+            supSubsRequireOperand: true,
+            charsThatBreakOutOfSupSub: '=',
+            autoSubscriptNumerals: true,
+            autoCommands: 'pi theta sqrt sum int',
+            autoOperatorNames: 'sin cos tan sinh cosh tanh arcsin arccos arctan ln log csc sec cot',
+            maxDepth: 10,
+        }
+
+        var userInput = document.getElementById('userInput');
+        var answerMathField = MQ.MathField(userInput, config, {
+            handlers: {
+                edit: function() {},
+                upOutOf: function(mathField) {},
+                moveOutOf: function(dir, mathField) {
+                    if (dir === MQ.L) {
+
+                    }
+                    else {
+
+                    }
+                },
+                enter: function () {
+                    alert('enter')
+                }
+            }
+        });
+
+        BaseUI.loadDefaultOptions('calculus')
+
+        /* ON-KEY UP EVENTS */
+
+        // UserInput
+        document.querySelector('#userInput').addEventListener('keyup', function() {
+            let enteredMath = answerMathField.latex(); // Get entered math in LaTeX format
+            let liveSolveRadioBtn = document.querySelector('#liveSolveRadioBtn')
+            let liveSolveSolutionsContainer = document.querySelector('#liveSolveSolutionContainer')
+            if (liveSolveRadioBtn.checked === true && enteredMath !== '') {
+                const request = new XMLHttpRequest()
+                request.open('POST', '/solve/true')
+                request.onload = () => {
+                    if (request.status === 200) {
+                        let solution = request.responseText
+                        if (solution !== 'Unable To Solve') {
+                            StepsUI.addLatexToElement(liveSolveSolutionsContainer, solution)
+                        }
+                        else {
+                            liveSolveSolutionsContainer.textContent = 'Unable To Solve'
+                        }
+                    }
+                }
+
+                const data = new FormData()
+                data.set('userInput', enteredMath)
+                request.send(data)
+            }
+        })
+
+        /* ON-CLICK EVENTS */
+
+        // Symbol Buttons
+        document.querySelectorAll('.symbol-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                let latexToAdd = btn.dataset.latex
+                answerMathField.write(latexToAdd)
+            })
+        })
+        // Sidebar
+        document.querySelector('#sidebar').addEventListener('click', (e) => {
+            // console.log(e.target)
+            // console.log(e.target.classList.contains('topics-btn'))
+
+            if (e.target.className === 'topic-extension-item') {
+                // console.log(e.target.parentElement.parentElement.parentElement.previousElementSibling.textContent)
+                let mainTopic = e.target.parentElement.parentElement.parentElement.previousElementSibling.textContent
+                mainTopic = replaceAll(replaceAll(mainTopic.trim(), '\\n', ''), '+ ', '').trim()
+                console.log(mainTopic === 'Set Theory')
+                let topicExtension = e.target.textContent
+
+                switch (mainTopic) {
+                    case 'Limits':
+                        switch (topicExtension) {
+                            case 'One Variable':
+                                answerMathField.latex('\\lim_{x\\to 0}\\left( \\right)')
+                                break
+                            case 'Multi Variable':
+                                answerMathField.latex('\\lim_{(x,y)\\to (0,0)}\\left( \\right)')
+                                break
+                            case 'One Sided':
+                                answerMathField.latex('\\lim_{x\\to 0^{}}\\left( \\right)')
+                                break
+                            case 'At Infinity':
+                                answerMathField.latex('\\lim_{x\\to\\infty}\\left( \\right)')
+                                break
+                            case "L'Hopital's Rule":
+                                answerMathField.latex('\\text{lhoptial}\\ \\lim_{x\\to\\infty}\\left( \\right)')
+                                break
+                            case 'Squeeze Theorem':
+                                answerMathField.latex('\\text{squeeze theorem}\\ \\lim_{x\\to 0}\\left( \\right)')
+                                break
+                        }
+                        break
+                    case 'Derivatives':
+                        switch (topicExtension) {
+                            case 'Sum/Diff Rule':
+                                answerMathField.latex('\\frac{d}{dx}\\left( f(x)+g(x) \\right)')
+                                break
+                            case 'Product Rule':
+                                answerMathField.latex('\\frac{d}{dx}\\left( f(x)\\cdot g(x) \\right)')
+                                break
+                            case 'Quotient Rule':
+                                answerMathField.latex('\\frac{d}{dx}\\left( \\frac{f(x)}{g(x)} \\right)')
+                                break
+                            case 'Chain Rule':
+                                answerMathField.latex('\\frac{d}{dx}\\left( f(g(x)) \\right)')
+                                break
+                            case 'First Derivative':
+                                answerMathField.latex('\\frac{d}{dx}\\left( \\right)')
+                                break
+                            case 'Higher Order Derivatives':
+                                answerMathField.latex('\\frac{d^{}}{dx^{}}\\left( \\right)')
+                                break
+                            case 'Derivative At a Point':
+                                answerMathField.latex('\\frac{d}{dx}\\left( \\right) \\ x = ')
+                                break
+                            case 'Partial Derivative':
+                                answerMathField.latex('\\frac{\\partial}{\\partial x}\\left( \\right)')
+                                break
+                            case 'Implicit Derivative':
+                                answerMathField.latex('\\frac{d}{dx}\\left( \\left(\\right)=\\left(\\right) \\right)')
+                                break
+                            case 'Second Implicit Derivative':
+                                answerMathField.latex('\\frac{d^2}{dx^2}\\left( \\left(\\right)=\\left(\\right) \\right)')
+                                break
+                            case 'Derivative Using Definition':
+                                answerMathField.latex('\\text{derivative using definition}\\ f(x)=')
+                                break
+                        }
+                        break
+                    case 'Derivative Applications':
+                        switch (topicExtension) {
+                            case 'Equation of Tangent Line':
+                                answerMathField.latex('\\text{tangent of}\\ f(x) = \\left( \\right),\\ \\text{at}\\ x=')
+                                break
+                            case 'Equation of Normal Line':
+                                answerMathField.latex('\\text{normal of}\\ f(x)=\\left( \\right),\\ \\text{at}\\ x=')
+                                break
+                            case 'Extreme Points':
+                                answerMathField.latex('\\text{extreme points of}\\ f(x)=')
+                                break
+                            case 'Linear Approximation':
+                                answerMathField.latex('\\text{linear approximation} \\ f(x)=\\left(\\right) \\ \\text{near}\\ x= ')
+                                break
+                            case 'Quadratic Approximation':
+                                answerMathField.latex('\\text{quadratic approximation} \\ f(x)=\\left(\\right) \\ \\text{near}\\ x= ')
+                                break
+                            case 'Related Rates':
+                                answerMathField.latex('')
+                                break
+                            case 'Optimization':
+                                answerMathField.latex('')
+                                break
+                        }
+                        break
+                    case 'Integrals':
+                        switch (topicExtension) {
+                            case 'Indefinite':
+                                answerMathField.latex('\\int\\left( \\right)dx')
+                                break
+                            case 'Definite':
+                                answerMathField.latex('\\int_{}^{}\\left( \\right)dx')
+                                break
+                            case 'Improper':
+                                answerMathField.latex('\\int_{\\-infty}^{\\infty}\\left( \\right)dx')
+                                break
+                            case 'Double Integrals':
+                                answerMathField.latex('\\int_{}^{}\\int_{}^{}\\left( \\right)dxdy')
+                                break
+                            case 'Triple Integrals':
+                                answerMathField.latex('\\int_{}^{}\\int_{}^{}\\int_{}^{}\\left( \\right)dxdydz')
+                                break
+                            case 'Numerical Integration':
+                                answerMathField.latex('')
+                                break
+                        }
+                        break
+                    case 'Integral Applications':
+                        switch (topicExtension) {
+                            case 'Limit of Sum':
+                                answerMathField.latex('\\lim_{n\\to\\infty}\\left(\\sum_{i=1}^n\\left( \\right)\\right)')
+                                break
+                            case 'Area Under Curve':
+                                answerMathField.latex('\\text{area}\\ f(x)=\\left(\\right)')
+                                break
+                            case 'Area Between Curves':
+                                answerMathField.latex('\\text{area}\\ f(x)=\\left( \\right),\\ g(x)=\\left(\\right)')
+                                break
+                            case 'Volume of Solid of Revolution':
+                                answerMathField.latex('\\text{volume}\\ y=\\left(\\right),\\ y=0,\\ x=\\left(\\right)')
+                                break
+                            case 'Function Average':
+                                answerMathField.latex('\\text{average}\\ f(x)=\\left( \\right),\\ \\text{on}\\ \\left[\\right]')
+                                break
+                            case 'Arc Length':
+                                answerMathField.latex('\\text{arc length}\\ f(x)=\\left( \\right),\\ \\text{on}\\ \\left[\\right]')
+                                break
+                            case 'Surface Area':
+                                answerMathField.latex('\\text{surface area}')
+                                break
+                        }
+                        break
+                }
+            }
+        })
+
+        // Solve Button
+        document.querySelector('#solveBtn').addEventListener('click', () => {
+            let enteredMath = answerMathField.latex()
+            let finalStepDiv = document.querySelector('#finalStep')
+            // console.log(enteredMath)
+
+            let selectedTopic = BaseUI.getSelectedTopic()
+            let subjectAndTopic = {'subject': 'discreteMath', 'selectedTopic': selectedTopic}
+
+            const request = new XMLHttpRequest()
+            request.open('POST', `/solve/false`)
+            request.onload = () => {
+                if (request.status === 200) {
+                    let solution = request.responseText
+                    if (solution !== 'Unable To Solve') {
+                        solution = JSON.parse(solution)
+                        let numSteps = Object.keys(solution).length;
+                        let finalStepLatex = solution[numSteps]
+                        // console.log(solution)
+                        // console.log(finalStepLatex)
+                        // Add final step to DOM
+                        StepsUI.addLatexToElement(finalStepDiv, finalStepLatex)
+                        StepsUI.displayStepsHeading()
+                        // Add all steps to DOM
+                        StepsUI.showAllSteps(solution, enteredMath)
+
+
+                        // console.log(solution)
+                        // console.log(finalStepLatex)
+                    }
+                    else {
+
+                    }
+                }
+            }
+            const data = new FormData()
+            data.set('userInput', enteredMath)
+            data.set('subjectAndTopic', JSON.stringify(subjectAndTopic))
+            request.send(data)
+        })
+
+        // Live Solve Button
+        document.querySelector('#liveSolveRadioBtn').addEventListener('click', function()  {
+            let solveBtn = document.querySelector('#solveBtn')
+            let resultsContainer = document.querySelector('.results-container')
+            let liveSolveSolutionContainer = document.querySelector('#liveSolveSolutionContainer')
+
+
+            if (this.checked) {
+                solveBtn.style.display = 'none'
+                resultsContainer.style.display = 'none'
+                liveSolveSolutionContainer.style.display = 'block'
+            }
+            else {
+                solveBtn.style.display = 'block'
+                resultsContainer.style.display = 'block'
+                liveSolveSolutionContainer.style.display = 'none'
+            }
+        })
+
+    })
+
+
+
+
+
+
+
+</script>
+
+{% endblock %}

@@ -517,7 +517,8 @@ class Radical(ArithmeticExpression):
 
 
 def parseLatex(latexString: str):
-    latexString = latexString.replace('\left(', '(').replace('\\right)', ')').replace('\cdot', '*').replace('\\pi', f'{pi}')\
+    latexString = latexString.replace('\left(', '(').replace('\\right)', ')').replace('\left\{', '{').replace('\\right\}', '}')\
+                             .replace('\cdot', '*').replace('\\pi', f'{pi}')\
                              .replace('e', f'{e}').replace('\sqrt', 'sqrt')
     return latexString
 
