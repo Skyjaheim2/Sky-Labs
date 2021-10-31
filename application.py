@@ -5,7 +5,9 @@ import json
 app = Flask(__name__)
 
 from Methods import evaluateArithmetic, parseLatex, latexify
-from methodsDiscreteMath import *
+from methodsDiscreteMath import solveDiscreteMath
+from calculusMethods import solveCalculus
+
 
 
 @app.route("/")
@@ -38,14 +40,20 @@ def physics():
 def solve(liveSolve):
     userInput = request.form.get('userInput')
     subjectAndTopic = json.loads(request.form.get('subjectAndTopic'))
+
     print(f"Subject And Topic: {subjectAndTopic}")
-    print()
     print(f'Before parse: {userInput}')
     userInput = parseLatex(userInput)
     print(f'After parse: {userInput}')
 
     if subjectAndTopic['subject'] == 'discreteMath':
         Solution = solveDiscreteMath(subjectAndTopic['selectedTopic'], userInput)
+    if subjectAndTopic['subject'] == 'calculus':
+        print()
+        Solution = solveCalculus(subjectAndTopic['selectedTopic'], userInput)
+        print(f"Solution: {Solution}")
+        print()
+        return jsonify(Solution)
 
     try:
         Simplification = evaluateArithmetic(userInput)

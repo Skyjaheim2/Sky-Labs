@@ -196,11 +196,11 @@
         // Solve Button
         document.querySelector('#solveBtn').addEventListener('click', () => {
             let enteredMath = answerMathField.latex()
-            let finalStepDiv = document.querySelector('#finalStep')
+            let finalStepDiv = document.querySelector('#finalSolutionHeading')
             // console.log(enteredMath)
 
             let selectedTopic = BaseUI.getSelectedTopic()
-            let subjectAndTopic = {'subject': 'discreteMath', 'selectedTopic': selectedTopic}
+            let subjectAndTopic = {'subject': 'probability', 'selectedTopic': selectedTopic}
 
             const request = new XMLHttpRequest()
             request.open('POST', `/solve/false`)

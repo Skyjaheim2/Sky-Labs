@@ -182,15 +182,17 @@
     }
     .results-container {
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: 15px;
         background-color: rgba(226, 226, 226, 0.45);
         /*height: 500px;*/
         border-radius: 15px;
         /*font-size: 30px;*/
         padding: 20px;
     }
-    #finalStep {
+    #finalSolutionHeading {
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-        font-size: 18px;
+        font-size: 17px;
+        margin-bottom: 20px;
     }
     .final-result {
         font-size: 20px;
@@ -210,21 +212,89 @@
     }
     .step-description {
         background-color: rgba(226, 226, 226, 0.45);
-        font-family: "Times New Roman", Symbola, serif;
-        font-size: 18px;
+        /*font-family: "Times New Roman", Symbola, serif;*/
+        /*font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;*/
+        font-size: 15px;
         padding: 5px;
         border-radius: 10px;
         margin-bottom: 8px;
         /*margin-top: 50px;*/
     }
+    .katex {
+        /*font-family: "Times New Roman", Symbola, serif;*/
+        /*font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;*/
+        font-family: 'Computer Modern',serif;
+    }
+    .expandable-step-container {
+        background-color: rgba(215, 213, 213, 0.45);
+        font-family: "Times New Roman", Symbola, serif;
+        font-size: 15px;
+        padding: 5px;
+        border-radius: 10px;
+        margin-top: 0;
+        margin-bottom: 0;
+
+    }
+    .show-steps-span {
+        font-family: "Times New Roman", Symbola, serif;
+        font-size: 16px;
+        float: right;
+        cursor: pointer;
+    }
+    .show-steps-icon {
+        width: 25px;
+        height: 25px;
+    }
+    .expanded-step-heading {
+        margin-top: 11px;
+    }
+    .expandable-step-solution-container {
+        /*animation-name: stepExpanded;*/
+        /*animation-delay: 0.5s;*/
+        /*animation-duration: 1s;*/
+        /*animation-fill-mode: forwards;*/
+        /*display: none;*/
+        overflow: hidden;
+        border-radius: 10px;
+        margin-top: 3px;
+        margin-bottom: 3px;
+        height: 0;
+    }
     .step-info {
+        margin-top: 10px;
         margin-bottom: 15px;
     }
     .final-step {
-        margin-top: 10px;
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-        font-size: 18px;
+        font-size: 17px;
         font-weight: 600;
+        margin-top: 10px;
+    }
+    @keyframes stepExpanded {
+        from {
+            height: 0;
+            padding: 0;
+            box-shadow: none;
+        }
+        to {
+            height: 300px;
+            padding: 10px;
+            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.5);
+        }
+
+    }
+    @keyframes stepCollapsed {
+        from {
+            height: 300px;
+            padding: 10px;
+            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.5);
+        }
+        to {
+            height: 0;
+            padding: 0;
+            box-shadow: none;
+            /*padding-top: 40px;*/
+        }
     }
 </style>
 {% block style %}
@@ -267,14 +337,44 @@
                 {% endblock %}
 
                 <div class="results-container">
-                    <div id="finalStep"></div>
+                    <div id="fooDiv"></div>
+                    <div id="finalSolutionHeading"></div>
                     <div class="steps-heading">Steps</div>
                     <div class="steps-container">
-                        <!--                <div class="step-description">Simplify inside the brackets: $ (1+1)=2 $</div>-->
-                        <!--                <div class="step-info">$ \left(\left(1+1\right)\cdot 2\right) = (2 \cdot 2) $</div>-->
+<!--                        <div class="step-description">Apply Sum/Diff Rule: $ \left( f \pm g \right)' = f' \pm g' $</div>-->
+<!--                        <div class="step-info">$ \displaystyle \frac{d}{dx}\left( 5x^3+3x^2 \right) = \frac{d}{dx}\left( x^3 \right) + \frac{d}{dx}\left( x^2 \right) $</div>-->
 
-                        <!--                <div class="step-description">Simplify inside the brackets: $ (2 \cdot 2)=4 $</div>-->
-                        <!--                <div class="final-step">Solution: $ 4 $</div>-->
+<!--                        &lt;!&ndash; E-STEP 1 &ndash;&gt;-->
+<!--                        <div id="step-1" class="expandable-step-container">$ \displaystyle \frac{d}{dx}\left( 5x^3 \right) = 15x^2  $<span class="show-steps-span">Show Steps <img class="show-steps-icon" src="{{ url_for('static', filename='img/add.svg') }}"></span></div>-->
+<!--                        <div id="step-solution-1" class="expandable-step-solution-container" data-expanded="false">-->
+<!--                            <div class="expanded-step-heading">$ \displaystyle \frac{d}{dx}\left( 5x^3 \right) $</div>-->
+<!--                            <hr>-->
+<!--                            <div class="step-description">Take the constant out: $ \left(n\cdot f \right)' = n\cdot f' $</div>-->
+<!--                            <div class="step-info">$ \displaystyle \frac{d}{dx}\left( 5x^3\right) = 5 \frac{d}{dx}\left( x^3 \right) $</div>-->
+
+<!--                            <div class="step-description">Apply the Power Rule: $ \left( x^n  \right)' = nx^{n-1} $</div>-->
+<!--                            <div class="step-info">$ \displaystyle 5 \frac{d}{dx}\left( x^3 \right) = 5\cdot 3x^{3-1} $</div>-->
+
+<!--                            <div class="step-description">Simplify</div>-->
+<!--                            <div class="step-info">$ \displaystyle 5\cdot 3x^{3-1} = 15x^2 $</div>-->
+<!--                        </div>-->
+
+<!--                        &lt;!&ndash; E-Step 2 &ndash;&gt;-->
+<!--                        <div id="step-2" class="expandable-step-container">$ \displaystyle \frac{d}{dx}\left( x^2 \right) = 2x  $<span class="show-steps-span">Show Steps <img class="show-steps-icon" src="{{ url_for('static', filename='img/add.svg') }}"></span></div>-->
+<!--                        <div id="step-solution-2" class="expandable-step-solution-container" data-expanded="false">-->
+<!--                            <div class="expanded-step-heading">$ \displaystyle \frac{d}{dx}\left( x^2 \right) $</div>-->
+<!--                            <hr>-->
+<!--                            <div class="step-description">Apply the Power Rule: $ \left( x^n  \right)' = nx^{n-1} $</div>-->
+<!--                            <div class="step-info">$ \displaystyle \frac{d}{dx}\left( x^2 \right) = 2\cdot x^{2-1} $</div>-->
+
+<!--                            <div class="step-description">Simplify</div>-->
+<!--                            <div class="step-info">$ \displaystyle 2\cdot x^{2-1} = 2x $</div>-->
+
+<!--                        </div>-->
+
+                        <!-- Solution -->
+<!--                        <div class="final-step">Solution: $ 15x^2+2x $</div>-->
+
 
                     </div>
 
@@ -596,7 +696,13 @@
         }
         static getSelectedTopic() {
             let selectedSubjectHeading = document.querySelector('#selectedSubjectTabHeading')
-            return selectedSubjectHeading.children[0].textContent.trim()
+            if (selectedSubjectHeading.children.length !== 0) {
+                return selectedSubjectHeading.children[0].textContent.trim()
+            }
+            else {
+                return selectedSubjectHeading.textContent
+            }
+
         }
     }
     class subjectTabsUI {
@@ -1064,18 +1170,62 @@
         }
         
     }
+    class Animations {
+        static animateShowSteps(stepContainer) {
+            // stepContainer.style.display = 'block'
+            stepContainer.overflow = 'auto'
+            stepContainer.style.animationName = 'stepExpanded'
+            stepContainer.style.animationDuration = '0.5s'
+            stepContainer.style.animationFillMode = 'forwards'
+            stepContainer.dataset.expanded = 'true'
 
+            stepContainer.addEventListener('animationend', () => {
+                // stepContainer.overflow = 'auto'
+                // stepContainer.style.display = 'block'
+            })
+        }
+        static animateHideSteps(stepContainer) {
+            stepContainer.style.animationName = 'stepCollapsed'
+            stepContainer.style.animationDuration = '0.5s'
+            stepContainer.style.animationFillMode = 'forwards'
+            stepContainer.dataset.expanded = 'false'
+
+            stepContainer.addEventListener('animationend', () => {
+                // stepContainer.style.overflow = 'hidden'
+            })
+        }
+    }
 
 
     document.addEventListener('DOMContentLoaded', () => {
 
         // BaseUI.loadDefaultOptions('algebra')
+        let foo = document.querySelector('#fooDiv')
+        // StepsUI.addLatexToElement(foo, '\\text{Apply Sum/Diff Rule:}\\ 5x^2')
         BaseUI.loadSymbolsContainer()
 
 
     })
 
     /* ONCLICK EVENTS */
+
+    // Show Steps
+
+
+
+    // document.querySelector('#step-1').addEventListener('click', () => {
+    //     let stepContainer = document.querySelector('#step-solution-1')
+    //
+    //     if (stepContainer.dataset.expanded === 'false') {
+    //         stepContainer.style.overflow = 'auto'
+    //         Animations.animateShowSteps(stepContainer)
+    //     }
+    //     else {
+    //         Animations.animateHideSteps(stepContainer)
+    //         $(stepContainer).animate({ scrollTop: 0 }, "fast");
+    //         stepContainer.style.overflow = 'hidden'
+    //     }
+    // })
 
     // Subject Tabs
     document.querySelector('.subject-tabs').addEventListener('click', (e) => {
@@ -1091,8 +1241,6 @@
             window.location.href = routes[subject]
             // subjectTabsUI.subjectTabBtnSelected(e.target)
             // console.log('after')
-
-
 
         }
     })

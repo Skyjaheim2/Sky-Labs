@@ -84,6 +84,7 @@
             }
         });
 
+        answerMathField.write("\\frac{d}{dx}\\left(5x^3 + x^2\\right)")
         BaseUI.loadDefaultOptions('calculus')
 
         /* ON-KEY UP EVENTS */
@@ -132,7 +133,6 @@
                 // console.log(e.target.parentElement.parentElement.parentElement.previousElementSibling.textContent)
                 let mainTopic = e.target.parentElement.parentElement.parentElement.previousElementSibling.textContent
                 mainTopic = replaceAll(replaceAll(mainTopic.trim(), '\\n', ''), '+ ', '').trim()
-                console.log(mainTopic === 'Set Theory')
                 let topicExtension = e.target.textContent
 
                 switch (mainTopic) {
@@ -274,11 +274,11 @@
         // Solve Button
         document.querySelector('#solveBtn').addEventListener('click', () => {
             let enteredMath = answerMathField.latex()
-            let finalStepDiv = document.querySelector('#finalStep')
+            let finalStepDiv = document.querySelector('#finalSolutionHeading')
             // console.log(enteredMath)
 
             let selectedTopic = BaseUI.getSelectedTopic()
-            let subjectAndTopic = {'subject': 'discreteMath', 'selectedTopic': selectedTopic}
+            let subjectAndTopic = {'subject': 'calculus', 'selectedTopic': selectedTopic}
 
             const request = new XMLHttpRequest()
             request.open('POST', `/solve/false`)
@@ -286,20 +286,91 @@
                 if (request.status === 200) {
                     let solution = request.responseText
                     if (solution !== 'Unable To Solve') {
-                        solution = JSON.parse(solution)
+                        let Steps = JSON.parse(solution)['steps']
+                        let finalResult = JSON.parse(solution)['finalResult']
                         let numSteps = Object.keys(solution).length;
-                        let finalStepLatex = solution[numSteps]
-                        // console.log(solution)
-                        // console.log(finalStepLatex)
-                        // Add final step to DOM
-                        StepsUI.addLatexToElement(finalStepDiv, finalStepLatex)
-                        StepsUI.displayStepsHeading()
-                        // Add all steps to DOM
-                        StepsUI.showAllSteps(solution, enteredMath)
+                        console.log(Steps)
+                        let stepsContainer = document.querySelector('.steps-container')
 
+                        let e_step_id = 1
+                        Steps.forEach((step) => {
+                            if (step['type'] === 'main-step') {
+                                stepsContainer.innerHTML += `
+                                    <div class="step-description">${step['description']}</div>
+                                    <div class="step-info">${step['info']}</div>
 
-                        // console.log(solution)
-                        // console.log(finalStepLatex)
+                                `
+                            }
+                            else if (step['type'] === 'e-step') {
+                                stepsContainer.innerHTML += `<div id="step-${e_step_id}" class="expandable-step-container"><span class="expandable-step">${step['heading']}</span><span class="show-steps-span">Show Steps <img class="show-steps-icon" src="{{ url_for('static', filename='img/add.svg') }}"></span></div>`
+                                let e_stepSolutionContainer = document.createElement('div')
+                                e_stepSolutionContainer.id = `step-solution-${e_step_id}`
+                                e_stepSolutionContainer.className = 'expandable-step-solution-container'
+                                e_stepSolutionContainer.dataset.expanded = 'false'
+                                e_stepSolutionContainer.innerHTML += `<div class="expanded-step-heading">${step['heading']}</div>`
+                                e_stepSolutionContainer.innerHTML += `<hr>`
+
+                                // console.log(step['e-steps'])
+                                let e_Steps = step['e-steps']
+                                e_Steps.forEach((e_step) => {
+                                    e_stepSolutionContainer.innerHTML += `
+                                        <div class="step-description">${e_step['description']}</div>
+                                        <div class="step-info">${e_step['info']}</div>
+
+                                    `
+                                })
+                                console.log(e_stepSolutionContainer)
+
+                                stepsContainer.appendChild(e_stepSolutionContainer)
+
+                                e_step_id += 1
+
+                            }
+                        })
+                        stepsContainer.innerHTML += `<div class="final-step"></div>`
+
+                        // Add Latex to all .step-descriptions
+                        document.querySelectorAll('.step-description').forEach((description) => {
+                            StepsUI.addLatexToElement(description, description.textContent)
+                        })
+                        // Add Latex to all .step-info
+                        document.querySelectorAll('.step-info').forEach((info) => {
+                            StepsUI.addLatexToElement(info, info.textContent)
+                        })
+                        // Add Latex to all .expandable-step
+                        document.querySelectorAll('.expandable-step').forEach((step) => {
+                            StepsUI.addLatexToElement(step, step.textContent)
+                        })
+                        // Add Latex to all .expandable-step-solution-container
+                        document.querySelectorAll('.expandable-step-solution-container').forEach((container) => {
+                            // StepsUI.addLatexToElement(container, container.textContent)
+                        })
+                        // Add Latex to all .expanded-step-heading
+                        document.querySelectorAll('.expanded-step-heading').forEach((heading) => {
+                            StepsUI.addLatexToElement(heading, heading.textContent)
+                        })
+                        // Add latex to .final-step
+                        StepsUI.addLatexToElement(document.querySelector('.final-step'), `\\text{Solution:}\\ ${finalResult}`)
+                        // Add Latex To Solution Heading
+                        StepsUI.addLatexToElement(document.querySelector('#finalSolutionHeading'), `${enteredMath}=${finalResult}`)
+
+                        // ON-CLICK: Expandable Steps
+                        for (let i = 1; i < 3; i++) {
+                            document.querySelector(`#step-${i}`).addEventListener('click', (e) => {
+                                let stepContainer = document.querySelector(`#step-solution-${i}`)
+                                if (stepContainer.dataset.expanded === 'false') {
+                                    e.target.innerHTML = `Hide Steps <img class="show-steps-icon" src="{{ url_for('static', filename='img/minus.svg') }}">`
+                                    stepContainer.style.overflow = 'auto'
+                                    Animations.animateShowSteps(stepContainer)
+                                } else {
+                                    e.target.innerHTML = `Show Steps <img class="show-steps-icon" src="{{ url_for('static', filename='img/add.svg') }}">`
+                                    Animations.animateHideSteps(stepContainer)
+                                    $(stepContainer).animate({scrollTop: 0}, "fast");
+                                    stepContainer.style.overflow = 'hidden'
+                                }
+                            })
+                        }
+
                     }
                     else {
 
@@ -330,6 +401,9 @@
                 liveSolveSolutionContainer.style.display = 'none'
             }
         })
+
+
+
 
     })
 

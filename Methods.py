@@ -1246,7 +1246,6 @@ def convertToStandardForm(num: str, autoConvert=False):
 # def applyPEMDAS(expression):
 #     i = 0
 #     while i < len(expression):
-#         # TODO - PARENTHESES, EXPONENTS
 #         if expression[i] == '*':
 #             allOperators = ['+', '-', '*', '/']
 #             # if i != len(expression)-2:
