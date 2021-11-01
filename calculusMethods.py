@@ -108,39 +108,47 @@ def solveCalculus(topicAndExtensions, userInput):
     # topic = topicAndExtensions.split('→')[0]
     # extension = topicAndExtensions.split('→')[1]
 
-    Steps = [
+    ESteps = [
         {'id': 1, 'type': 'main-step', 'description': r"\text{Apply Sum/Diff Rule:}\ (f \pm g)' = f' \pm g'", 'info': r"\displaystyle \frac{d}{dx}(5x^3+x^2)=\frac{d}{dx}(5x^3)+\frac{d}{dx}(x^2)"},
         {'id': 2, 'type': 'e-step', 'heading': r'\displaystyle \frac{d}{dx}(5x^3)=15x^2', 'e-steps': [
-            {'id': 1, 'description': r"\text{Take the constant out:}\ (n* f)'=n* f'", 'info': r"\displaystyle \frac{d}{dx}(5x^3)=5*\frac{d}{dx}(x^3)", 'conclusion': r'5*\frac{d}{dx}(x^3)'},
-            {'id': 2, 'description': r"\text{Apply the Power Rule}\: (x^n)'=nx^{n-1}", 'info': r"\displaystyle 5*\frac{d}{dx}(x^3)=5*3x^{3-1}", 'conclusion': '5*3x^{3-1}'},
-            {'id': 3, 'description': r"\text{Simplify}", 'info': r"\displaystyle 5*3x^{3-1}=15x^2", 'conclusion': '15x^2'}
+            {'id': 1, 'type': 'main-step', 'description': r"\text{Take the constant out:}\ (n* f)'=n* f'", 'info': r"\displaystyle \frac{d}{dx}(5x^3)=5*\frac{d}{dx}(x^3)", 'conclusion': r'5*\frac{d}{dx}(x^3)'},
+            {'id': 2, 'type': 'main-step', 'description': r"\text{Apply the Power Rule}\: (x^n)'=nx^{n-1}", 'info': r"\displaystyle 5*\frac{d}{dx}(x^3)=5*3x^{3-1}", 'conclusion': '5*3x^{3-1}'},
+            {'id': 3, 'type': 'main-step', 'description': r"\text{Simplify}", 'info': r"\displaystyle 5*3x^{3-1}=15x^2", 'conclusion': '15x^2'},
+            {'id': 4, 'type': 'e-step', 'heading': r'\displaystyle \frac{d}{dx}(x^2)=2x', 'e-steps': [
+                {'id': 1, 'type': 'main-step', 'description': r"\displaystyle \text{Apply the Power Rule:}\ (x^n)'=nx^{n-1}", 'info': r"\displaystyle \frac{d}{dx}(x^2)=2x^{2-1}", 'conclusion': r'2x^{2-1}'},
+                {'id': 2, 'type': 'main-step', 'description': r"\text{Simplify}", 'info': r"\displaystyle 2x^{2-1}=2x", 'conclusion': '2x'},
+                {'id': 3, 'type': 'e-step', 'heading': r'\displaystyle \frac{d}{dx}(x^2)=2x', 'e-steps': [
+                    {'id': 1, 'type': 'main-step', 'description': r"\displaystyle \text{Apply the Power Rule:}\ (x^n)'=nx^{n-1}", 'info': r"\displaystyle \frac{d}{dx}(x^2)=2x^{2-1}", 'conclusion': r'2x^{2-1}'},
+                    {'id': 2, 'type': 'main-step', 'description': r"\text{Simplify}", 'info': r"\displaystyle 2x^{2-1}=2x", 'conclusion': '2x'}
+                ]},
+            ]},
+
         ]},
         {'id': 3, 'type': 'e-step', 'heading': r'\displaystyle \frac{d}{dx}(x^2)=2x', 'e-steps': [
-            {'id': 1, 'description': r"\displaystyle \text{Apply the Power Rule:}\ (x^n)'=nx^{n-1}", 'info': r"\displaystyle \frac{d}{dx}(x^2)=2x^{2-1}", 'conclusion': r'2x^{2-1}'},
-            {'id': 2, 'description': r"\text{Simplify}", 'info': r"\displaystyle 2x^{2-1}=2x", 'conclusion': '2x'}
+            {'id': 1, 'type': 'main-step', 'description': r"\displaystyle \text{Apply the Power Rule:}\ (x^n)'=nx^{n-1}", 'info': r"\displaystyle \frac{d}{dx}(x^2)=2x^{2-1}", 'conclusion': r'2x^{2-1}'},
+            {'id': 2, 'type': 'main-step', 'description': r"\text{Simplify}", 'info': r"\displaystyle 2x^{2-1}=2x", 'conclusion': '2x'}
         ]},
     ]
 
+    Steps = [
+        {'id': 1, 'type': 'main-step', 'description': r"\text{Apply Sum/Diff Rule:}\ (f \pm g)' = f' \pm g'", 'info': r"\displaystyle \frac{d}{dx}(5x^3+x^2)=\frac{d}{dx}(5x^3)+\frac{d}{dx}(x^2)"},
+        {'id': 2, 'type': 'e-step', 'heading': r'\displaystyle \frac{d}{dx}(5x^3)=15x^2', 'e-steps': [
+            {'id': 1, 'type': 'main-step', 'description': r"\text{Take the constant out:}\ (n* f)'=n* f'", 'info': r"\displaystyle \frac{d}{dx}(5x^3)=5*\frac{d}{dx}(x^3)", 'conclusion': r'5*\frac{d}{dx}(x^3)'},
+            {'id': 2, 'type': 'main-step', 'description': r"\text{Apply the Power Rule}\: (x^n)'=nx^{n-1}", 'info': r"\displaystyle 5*\frac{d}{dx}(x^3)=5*3x^{3-1}", 'conclusion': '5*3x^{3-1}'},
+            {'id': 3, 'type': 'main-step', 'description': r"\text{Simplify}", 'info': r"\displaystyle 5*3x^{3-1}=15x^2", 'conclusion': '15x^2'},
+        ]},
+        {'id': 3, 'type': 'e-step', 'heading': r'\displaystyle \frac{d}{dx}(x^2)=2x', 'e-steps': [
+            {'id': 1, 'type': 'main-step', 'description': r"\displaystyle \text{Apply the Power Rule:}\ (x^n)'=nx^{n-1}", 'info': r"\displaystyle \frac{d}{dx}(x^2)=2x^{2-1}", 'conclusion': r'2x^{2-1}'},
+            {'id': 2, 'type': 'main-step', 'description': r"\text{Simplify}", 'info': r"\displaystyle 2x^{2-1}=2x", 'conclusion': '2x'}
+        ]},
+
+
+    ]
     Steps = convertStepsToLatex(Steps)
-
     finalResult = '15x^2+2x'
-
-    # print(Steps)
 
     return {'steps': Steps, 'finalResult': finalResult}
 
-    # if r"\frac{d}{dx}" in userInput:
-    #
-    #     functionToTakeDerivativeOf = userInput[12:].replace('(', '').replace(')', '')
-    #
-    #     Terms = [Monomial(term) for term in functionToTakeDerivativeOf.split('+')]
-    #     Derivatives = [term.derivative() for term in Terms]
-    #
-    #
-    #     print(Terms)
-    #     print(Derivatives)
-    #     print()
-    # return userInput
 
 def convertStepsToLatex(Steps):
     for step in Steps:
@@ -149,32 +157,16 @@ def convertStepsToLatex(Steps):
             step['info'] = latexify(step['info'])
         elif step['type'] == 'e-step':
             step['heading'] = latexify(step['heading'])
-            for e_step in step['e-steps']:
-                e_step['description'] = latexify(e_step['description'])
-                e_step['info'] = latexify(e_step['info'])
-                e_step['conclusion'] = latexify(e_step['conclusion'])
+            convertStepsToLatex(step['e-steps'])
 
     return Steps
 
 
 
 def main():
-    solveCalculus('', r'\frac{d}{dx}(5x^3+x^2)')
+    print(solveCalculus('', r'\frac{d}{dx}(5x^3+x^2)'))
 
 
-
-    Steps = [
-        {'id': 1, 'type': 'mainStep', 'description': r"Apply Sum/Diff Rule: (f \pm g)' = f' \pm g'", 'info': r"\frac{d}{dx}(5x^3+x^2)=\frac{d}{dx}(5x^3)+\frac{d}{dx}(x^2)"},
-        {'id': 2, 'type': 'e-step', 'heading': r'\frac{d}{dx}(5x^3)=15x^2', 'e-steps': [
-            {'id': 1, 'description': "Take the constant out: (n* f)'=n* f'", 'info': r"\frac{d}{dx}(5x^3)=5*\frac{d}{dx}(x^3)", 'conclusion':r'5*\frac{d}{dx}(x^3)'},
-            {'id': 2, 'description': "Apply the Power Rule: (x^n)'=nx^{n-1}", 'info': r"5*\frac{d}{dx}(x^3)=5*3x^{3-1}", 'conclusion': '5*3x^{3-1}'},
-            {'id': 3, 'description': "Simplify", 'info': r"5*3x^{3-1}=15x^2", 'conclusion': '15x^2'}
-        ]},
-        {'id': 3, 'type': 'e-step', 'heading': r'\frac{d}{dx}(x^2)=2x', 'e-steps': [
-            {'id': 1, 'description': "Apply the Power Rule: (x^n)'=nx^{n-1}", 'info': r"\frac{d}{dx}(x^2)=2x^{2-1}", 'conclusion': r'2x^{2-1}'},
-            {'id': 2, 'description': "Simplify", 'info': r"2x^{2-1}=2x", 'conclusion': '2x'}
-        ]},
-    ]
 
 
 main()
