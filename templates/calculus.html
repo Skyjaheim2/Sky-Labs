@@ -84,7 +84,7 @@
             }
         });
 
-        answerMathField.write("\\frac{d}{dx}\\left(5x^3 + x^2\\right)")
+        // answerMathField.write("\\frac{d}{dx}\\left(5x^3 + x^2\\right)")
         BaseUI.loadDefaultOptions('calculus')
 
         /* ON-KEY UP EVENTS */
@@ -274,8 +274,15 @@
         // Solve Button
         document.querySelector('#solveBtn').addEventListener('click', () => {
             let enteredMath = answerMathField.latex()
-            let finalStepDiv = document.querySelector('#finalSolutionHeading')
-            // console.log(enteredMath)
+            let resultsContainer = document.querySelector('.results-container')
+            // Clear previous work
+            resultsContainer.innerHTML = `
+                <div id="finalSolutionHeading"></div>
+                <div class="steps-heading">Steps</div>
+                <div class="steps-container"></div>
+            `
+
+
 
             let selectedTopic = BaseUI.getSelectedTopic()
             let subjectAndTopic = {'subject': 'calculus', 'selectedTopic': selectedTopic}

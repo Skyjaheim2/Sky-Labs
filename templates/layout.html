@@ -228,7 +228,7 @@
     .expandable-step-container {
         background-color: rgba(215, 213, 213, 0.45);
         font-family: "Times New Roman", Symbola, serif;
-        font-size: 15px;
+        font-size: 17px;
         padding: 5px;
         border-radius: 10px;
         margin-top: 0;
@@ -246,6 +246,7 @@
         height: 25px;
     }
     .expanded-step-heading {
+        font-size: 16px;
         margin-top: 11px;
     }
     .expandable-step-solution-container {
@@ -261,6 +262,7 @@
         height: 0;
     }
     .step-info {
+        font-size: 17px;
         margin-top: 10px;
         margin-bottom: 15px;
     }
@@ -337,7 +339,6 @@
                 {% endblock %}
 
                 <div class="results-container">
-                    <div id="fooDiv"></div>
                     <div id="finalSolutionHeading"></div>
                     <div class="steps-heading">Steps</div>
                     <div class="steps-container">
@@ -1347,8 +1348,18 @@
     // Topic Extension Item
     document.querySelector('#sidebar').addEventListener('click', (e) => {
         if (e.target.classList.contains('topics-btn')) {
+            let pm = ''
+            if (e.target.textContent.includes('+')) {
+                pm = '-'
+                e.target.innerHTML = e.target.innerHTML.replace('+', pm)
+            }
+            else {
+                pm = '+'
+                e.target.innerHTML = e.target.innerHTML.replace('-', pm)
+            }
+
             let mainTopic = e.target.textContent
-            mainTopic = replaceAll(replaceAll(mainTopic.trim(), '\\n', ''), '+ ', '')
+            mainTopic = replaceAll(replaceAll(mainTopic.trim(), '\\n', ''), `${pm} `, '')
             BaseUI.extensionTopicClicked(mainTopic, '')
         }
         if (e.target.className === 'topic-extension-item') {

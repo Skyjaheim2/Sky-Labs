@@ -12,6 +12,8 @@ class ArithmeticExpression:
 
         if len(allOperations) == 0 and self.isSingleExpression():
             return 'no-operation'
+        if 'frac' in self.expression:
+            return 'fraction-arithmetic'
 
         if 'sqrt' in self.expression:
             isRadicalOnly = True
@@ -481,6 +483,7 @@ class ArithmeticExpression:
 
 class Exponential:
     def __init__(self, expression):
+        self.expression = expression
         expression = ArithmeticExpression(expression)
         if '^' not in expression:
             self.base = expression
@@ -495,6 +498,11 @@ class Exponential:
             if '{' in self.exponent:
                 expressionInExponent = self.exponent.replace('{', '').replace('}', '')
                 self.exponent = ArithmeticExpression(expressionInExponent)
+
+    def __str__(self):
+        return self.expression
+    def __repr__(self):
+        return self.expression
 
 class Radical(ArithmeticExpression):
     def __init__(self, expression):
@@ -515,16 +523,42 @@ class Radical(ArithmeticExpression):
 
         return ArithmeticExpression(expressionInside)
 
+    def __str__(self):
+        return str(self.expression)
+
+class Fraction(ArithmeticExpression):
+    def __init__(self, expression):
+        super().__init__(expression)
+        self.fraction_expression = expression
+
+    def getNumerator(self):
+        numOpenCurlyParen = 0
+        numClosedCurlyParen = 0
+        numerator = ''
+
+        for i in range(4, len(self.fraction_expression)):
+            if self.fraction_expression[i] == '{':
+                numOpenCurlyParen += 1
+            elif self.fraction_expression[i] == '}':
+                numClosedCurlyParen += 1
+
+            if numOpenCurlyParen == numClosedCurlyParen:
+                numerator = self.fraction_expression[5:i]
+                return ArithmeticExpression(numerator)
+
+    def getDenominator(self):
+        return ArithmeticExpression(self.fraction_expression[7+len(self.getNumerator()):len(self.fraction_expression)-1])
+
 
 def parseLatex(latexString: str):
     latexString = latexString.replace('\left(', '(').replace('\\right)', ')').replace('\left\{', '{').replace('\\right\}', '}')\
-                             .replace('\cdot', '*').replace('\\pi', f'{pi}')\
-                             .replace('e', f'{e}').replace('\sqrt', 'sqrt')
+                             .replace('\cdot', '*').replace(r'\pi', 'pi').replace('\sqrt', 'sqrt')\
+                             .replace(r'\frac', 'frac')
     return latexString
 
 def latexify(expression):
-    expression = expression.replace('(', '\left(').replace(')', '\\right)').replace('*', '\cdot').replace(f'{pi}', '\pi')\
-                           .replace(f'{e}', 'e').replace('sqrt', '\\sqrt')
+    expression = expression.replace('(', '\left(').replace(')', '\\right)').replace('*', '\cdot').replace('pi', r'\pi')\
+                           .replace('sqrt', '\\sqrt').replace('frac',r'\frac')
     return expression
 
 
@@ -638,8 +672,62 @@ def evaluateArithmetic(expression, stepCounter=None, Steps=None, returnStepsAsAr
             simplifiedExpression = expression.replace(f"{expressionInsideRadical}", result)
             return evaluateArithmetic(simplifiedExpression, stepCounter, Steps, returnStepsAsArray)
 
+    elif operation == 'fraction-arithmetic':
+        expression = Fraction(expression)
+
+        # expression = frac{1+2+3}{5+2}
+        Steps = []
+
+        numerator = expression.getNumerator()
+        denominator = expression.getDenominator()
+
+        simplifiedNumerator = evaluateArithmetic(numerator)[1]
+        simplifiedDenominator = evaluateArithmetic(denominator)[1]
+
+        if not numerator.isSingleExpression():
+            stepToAdd = {}
+            stepToAdd['id'], stepToAdd['type'] = 1, 'e-step'
+            stepToAdd['heading'] = rf"\displaystyle \text{'{'}Simplify Numerator:{'}'}\ {latexify(expression.getNumerator())}={simplifiedNumerator}"
+            stepToAdd['e-steps'] = []
+
+            intermediateSteps = evaluateArithmetic(numerator)[0]
+
+            for stepNum in intermediateSteps:
+                currentStep = intermediateSteps[stepNum]
+                currentStep['type'] = 'main-step'
+                currentStep['description'] = currentStep['step'].split(':')[0]
+                currentStep['description'] = rf"\text{'{'}{currentStep['description']}{'}'}"
+                currentStep['info'] = latexify(currentStep['step'].split(':')[1].lstrip())
+
+                del currentStep['step']
+                del currentStep['simplification']
+                stepToAdd['e-steps'].append(currentStep)
+
+            Steps.append(stepToAdd)
+
+        if not denominator.isSingleExpression():
+            stepToAdd = {}
+            stepToAdd['id'], stepToAdd['type'] = 1, 'e-step'
+            stepToAdd['heading'] = rf"\displaystyle \text{'{'}Simplify Denominator:{'}'}\ {latexify(denominator)}={simplifiedDenominator}"
+            stepToAdd['e-steps'] = []
+
+            intermediateSteps = evaluateArithmetic(denominator)[0]
+
+            for stepNum in intermediateSteps:
+                currentStep = intermediateSteps[stepNum]
+                currentStep['type'] = 'main-step'
+                currentStep['description'] = currentStep['step'].split(':')[0]
+                currentStep['description'] = rf"\text{'{'}{currentStep['description']}{'}'}"
+                currentStep['info'] = latexify(currentStep['step'].split(':')[1].lstrip())
+
+                del currentStep['step']
+                del currentStep['simplification']
+                stepToAdd['e-steps'].append(currentStep)
+
+            Steps.append(stepToAdd)
 
 
+        return {'steps': Steps, 'finalResult': rf"\frac{'{'}{simplifiedNumerator}{'}'}{'{'}{simplifiedDenominator}{'}'}"}
 
     elif operation == 'arithmetic-exponent-multiply':
         allExponentsInExpression = expression.getAllExponentsInExpression()
@@ -1500,7 +1588,7 @@ def convertToStandardForm(num: str, autoConvert=False):
 def main():
     # print(simplify('((1+1)*2)')[0])
 
-    expression = ArithmeticExpression('5+3*2+sqrt{7+5*21}')
+    expression = ArithmeticExpression('frac{1+sqrt{2}}{1}')
     print(evaluateArithmetic(expression)[0])
 
     # print(applyPEMDAS('1+2*-3*-4*523+9'))
