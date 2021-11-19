@@ -164,7 +164,8 @@ def convertStepsToLatex(Steps):
 
 
 def main():
-    print(solveCalculus('', r'\frac{d}{dx}(5x^3+x^2)'))
+    pass
+    # print(solveCalculus('', r'\frac{d}{dx}(5x^3+x^2)'))
 
 
 

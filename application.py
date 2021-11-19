@@ -4,7 +4,7 @@ import json
 
 app = Flask(__name__)
 
-from Methods import evaluateArithmetic, parseLatex, latexify
+from Methods import parseLatex, latexify
 from methodsDiscreteMath import solveDiscreteMath
 from calculusMethods import solveCalculus
 from test import simplifyExpression, Expression
