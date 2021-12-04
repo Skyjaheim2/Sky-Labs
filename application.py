@@ -48,28 +48,9 @@ def solve(liveSolve):
     print(f'After parse: {userInput}')
 
     if subjectAndTopic['subject'] == 'algebra':
-        try:
-            Simplification = evaluateArithmetic(userInput)
-        except:
-            return "Unable To Solve"
-
-        Steps, result, stepCounter = Simplification[0], Simplification[1], Simplification[2]
-
-        if liveSolve == 'true':
-            return result
-
-        if Steps != -1:
-
-            # CONVERT ALL STEPS TO LATEX
-            for stepNum in Steps:
-                Steps.update({stepNum: {'step': latexify(Steps[stepNum]["step"]),
-                                        'simplification': latexify(Steps[stepNum]["simplification"])}})
-
-            Steps.update({stepCounter + 1: f'{latexify(userInput)} = {result}'})
-            return jsonify(Steps)
-        else:
-            return 'Unable To Solve'
-
+        userInput = Expression(userInput)
+        Solution = simplifyExpression(userInput)
+        return jsonify(Solution)
 
     if subjectAndTopic['subject'] == 'discreteMath':
         Solution = solveDiscreteMath(subjectAndTopic['selectedTopic'], userInput)

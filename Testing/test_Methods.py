@@ -927,52 +927,48 @@ class TestCalc(unittest.TestCase):
         expressionsAndExpectedVal = [
             {
                 'expression': '1+2+3+4',
-                'expected_val': {'steps': [{'type': 'e-step', 'heading': '\\displaystyle 1+2+3+4=10', 'e-steps': [
-                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2+3+4=10'}]}], 'finalResult': '10'},
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2+3+4=10'}], 'finalResult': '10'},
             },
             {
                 'expression': '1+a+a+b',
-                'expected_val': {'steps': [{'type': 'e-step', 'heading': '\\displaystyle 1+a+a+b=2a+b+1', 'e-steps': [
+                'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+a+a+b=a+a+b+1'},
-                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle a+a+b+1=2a+b+1'}]}], 'finalResult': '2a+b+1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle a+a+b+1=2a+b+1'}], 'finalResult': '2a+b+1'},
             },
             {
                 'expression': '1+2+3+a+a+c',
                 'expected_val': {'steps': [
-                    {'type': 'e-step', 'heading': '\\displaystyle 1+2+3+a+a+c=2a+c+6', 'e-steps': [
-                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+2+3+a+a+c=a+a+c+1+2+3'},
-                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle a+a+c+1+2+3=2a+c+1+2+3'},
-                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2a+c+1+2+3=2a+c+6'}]}], 'finalResult': '2a+c+6'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+2+3+a+a+c=a+a+c+1+2+3'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle a+a+c+1+2+3=2a+c+1+2+3'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2a+c+1+2+3=2a+c+6'}], 'finalResult': '2a+c+6'},
             },
             {
                 'expression': 'a+a+5b-2b+c-c',
                 'expected_val': {'steps': [
-                    {'type': 'e-step', 'heading': '\\displaystyle a+a+5b-2b+c-c=2a+3b', 'e-steps': [
-                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle a+a+5b-2b+c-c=2a+3b'}]}], 'finalResult': '2a+3b'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle a+a+5b-2b+c-c=2a+3b'}], 'finalResult': '2a+3b'},
             },
             {
                 'expression': '5x+3+5+x',
-                'expected_val': {'steps': [{'type': 'e-step', 'heading': '\\displaystyle 5x+3+5+x=6x+8', 'e-steps': [
+                'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 5x+3+5+x=5x+x+3+5'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+x+3+5=6x+3+5'},
-                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 6x+3+5=6x+8'}]}], 'finalResult': '6x+8'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 6x+3+5=6x+8'}], 'finalResult': '6x+8'},
             },
             {
                 'expression': '1+pi+5\sin(ab+c)-2\sin(ab+c)+3pi+3',
                 'expected_val': {'steps': [
-                    {'type': 'e-step', 'heading': '\\displaystyle 1+\\pi+5\\sin\\left(ab+c\\right)-2\\sin\\left(ab+c\\right)+3\\pi+3=4\\pi+3\\sin\\left(ab+c\\right)+4', 'e-steps': [
-                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+\\pi+5\\sin\\left(ab+c\\right)-2\\sin\\left(ab+c\\right)+3\\pi+3=\\pi+3\\pi+5\\sin\\left(ab+c\\right)-2\\sin\\left(ab+c\\right)+1+3'},
-                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle \\pi+3\\pi+5\\sin\\left(ab+c\\right)-2\\sin\\left(ab+c\\right)+1+3=4\\pi+3\\sin\\left(ab+c\\right)+1+3'},
-                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 4\\pi+3\\sin\\left(ab+c\\right)+1+3=4\\pi+3\\sin\\left(ab+c\\right)+4'}]}], 'finalResult': '4\\pi+3\\sin\\left(ab+c\\right)+4'}
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+\\pi+5\\sin\\left(ab+c\\right)-2\\sin\\left(ab+c\\right)+3\\pi+3=\\pi+3\\pi+5\\sin\\left(ab+c\\right)-2\\sin\\left(ab+c\\right)+1+3'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle \\pi+3\\pi+5\\sin\\left(ab+c\\right)-2\\sin\\left(ab+c\\right)+1+3=4\\pi+3\\sin\\left(ab+c\\right)+1+3'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 4\\pi+3\\sin\\left(ab+c\\right)+1+3=4\\pi+3\\sin\\left(ab+c\\right)+4'}], 'finalResult': '4\\pi+3\\sin\\left(ab+c\\right)+4'}
             },
             {
                 'expression': 'sqrt{1+2+x+15x-3}',
                 'expected_val': {'steps': [
-                    {'type': 'e-step', 'heading': '\\displaystyle \\sqrt{1+2+x+15x-3}=\\sqrt{16x}', 'e-steps': [
-                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+2+x+15x-3=x+15x+1+2-3'},
-                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle x+15x+1+2-3=16x+1+2-3'},
-                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 16x+1+2-3=16x+0'},
-                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{1+2+x+15x-3}=\\sqrt{16x}'}]}], 'finalResult': '\\sqrt{16x}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+2+x+15x-3=x+15x+1+2-3'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle x+15x+1+2-3=16x+1+2-3'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 16x+1+2-3=16x+0'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{1+2+x+15x-3}=\\sqrt{16x}'}], 'finalResult': '\\sqrt{16x}'},
             },
             {
                 'expression': 'sqrt{15x-2x}+2+3',
@@ -1012,14 +1008,82 @@ class TestCalc(unittest.TestCase):
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2+3=6'}]}], 'finalResult': '\\sqrt{\\sqrt{6x+3}+40x-8}+6'},
             },
             {
-                'expression': '1',
+                'expression': 'sqrt{36}',
                 'expected_val': {'steps': [
-                    {'type': 'e-step', 'heading': '\\displaystyle 1=1', 'e-steps': []}], 'finalResult': '1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Radical}', 'info': '\\displaystyle \\sqrt{36}=6'}], 'finalResult': '6'},
+
+            },
+            {
+                'expression': 'sqrt{72}',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Factor Radical}', 'info': '\\displaystyle \\sqrt{72}=\\sqrt{36}\\cdot\\sqrt{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{36}\\cdot\\sqrt{2}=6\\sqrt{2}'}], 'finalResult': '6\\sqrt{2}'},
+
+            },
+            {
+                'expression': '2sqrt{3+1}',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 3+1=4'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 2\\sqrt{3+1}=2\\sqrt{4}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Radical}', 'info': '\\displaystyle 2\\sqrt{4}=2\\cdot2'}], 'finalResult': '2\\cdot2'},
+
+            },
+            {
+                'expression': '(a+b)sqrt{4}+(2x+y)sqrt{36}',
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(a+b\\right)\\sqrt{4}=2\\left(a+b\\right)', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Radical}', 'info': '\\displaystyle \\left(a+b\\right)\\sqrt{4}=2\\left(a+b\\right)'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(2x+y\\right)\\sqrt{36}=6\\left(2x+y\\right)', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Radical}', 'info': '\\displaystyle \\left(2x+y\\right)\\sqrt{36}=6\\left(2x+y\\right)'}]}], 'finalResult': '2\\left(a+b\\right)+6\\left(2x+y\\right)'},
+
+            },
+            {
+                'expression': 'sqrt[3]{94+2}+sqrt[5]{2x+3x+1}',
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\sqrt[3]{94+2}=2\\sqrt[3]{12}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 94+2=96'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt[3]{94+2}=\\sqrt[3]{96}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Factor Radical}', 'info': '\\displaystyle \\sqrt[3]{96}=\\sqrt[3]{8}\\cdot\\sqrt[3]{12}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt[3]{8}\\cdot\\sqrt[3]{12}=2\\sqrt[3]{12}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\sqrt[5]{2x+3x+1}=\\sqrt[5]{5x+1}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 2x+3x+1=5x+1'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt[5]{2x+3x+1}=\\sqrt[5]{5x+1}'}]}], 'finalResult': '2\\sqrt[3]{12}+\\sqrt[5]{5x+1}'}
+            },
+            {
+                'expression': 'a+b+3a+1+sqrt{36}+sqrt{25}+sqrt{25-23}+3',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle a+b+3a+1+\\sqrt{36}+\\sqrt{25}+\\sqrt{25-23}+3=\\sqrt{36}+\\sqrt{25}+\\sqrt{25-23}+a+b+3a+1+3'},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\sqrt{36}=6', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Radical}', 'info': '\\displaystyle \\sqrt{36}=6'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\sqrt{25}=5', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Radical}', 'info': '\\displaystyle \\sqrt{25}=5'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\sqrt{25-23}=\\sqrt{2}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 25-23=2'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{25-23}=\\sqrt{2}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle a+b+3a+1+3=4a+b+4', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle a+b+3a+1+3=a+3a+b+1+3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle a+3a+b+1+3=4a+b+1+3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 4a+b+1+3=4a+b+4'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle 6+5+\\sqrt{2}+4a+b+4'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 6+5+\\sqrt{2}+4a+b+4=\\sqrt{2}+6+5+4a+b+4'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 6+5+4a+b+4=4a+b+6+5+4'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 4a+b+6+5+4=4a+b+15'}], 'finalResult': '\\sqrt{2}+4a+b+15'},
+
+            },
+            {
+                'expression': 'sqrt[n]{1+3x+2x}',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+3x+2x=3x+2x+1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+2x+1=5x+1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt[n]{1+3x+2x}=\\sqrt[n]{5x+1}'}], 'finalResult': '\\sqrt[n]{5x+1}'},
+            },
+            {
+                'expression': '1',
+                'expected_val': {'steps': [], 'finalResult': '1'},
             },
             {
                 'expression': 'a',
-                'expected_val': {'steps': [
-                    {'type': 'e-step', 'heading': '\\displaystyle a=a', 'e-steps': []}], 'finalResult': 'a'}
+                'expected_val': {'steps': [], 'finalResult': 'a'}
             }
 
         ]
@@ -1028,7 +1092,7 @@ class TestCalc(unittest.TestCase):
             expression = Expression(item['expression'])
             expectedVal = item['expected_val']
             returnedVal = simplifyExpression(expression)
-            self.assertEqual(expectedVal, returnedVal, f"Failed: {expression}")
+            self.assertEqual(expectedVal, returnedVal, f"Failed: {expression} Latex: {latexify(expression)}")
 
 
 def test():

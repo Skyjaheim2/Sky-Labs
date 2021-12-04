@@ -216,8 +216,13 @@
         // Solve Button
         document.querySelector('#solveBtn').addEventListener('click', () => {
             let enteredMath = answerMathField.latex()
-            let finalStepDiv = document.querySelector('#finalSolutionHeading')
-            // console.log(enteredMath)
+            let resultsContainer = document.querySelector('.results-container')
+            // Clear previous work
+            resultsContainer.innerHTML = `
+                <div id="finalSolutionHeading"></div>
+                <div class="steps-heading">Steps</div>
+                <div class="steps-container"></div>
+            `
 
             let selectedTopic = BaseUI.getSelectedTopic()
             let subjectAndTopic = {'subject': 'discreteMath', 'selectedTopic': selectedTopic}
@@ -228,22 +233,24 @@
                 if (request.status === 200) {
                     let solution = request.responseText
                     if (solution !== 'Unable To Solve') {
-                        solution = JSON.parse(solution)
-                        let numSteps = Object.keys(solution).length;
-                        let finalStepLatex = solution[numSteps]
-                        // console.log(solution)
-                        // console.log(finalStepLatex)
-                        // Add final step to DOM
-                        StepsUI.addLatexToElement(finalStepDiv, finalStepLatex)
-                        StepsUI.displayStepsHeading()
-                        // Add all steps to DOM
-                        StepsUI.showAllSteps(solution, enteredMath)
+                        let Steps = JSON.parse(solution)['steps']
+                        let finalResult = JSON.parse(solution)['finalResult']
+                        let stepsContainer = document.querySelector('.steps-container')
 
-
-                        // console.log(solution)
-                        // console.log(finalStepLatex)
-                    }
-                    else {
+                        let e_step_id = 1
+                        Steps.forEach((step) => {
+                            if (step['type'] === 'main-step') {
+                                StepsUI.displayStep(stepsContainer, step, 'main-step')
+                            } else if (step['type'] === 'e-step') {
+                                StepsUI.displayStep(stepsContainer, step, 'e-step', e_step_id)
+                                let num_e_steps_added = document.querySelectorAll('.expandable-step-container').length
+                                e_step_id = num_e_steps_added + 1
+                            }
+                        })
+                        stepsContainer.innerHTML += `<div class="final-step"></div>`
+                        StepsUI.addLatexToSteps(finalResult, enteredMath)
+                        StepsUI.makeStepsExpandable()
+                    } else {
 
                     }
                 }
