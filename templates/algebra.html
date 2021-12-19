@@ -19,7 +19,9 @@
 
     #liveSolveSolutionContainer {
         display: none;
-        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        /*font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;*/
+        font-family: "Times New Roman", Symbola, serif;
+        font-weight: 500;
         background-color: rgba(226, 226, 226, 0.45);
         border-radius: 15px;
         padding: 20px;
@@ -102,24 +104,36 @@
             let enteredMath = answerMathField.latex(); // Get entered math in LaTeX format
             let liveSolveRadioBtn = document.querySelector('#liveSolveRadioBtn')
             let liveSolveSolutionsContainer = document.querySelector('#liveSolveSolutionContainer')
+
+            let selectedTopic = BaseUI.getSelectedTopic()
+            let subjectAndTopic = {'subject': 'algebra', 'selectedTopic': selectedTopic}
+
+
             if (liveSolveRadioBtn.checked === true && enteredMath !== '') {
                 const request = new XMLHttpRequest()
                 request.open('POST', '/solve/true')
                 request.onload = () => {
                     if (request.status === 200) {
                         let solution = request.responseText
-                        if (solution !== 'Unable To Solve') {
-                            StepsUI.addLatexToElement(liveSolveSolutionsContainer, solution)
+                        if (solution !== 'Unable to solve') {
+                            solution = JSON.parse(solution)
+                            StepsUI.addLatexToElement(liveSolveSolutionsContainer, solution['finalResult'])
+                            this.style.borderColor = ''
                         }
                         else {
-                            liveSolveSolutionsContainer.textContent = 'Unable To Solve'
+                            this.style.borderColor = 'red'
                         }
                     }
                 }
 
                 const data = new FormData()
                 data.set('userInput', enteredMath)
+                data.set('subjectAndTopic', JSON.stringify(subjectAndTopic))
                 request.send(data)
+            }
+            if (enteredMath === '') {
+                liveSolveSolutionsContainer.textContent = ''
+                this.style.borderColor = ''
             }
         })
 

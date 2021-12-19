@@ -47,6 +47,7 @@ def solve(liveSolve):
     userInput = parseLatex(userInput)
     print(f'After parse: {userInput}')
 
+    # try:
     if subjectAndTopic['subject'] == 'algebra':
         userInput = Expression(userInput)
         Solution = simplifyExpression(userInput)
@@ -60,6 +61,9 @@ def solve(liveSolve):
         userInput = Expression(userInput)
         Solution = simplifyExpression(userInput)
         return jsonify(Solution)
+    # except:
+    #
+    #     return 'Unable to solve'
 
 
 
