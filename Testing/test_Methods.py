@@ -9,6 +9,8 @@ from Methods import *
 # python -m unittest test_Methods.py
 
 class TestCalc(unittest.TestCase):
+    # maxDiff = None
+
     # THIS RUNS 'ONCE' BEFORE ALL THE TESTS
     @classmethod
     def setUpClass(cls):
@@ -1229,25 +1231,25 @@ class TestCalc(unittest.TestCase):
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 2^{x}+2^{x}=2\\cdot2^{x}'}], 'finalResult': '2\\cdot2^{x}'},
             },
             {
-                'expression': '4x+2x+(1+1)^x+(3-1)^x+(5-2)^{5x-4x}+2^x',
+                'expression': '4x+2x+(1+1)^{x}+(3-1)^{x}+(5-2)^{5x-4x}+2^{x}',
                 'expected_val': {'steps': [
-                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 4x+2x+\\left(1+1\\right)^x+\\left(3-1\\right)^x+\\left(5-2\\right)^{5x-4x}+2^x=\\left(1+1\\right)^x+\\left(3-1\\right)^x+\\left(5-2\\right)^{5x-4x}+2^x+4x+2x'},
-                    {'type': 'e-step', 'heading': '\\displaystyle \\left(1+1\\right)^x=2^{x}', 'e-steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 4x+2x+\\left(1+1\\right)^{x}+\\left(3-1\\right)^{x}+\\left(5-2\\right)^{5x-4x}+2^{x}=\\left(1+1\\right)^{x}+\\left(3-1\\right)^{x}+\\left(5-2\\right)^{5x-4x}+2^{x}+4x+2x'},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(1+1\\right)^{x}=2^{x}', 'e-steps': [
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+1=2'},
-                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(1+1\\right)^x=2^{x}'}]},
-                    {'type': 'e-step', 'heading': '\\displaystyle \\left(3-1\\right)^x=2^{x}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(1+1\\right)^{x}=2^{x}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(3-1\\right)^{x}=2^{x}', 'e-steps': [
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 3-1=2'},
-                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(3-1\\right)^x=2^{x}'}]},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(3-1\\right)^{x}=2^{x}'}]},
                     {'type': 'e-step', 'heading': '\\displaystyle \\left(5-2\\right)^{5x-4x}=3^{x}', 'e-steps': [
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 5-2=3'},
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(5-2\\right)^{5x-4x}=3^{5x-4x}'},
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x-4x=x'},
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 3^{5x-4x}=3^{x}'}]},
-                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle \\left(1+1\\right)^x+\\left(3-1\\right)^x+\\left(5-2\\right)^{5x-4x}+2^x=2^{x}+2^{x}+3^{x}+2^x'},
-                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Exponentials}', 'info': '\\displaystyle 2^{x}+2^{x}+3^{x}+2^x=2^{x}+2^{x}+2^x+3^{x}'},
-                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 2^{x}+2^{x}+2^x+3^{x}=3\\cdot2^{x}+3^{x}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle \\left(1+1\\right)^{x}+\\left(3-1\\right)^{x}+\\left(5-2\\right)^{5x-4x}+2^{x}=2^{x}+2^{x}+3^{x}+2^{x}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Exponentials}', 'info': '\\displaystyle 2^{x}+2^{x}+3^{x}+2^{x}=2^{x}+2^{x}+2^{x}+3^{x}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 2^{x}+2^{x}+2^{x}+3^{x}=3\\cdot2^{x}+3^{x}'},
                     {'type': 'e-step', 'heading': '\\displaystyle 4x+2x=6x', 'e-steps': [
-                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 4x+2x=6x'}]}], 'finalResult': '3\\cdot2^{x}+3^{x}+6x'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 4x+2x=6x'}]}], 'finalResult': '3\\cdot2^{x}+3^{x}+6x'}
             },
             {
                 'expression': '2^{x}+2^{3}+1+2+3',
@@ -1272,6 +1274,62 @@ class TestCalc(unittest.TestCase):
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+3x+1=8x+1'}], 'finalResult': '8x+1'},
             },
             {
+                'expression': '(sqrt{5x+3x+1})^{5-3}',
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(\\sqrt{5x+3x+1}\\right)^{5-3}=\\left(\\sqrt{8x+1}\\right)^{2}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+3x+1=8x+1'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{5x+3x+1}=\\sqrt{8x+1}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(\\sqrt{5x+3x+1}\\right)^{5-3}=\\left(\\sqrt{8x+1}\\right)^{5-3}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 5-3=2'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle \\left(\\sqrt{8x+1}\\right)^{5-3}=\\left(\\sqrt{8x+1}\\right)^{2}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\left(\\sqrt{8x+1}\\right)^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply exponential rule:}\\ (\\sqrt[n]{a})^n=a', 'info': '\\displaystyle \\left(\\sqrt{8x+1}\\right)^{2}=8x+1'}], 'finalResult': '8x+1'}
+            },
+            {
+                'expression': '(sqrt{5x+3x+1})^{3}',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+3x+1=8x+1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{5x+3x+1}=\\sqrt{8x+1}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(\\sqrt{5x+3x+1}\\right)^{3}=\\left(\\sqrt{8x+1}\\right)^{3}'}], 'finalResult': '\\left(\\sqrt{8x+1}\\right)^{3}'}
+            },
+            # {
+            #     'expression': 'frac{5x+3x+2x}{3x-2x}',
+            #     'expected_val': {'steps': [
+            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+3x+2x=10x'},
+            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{5x+3x+2x}{3x-2x}=\\frac{10x}{3x-2x}'},
+            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x-2x=x'},
+            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{5x+3x+2x}{3x-2x}=\\frac{10x}{x}'}], 'finalResult': '\\frac{10x}{x}'}
+            # },
+            {
+                'expression': 'frac{5x+3x+e^{7x+3x+2}+5}{e^{2sqrt{x}+3sqrt{3x-2x}}+sqrt{25x-12x+2}}',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 5x+3x+e^{7x+3x+2}+5=e^{7x+3x+2}+5x+3x+5'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 7x+3x+2=10x+2'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle e^{7x+3x+2}=e^{10x+2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+3x+5=8x+5'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{5x+3x+e^{7x+3x+2}+5}{e^{2\\sqrt{x}+3\\sqrt{3x-2x}}+\\sqrt{25x-12x+2}}=\\frac{e^{10x+2}+8x+5}{e^{2\\sqrt{x}+3\\sqrt{3x-2x}}+\\sqrt{25x-12x+2}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x-2x=x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 3\\sqrt{3x-2x}=3\\sqrt{x}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle 2\\sqrt{x}+3\\sqrt{x}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 2\\sqrt{x}+3\\sqrt{x}=5\\sqrt{x}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle e^{2\\sqrt{x}+3\\sqrt{3x-2x}}=e^{5\\sqrt{x}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 25x-12x+2=13x+2'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{25x-12x+2}=\\sqrt{13x+2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{5x+3x+e^{7x+3x+2}+5}{e^{2\\sqrt{x}+3\\sqrt{3x-2x}}+\\sqrt{25x-12x+2}}=\\frac{e^{10x+2}+8x+5}{e^{5\\sqrt{x}}+\\sqrt{13x+2}}'}], 'finalResult': '\\frac{e^{10x+2}+8x+5}{e^{5\\sqrt{x}}+\\sqrt{13x+2}}'}
+            },
+            {
+                'expression': 'frac{1+1+1+1}{2}',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+1+1+1=4'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{1+1+1+1}{2}=\\frac{4}{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{1+1+1+1}{2}=\\frac{4}{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Divide The Numbers}', 'info': '\\displaystyle \\frac{4}{2}=2'}], 'finalResult': '2'}
+            },
+            # {
+            #     'expression': 'frac{1}{2}',
+            #     'expected_val': {'steps': [], 'finalResult': '\\frac{1}{2}'},
+            # },
+            {
                 'expression': '1',
                 'expected_val': {'steps': [], 'finalResult': '1'},
             },
@@ -1283,10 +1341,13 @@ class TestCalc(unittest.TestCase):
         ]
 
         for item in expressionsAndExpectedVal:
+            # try:
             expression = Expression(item['expression'])
             expectedVal = item['expected_val']
             returnedVal = simplifyExpression(expression)
-            self.assertEqual(expectedVal, returnedVal, f"Failed: {expression} Latex: {latexify(expression)}")
+            self.assertEqual(expectedVal, returnedVal, f"Failed: {expression}\nLatex: {latexify(expression)}")
+            # except Exception as error:
+            #     print(f"Error: {error}\nOn: {item['expression']}\nLatex: {latexify(item['expression'])}\n")
 
 
 def test():

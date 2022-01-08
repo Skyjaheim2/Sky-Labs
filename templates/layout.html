@@ -265,7 +265,8 @@
         font-size: 17px;
         margin-top: 10px;
         margin-bottom: 15px;
-        overflow-x: auto;
+        overflow-y: visible;
+        /*overflow-x: auto;*/
         white-space: nowrap;
     }
     .final-step {
@@ -481,7 +482,7 @@
                 StepsUI.addLatexToElement(heading, heading.textContent)
             })
             // Add latex to .final-step
-            StepsUI.addLatexToElement(document.querySelector('.final-step'), `\\text{Solution:}\\ ${finalResult}`)
+            StepsUI.addLatexToElement(document.querySelector('.final-step'), `\\displaystyle \\text{Solution:}\\ ${finalResult}`)
             // Add Latex To Solution Heading
             StepsUI.addLatexToElement(document.querySelector('#finalSolutionHeading'), `\\displaystyle ${enteredMath}=${finalResult}`)
 

@@ -22,6 +22,7 @@
         /*font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;*/
         font-family: "Times New Roman", Symbola, serif;
         font-weight: 500;
+        font-size: 23px;
         background-color: rgba(226, 226, 226, 0.45);
         border-radius: 15px;
         padding: 20px;
@@ -117,7 +118,7 @@
                         let solution = request.responseText
                         if (solution !== 'Unable to solve') {
                             solution = JSON.parse(solution)
-                            StepsUI.addLatexToElement(liveSolveSolutionsContainer, solution['finalResult'])
+                            StepsUI.addLatexToElement(liveSolveSolutionsContainer, `\\displaystyle =${solution['finalResult']}`)
                             this.style.borderColor = ''
                         }
                         else {
@@ -288,7 +289,13 @@
                         stepsContainer.innerHTML += `<div class="final-step"></div>`
                         StepsUI.addLatexToSteps(finalResult, enteredMath)
                         StepsUI.makeStepsExpandable()
-                    } else {
+
+                        // Make the first main-step scrollable if content is too long
+
+                        // if (Steps.length !== 0)
+                        //     document.querySelector('.step-info').style.overflowX = 'auto'
+                    }
+                    else {
 
                     }
                 }
