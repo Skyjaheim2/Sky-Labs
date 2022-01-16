@@ -42,7 +42,16 @@ def solve(liveSolve):
     userInput = request.form.get('userInput')
     subjectAndTopic = json.loads(request.form.get('subjectAndTopic'))
 
+    keyword = None
+    splitInput = userInput.split(' ')
+    if len(splitInput) > 1:
+        keyword = splitInput[0][:-1]
+        userInput = splitInput[1]
+
+
+
     print(f"Subject And Topic: {subjectAndTopic}")
+    print(keyword)
     print(f'Before parse: {userInput}')
     userInput = parseLatex(userInput)
     print(f'After parse: {userInput}')
@@ -50,7 +59,7 @@ def solve(liveSolve):
     # try:
     if subjectAndTopic['subject'] == 'algebra':
         userInput = Expression(userInput)
-        Solution = simplifyExpression(userInput)
+        Solution = simplifyExpression(userInput, keyword=keyword)
         return jsonify(Solution)
 
     if subjectAndTopic['subject'] == 'discreteMath':

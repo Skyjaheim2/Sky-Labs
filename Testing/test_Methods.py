@@ -929,17 +929,20 @@ class TestCalc(unittest.TestCase):
         expressionsAndExpectedVal = [
             {
                 'expression': '1+2+3+4',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2+3+4=10'}], 'finalResult': '10'},
             },
             {
                 'expression': '1+a+a+b',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+a+a+b=a+a+b+1'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle a+a+b+1=2a+b+1'}], 'finalResult': '2a+b+1'},
             },
             {
                 'expression': '1+2+3+a+a+c',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+2+3+a+a+c=a+a+c+1+2+3'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle a+a+c+1+2+3=2a+c+1+2+3'},
@@ -947,17 +950,20 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '15x+13x+x-2+15',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 15x+13x+x-2+15=29x-2+15'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 29x-2+15=29x+13'}], 'finalResult': '29x+13'}
             },
             {
                 'expression': 'a+a+5b-2b+c-c',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle a+a+5b-2b+c-c=2a+3b+0'}], 'finalResult': '2a+3b'},
             },
             {
                 'expression': '5x+3+5+x',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 5x+3+5+x=5x+x+3+5'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+x+3+5=6x+3+5'},
@@ -965,6 +971,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '1+pi+5\sin(ab+c)-2\sin(ab+c)+3pi+3',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+\\pi+5\\sin\\left(ab+c\\right)-2\\sin\\left(ab+c\\right)+3\\pi+3=\\pi+3\\pi+5\\sin\\left(ab+c\\right)-2\\sin\\left(ab+c\\right)+1+3'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle \\pi+3\\pi+5\\sin\\left(ab+c\\right)-2\\sin\\left(ab+c\\right)+1+3=4\\pi+3\\sin\\left(ab+c\\right)+1+3'},
@@ -972,6 +979,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': 'sqrt{1+2+x+15x-3}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+2+x+15x-3=x+15x+1+2-3'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle x+15x+1+2-3=16x+1+2-3'},
@@ -980,6 +988,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': 'sqrt{15x-2x}+2+3',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'e-step', 'heading': '\\displaystyle \\sqrt{15x-2x}=\\sqrt{13x}', 'e-steps': [
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 15x-2x=13x'},
@@ -989,6 +998,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '1+x+sqrt{1+25x-15x+3x+13}+3x-5',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 1+x+\\sqrt{1+25x-15x+3x+13}+3x-5=\\sqrt{1+25x-15x+3x+13}+1+x+3x-5'},
                     {'type': 'e-step', 'heading': '\\displaystyle \\sqrt{1+25x-15x+3x+13}=\\sqrt{13x+14}', 'e-steps': [
@@ -1003,6 +1013,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '1+2+sqrt{25x+15x+sqrt{12x-6x+3}-13+5}+3',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 1+2+\\sqrt{25x+15x+\\sqrt{12x-6x+3}-13+5}+3=\\sqrt{25x+15x+\\sqrt{12x-6x+3}-13+5}+1+2+3'},
                     {'type': 'e-step', 'heading': '\\displaystyle \\sqrt{25x+15x+\\sqrt{12x-6x+3}-13+5}=\\sqrt{\\sqrt{6x+3}+40x-8}', 'e-steps': [
@@ -1017,19 +1028,20 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': 'sqrt{36}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Radical}', 'info': '\\displaystyle \\sqrt{36}=6'}], 'finalResult': '6'},
-
             },
             {
                 'expression': 'sqrt{72}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Factor Radical}', 'info': '\\displaystyle \\sqrt{72}=\\sqrt{36}\\cdot\\sqrt{2}'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{36}\\cdot\\sqrt{2}=6\\sqrt{2}'}], 'finalResult': '6\\sqrt{2}'},
-
             },
             {
                 'expression': '2sqrt{3+1}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 3+1=4'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 2\\sqrt{3+1}=2\\sqrt{4}'},
@@ -1038,6 +1050,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '(a+b)sqrt{4}+(2x+y)sqrt{36}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'e-step', 'heading': '\\displaystyle \\left(a+b\\right)\\sqrt{4}=2\\left(a+b\\right)', 'e-steps': [
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Radical}', 'info': '\\displaystyle \\left(a+b\\right)\\sqrt{4}=2\\left(a+b\\right)'}]},
@@ -1047,6 +1060,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': 'sqrt[3]{94+2}+sqrt[5]{2x+3x+1}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'e-step', 'heading': '\\displaystyle \\sqrt[3]{94+2}=2\\sqrt[3]{12}', 'e-steps': [
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 94+2=96'},
@@ -1059,6 +1073,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': 'a+b+3a+1+sqrt{36}+sqrt{25}+sqrt{25-23}+3',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle a+b+3a+1+\\sqrt{36}+\\sqrt{25}+\\sqrt{25-23}+3=\\sqrt{36}+\\sqrt{25}+\\sqrt{25-23}+a+b+3a+1+3'},
                     {'type': 'e-step', 'heading': '\\displaystyle \\sqrt{36}=6', 'e-steps': [
@@ -1080,6 +1095,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': 'sqrt[n]{1+3x+2x}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+3x+2x=3x+2x+1'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+2x+1=5x+1'},
@@ -1087,11 +1103,13 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '2^3',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Exponent}', 'info': '\\displaystyle 2^3=8'}], 'finalResult': '8'},
             },
             {
                 'expression': '(1+2+2x+3x+3)^2',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+2+2x+3x+3=2x+3x+1+2+3'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 2x+3x+1+2+3=5x+1+2+3'},
@@ -1100,6 +1118,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': 'e^{1+5x+3x+4}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+5x+3x+4=5x+3x+1+4'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+3x+1+4=8x+1+4'},
@@ -1108,6 +1127,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '(2x+x+1)^{1+2+3x-x}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 2x+x+1=3x+1'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(2x+x+1\\right)^{1+2+3x-x}=\\left(3x+1\\right)^{1+2+3x-x}'},
@@ -1118,6 +1138,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': 'sqrt{(3x+2x+1)^{1+2+3}}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+2x+1=5x+1'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(3x+2x+1\\right)^{1+2+3}=\\left(5x+1\\right)^{1+2+3}'},
@@ -1127,6 +1148,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '(5x+2x+1)^{3+2-5}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+2x+1=7x+1'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(5x+2x+1\\right)^{3+2-5}=\\left(7x+1\\right)^{3+2-5}'},
@@ -1136,6 +1158,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '(5x+2x-7x)^{1+2x}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+2x-7x=0'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(5x+2x-7x\\right)^{1+2x}=0^{1+2x}'},
@@ -1145,6 +1168,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '1+2+sqrt{74+6}+2^{1+2}+(3+2)^2',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 1+2+\\sqrt{74+6}+2^{1+2}+\\left(3+2\\right)^2=2^{1+2}+\\left(3+2\\right)^2+\\sqrt{74+6}+1+2'},
                     {'type': 'e-step', 'heading': '\\displaystyle 2^{1+2}=8', 'e-steps': [
@@ -1168,11 +1192,13 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '2sqrt{x}+3sqrt{x}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 2\\sqrt{x}+3\\sqrt{x}=5\\sqrt{x}'}], 'finalResult': '5\\sqrt{x}'},
             },
             {
                 'expression': '1+2+3sqrt{5x+3x+2x}+5sqrt{8x+2x}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 1+2+3\\sqrt{5x+3x+2x}+5\\sqrt{8x+2x}=3\\sqrt{5x+3x+2x}+5\\sqrt{8x+2x}+1+2'},
                     {'type': 'e-step', 'heading': '\\displaystyle 3\\sqrt{5x+3x+2x}=3\\sqrt{10x}', 'e-steps': [
@@ -1188,6 +1214,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '(1+2)^{sqrt{x+sqrt{8}}}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2=3'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(1+2\\right)^{\\sqrt{x+\\sqrt{8}}}=3^{\\sqrt{x+\\sqrt{8}}}'},
@@ -1199,6 +1226,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '2^{2^{2^2}}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Exponent}', 'info': '\\displaystyle 2^2=4'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 2^{2^2}=2^{4}'},
@@ -1208,6 +1236,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '2^{2^{2^{2^{2^2}}}}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Exponent}', 'info': '\\displaystyle 2^2=4'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 2^{2^2}=2^{4}'},
@@ -1217,9 +1246,9 @@ class TestCalc(unittest.TestCase):
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 2^{2^{2^{2^2}}}=2^{65536}'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 2^{2^{2^{2^{2^2}}}}=2^{2^{65536}}'}], 'finalResult': '2^{2^{65536}}'}
             },
-
             {
                 'expression': '(1+1)^x+2^{3x-2x}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'e-step', 'heading': '\\displaystyle \\left(1+1\\right)^x=2^{x}', 'e-steps': [
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+1=2'},
@@ -1232,6 +1261,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '4x+2x+(1+1)^{x}+(3-1)^{x}+(5-2)^{5x-4x}+2^{x}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 4x+2x+\\left(1+1\\right)^{x}+\\left(3-1\\right)^{x}+\\left(5-2\\right)^{5x-4x}+2^{x}=\\left(1+1\\right)^{x}+\\left(3-1\\right)^{x}+\\left(5-2\\right)^{5x-4x}+2^{x}+4x+2x'},
                     {'type': 'e-step', 'heading': '\\displaystyle \\left(1+1\\right)^{x}=2^{x}', 'e-steps': [
@@ -1253,6 +1283,7 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '2^{x}+2^{3}+1+2+3',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'e-step', 'heading': '\\displaystyle 2^{3}=8', 'e-steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Exponent}', 'info': '2^{3}=8'}]},
@@ -1265,16 +1296,19 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '2^{x}+3^{x}+4^{x}',
+                'keyword': None,
                 'expected_val': {'steps': [], 'finalResult': '2^{x}+3^{x}+4^{x}'},
             },
             {
                 'expression': 'sqrt{(5x+3x+1)^{2}}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Apply radical rule:}\\ \\sqrt[n]{a^n}=a', 'info': '\\displaystyle \\sqrt{\\left(5x+3x+1\\right)^{2}}=\\left(5x+3x+1\\right)'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+3x+1=8x+1'}], 'finalResult': '8x+1'},
             },
             {
                 'expression': '(sqrt{5x+3x+1})^{5-3}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'e-step', 'heading': '\\displaystyle \\left(\\sqrt{5x+3x+1}\\right)^{5-3}=\\left(\\sqrt{8x+1}\\right)^{2}', 'e-steps': [
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+3x+1=8x+1'},
@@ -1287,21 +1321,67 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': '(sqrt{5x+3x+1})^{3}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+3x+1=8x+1'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{5x+3x+1}=\\sqrt{8x+1}'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(\\sqrt{5x+3x+1}\\right)^{3}=\\left(\\sqrt{8x+1}\\right)^{3}'}], 'finalResult': '\\left(\\sqrt{8x+1}\\right)^{3}'}
             },
-            # {
-            #     'expression': 'frac{5x+3x+2x}{3x-2x}',
-            #     'expected_val': {'steps': [
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+3x+2x=10x'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{5x+3x+2x}{3x-2x}=\\frac{10x}{3x-2x}'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x-2x=x'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{5x+3x+2x}{3x-2x}=\\frac{10x}{x}'}], 'finalResult': '\\frac{10x}{x}'}
-            # },
+            {
+                'expression': 'frac{5x+3x+2x}{3x-2x}',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+3x+2x=10x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{5x+3x+2x}{3x-2x}=\\frac{10x}{3x-2x}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x-2x=x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{5x+3x+2x}{3x-2x}=\\frac{10x}{x}'},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{10x}{x}=10', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Cancel like terms}', 'info': '\\displaystyle \\frac{10x}{x}=10'}]}], 'finalResult': '10'},
+            },
+            {
+                'expression': 'frac{8x+2x}{2x+3x}',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{8x+2x}{2x+3x}=\\frac{10}{5}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 8x+2x=10x'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{8x+2x}{2x+3x}=\\frac{10x}{2x+3x}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 2x+3x=5x'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{8x+2x}{2x+3x}=\\frac{10x}{5x}'},
+                        {'type': 'e-step', 'heading': '\\displaystyle \\frac{10x}{5x}=\\frac{10}{5}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Cancel like terms}', 'info': '\\displaystyle \\frac{10x}{5x}=\\frac{10}{5}'}]}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\frac{10}{5}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Divide The Numbers}', 'info': '\\displaystyle \\frac{10}{5}=2'}], 'finalResult': '2'},
+            },
+            {
+                'expression': 'frac{10x^{2}+12x^{2}+5x+7x^{2}-2x^{2}}{5x+3x+2x}',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 10x^{2}+12x^{2}+5x+7x^{2}-2x^{2}=10x^{2}+12x^{2}+7x^{2}-2x^{2}+5x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 10x^{2}+12x^{2}+7x^{2}-2x^{2}=27x^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{10x^{2}+12x^{2}+5x+7x^{2}-2x^{2}}{5x+3x+2x}=\\frac{27x^{2}+5x}{5x+3x+2x}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+3x+2x=10x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{10x^{2}+12x^{2}+5x+7x^{2}-2x^{2}}{5x+3x+2x}=\\frac{27x^{2}+5x}{10x}'}], 'finalResult': '\\frac{27x^{2}+5x}{10x}'},
+            },
+            {
+                'expression': 'frac{10x^{2}+12x^{2}+5x+7x^{2}-2x^{2}}{5x+3x+2x}',
+                'keyword': 'expand',
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{10x^{2}+12x^{2}+5x+7x^{2}-2x^{2}}{5x+3x+2x}=\\frac{27x}{10}+\\frac{5}{10}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 10x^{2}+12x^{2}+5x+7x^{2}-2x^{2}=10x^{2}+12x^{2}+7x^{2}-2x^{2}+5x'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 10x^{2}+12x^{2}+7x^{2}-2x^{2}=27x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{10x^{2}+12x^{2}+5x+7x^{2}-2x^{2}}{5x+3x+2x}=\\frac{27x^{2}+5x}{5x+3x+2x}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+3x+2x=10x'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{10x^{2}+12x^{2}+5x+7x^{2}-2x^{2}}{5x+3x+2x}=\\frac{27x^{2}+5x}{10x}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a \\pm b}{c}=\\frac{a}{c}\\pm\\frac{b}{c}', 'info': '\\displaystyle \\frac{27x^{2}+5x}{10x}=\\frac{27x^{2}}{10x}+\\frac{5x}{10x}'},
+                        {'type': 'e-step', 'heading': '\\displaystyle \\frac{27x^{2}}{10x}+\\frac{5x}{10x}=\\frac{27x}{10}+\\frac{5}{10}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Cancel like terms}', 'info': '\\displaystyle \\frac{27x^{2}}{10x}=\\frac{27x}{10}'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Cancel like terms}', 'info': '\\displaystyle \\frac{5x}{10x}=\\frac{5}{10}'}]}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\frac{27x}{10}+\\frac{5}{10}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Reduce Fraction}', 'info': '\\displaystyle \\frac{5}{10}=\\frac{1}{2}'}], 'finalResult': '\\frac{27x}{10}+\\frac{1}{2}'},
+            },
             {
                 'expression': 'frac{5x+3x+e^{7x+3x+2}+5}{e^{2sqrt{x}+3sqrt{3x-2x}}+sqrt{25x-12x+2}}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 5x+3x+e^{7x+3x+2}+5=e^{7x+3x+2}+5x+3x+5'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 7x+3x+2=10x+2'},
@@ -1319,22 +1399,106 @@ class TestCalc(unittest.TestCase):
             },
             {
                 'expression': 'frac{1+1+1+1}{2}',
+                'keyword': None,
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+1+1+1=4'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{1+1+1+1}{2}=\\frac{4}{2}'},
-                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{1+1+1+1}{2}=\\frac{4}{2}'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Divide The Numbers}', 'info': '\\displaystyle \\frac{4}{2}=2'}], 'finalResult': '2'}
             },
-            # {
-            #     'expression': 'frac{1}{2}',
-            #     'expected_val': {'steps': [], 'finalResult': '\\frac{1}{2}'},
-            # },
+            {
+                'expression': 'frac{26}{50}',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Reduce Fraction}', 'info': '\\displaystyle \\frac{26}{50}=\\frac{13}{25}'}], 'finalResult': '\\frac{13}{25}'},
+            },
+            {
+                'expression': 'frac{1}{2}+frac{2}{5}+frac{1}{7}+frac{3}{9}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{3}{9}=\\frac{1}{3}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Reduce Fraction}', 'info': '\\displaystyle \\frac{3}{9}=\\frac{1}{3}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }210', 'info': '\\displaystyle \\frac{1}{2}+\\frac{2}{5}+\\frac{1}{7}+\\frac{1}{3}=\\frac{105}{210}+\\frac{84}{210}+\\frac{30}{210}+\\frac{70}{210}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{105}{210}+\\frac{84}{210}+\\frac{30}{210}+\\frac{70}{210}=\\frac{105+84+30+70}{210}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\frac{105+84+30+70}{210}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 105+84+30+70=289'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{105+84+30+70}{210}=\\frac{289}{210}'}], 'finalResult': '\\frac{289}{210}'},
+            },
+            {
+                'expression': 'frac{5+2+7}{a}+frac{10-12}{b}+frac{11}{c}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{5+2+7}{a}=\\frac{14}{a}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 5+2+7=14'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{5+2+7}{a}=\\frac{14}{a}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{10-12}{b}=\\frac{-2}{b}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 10-12=-2'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{10-12}{b}=\\frac{-2}{b}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }abc', 'info': '\\displaystyle \\frac{14}{a}+\\frac{-2}{b}+\\frac{11}{c}=\\frac{14bc}{abc}+\\frac{-2ac}{abc}+\\frac{11ab}{abc}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{14bc}{abc}+\\frac{-2ac}{abc}+\\frac{11ab}{abc}=\\frac{14bc+-2ac+11ab}{abc}'}], 'finalResult': '\\frac{14bc-2ac+11ab}{abc}'},
+            },
+            {
+                'expression': 'frac{1}{a+b}+frac{2}{c+d}+frac{10}{u+v}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }\\left(a+b\\right)\\left(c+d\\right)\\left(u+v\\right)', 'info': '\\displaystyle \\frac{1}{a+b}+\\frac{2}{c+d}+\\frac{10}{u+v}=\\frac{\\left(c+d\\right)\\left(u+v\\right)}{\\left(a+b\\right)\\left(c+d\\right)\\left(u+v\\right)}+\\frac{2\\left(a+b\\right)\\left(u+v\\right)}{\\left(a+b\\right)\\left(c+d\\right)\\left(u+v\\right)}+\\frac{10\\left(a+b\\right)\\left(c+d\\right)}{\\left(a+b\\right)\\left(c+d\\right)\\left(u+v\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{\\left(c+d\\right)\\left(u+v\\right)}{\\left(a+b\\right)\\left(c+d\\right)\\left(u+v\\right)}+\\frac{2\\left(a+b\\right)\\left(u+v\\right)}{\\left(a+b\\right)\\left(c+d\\right)\\left(u+v\\right)}+\\frac{10\\left(a+b\\right)\\left(c+d\\right)}{\\left(a+b\\right)\\left(c+d\\right)\\left(u+v\\right)}=\\frac{\\left(c+d\\right)\\left(u+v\\right)+2\\left(a+b\\right)\\left(u+v\\right)+10\\left(a+b\\right)\\left(c+d\\right)}{\\left(a+b\\right)\\left(c+d\\right)\\left(u+v\\right)}'}], 'finalResult': '\\frac{\\left(c+d\\right)\\left(u+v\\right)+2\\left(a+b\\right)\\left(u+v\\right)+10\\left(a+b\\right)\\left(c+d\\right)}{\\left(a+b\\right)\\left(c+d\\right)\\left(u+v\\right)}'},
+            },
+            {
+                'expression': 'frac{7x^{2}-3x^{2}}{x+y}-frac{10x^{2}+5x^{2}}{u+v}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{7x^{2}-3x^{2}}{x+y}=\\frac{4x^{2}}{x+y}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 7x^{2}-3x^{2}=4x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{7x^{2}-3x^{2}}{x+y}=\\frac{4x^{2}}{x+y}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{10x^{2}+5x^{2}}{u+v}=\\frac{15x^{2}}{u+v}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 10x^{2}+5x^{2}=15x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{10x^{2}+5x^{2}}{u+v}=\\frac{15x^{2}}{u+v}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }\\left(x+y\\right)\\left(u+v\\right)', 'info': '\\displaystyle \\frac{4x^{2}}{x+y}-\\frac{15x^{2}}{u+v}=\\frac{4x^{2}\\left(u+v\\right)}{\\left(x+y\\right)\\left(u+v\\right)}-\\frac{15x^{2}\\left(x+y\\right)}{\\left(x+y\\right)\\left(u+v\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{4x^{2}\\left(u+v\\right)}{\\left(x+y\\right)\\left(u+v\\right)}-\\frac{15x^{2}\\left(x+y\\right)}{\\left(x+y\\right)\\left(u+v\\right)}=\\frac{4x^{2}\\left(u+v\\right)-15x^{2}\\left(x+y\\right)}{\\left(x+y\\right)\\left(u+v\\right)}'}], 'finalResult': '\\frac{4x^{2}\\left(u+v\\right)-15x^{2}\\left(x+y\\right)}{\\left(x+y\\right)\\left(u+v\\right)}'},
+            },
+            {
+                'expression': 'frac{10y}{x}+frac{3x}{x+1}+frac{2}{x+y+z}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }x\\left(x+1\\right)\\left(x+y+z\\right)', 'info': '\\displaystyle \\frac{10y}{x}+\\frac{3x}{x+1}+\\frac{2}{x+y+z}=\\frac{10y\\left(x+1\\right)\\left(x+y+z\\right)}{x\\left(x+1\\right)\\left(x+y+z\\right)}+\\frac{3xx\\left(x+y+z\\right)}{x\\left(x+1\\right)\\left(x+y+z\\right)}+\\frac{2x\\left(x+1\\right)}{x\\left(x+1\\right)\\left(x+y+z\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{10y\\left(x+1\\right)\\left(x+y+z\\right)}{x\\left(x+1\\right)\\left(x+y+z\\right)}+\\frac{3xx\\left(x+y+z\\right)}{x\\left(x+1\\right)\\left(x+y+z\\right)}+\\frac{2x\\left(x+1\\right)}{x\\left(x+1\\right)\\left(x+y+z\\right)}=\\frac{10y\\left(x+1\\right)\\left(x+y+z\\right)+3xx\\left(x+y+z\\right)+2x\\left(x+1\\right)}{x\\left(x+1\\right)\\left(x+y+z\\right)}'}], 'finalResult': '\\frac{10y\\left(x+1\\right)\\left(x+y+z\\right)+3xx\\left(x+y+z\\right)+2x\\left(x+1\\right)}{x\\left(x+1\\right)\\left(x+y+z\\right)}'},
+            },
+            {
+                'expression': 'frac{5x^{2}+2x^{2}+1+3}{1+sqrt{10x+3x+y}}+frac{15x+21x}{e^{3x+2x}+sqrt{7x-2x}}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{5x^{2}+2x^{2}+1+3}{1+\\sqrt{10x+3x+y}}=\\frac{7x^{2}+4}{\\sqrt{13x+y}+1}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 5x^{2}+2x^{2}=7x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+3=4'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{5x^{2}+2x^{2}+1+3}{1+\\sqrt{10x+3x+y}}=\\frac{7x^{2}+4}{1+\\sqrt{10x+3x+y}}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 1+\\sqrt{10x+3x+y}=\\sqrt{10x+3x+y}+1'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 10x+3x+y=13x+y'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{10x+3x+y}=\\sqrt{13x+y}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{5x^{2}+2x^{2}+1+3}{1+\\sqrt{10x+3x+y}}=\\frac{7x^{2}+4}{\\sqrt{13x+y}+1}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{15x+21x}{e^{3x+2x}+\\sqrt{7x-2x}}=\\frac{36x}{e^{5x}+\\sqrt{5x}}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 15x+21x=36x'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{15x+21x}{e^{3x+2x}+\\sqrt{7x-2x}}=\\frac{36x}{e^{3x+2x}+\\sqrt{7x-2x}}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+2x=5x'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle e^{3x+2x}=e^{5x}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 7x-2x=5x'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{7x-2x}=\\sqrt{5x}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{15x+21x}{e^{3x+2x}+\\sqrt{7x-2x}}=\\frac{36x}{e^{5x}+\\sqrt{5x}}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }\\left(\\sqrt{13x+y}+1\\right)\\left(e^{5x}+\\sqrt{5x}\\right)', 'info': '\\displaystyle \\frac{7x^{2}+4}{\\sqrt{13x+y}+1}+\\frac{36x}{e^{5x}+\\sqrt{5x}}=\\frac{\\left(7x^{2}+4\\right)\\left(e^{5x}+\\sqrt{5x}\\right)}{\\left(\\sqrt{13x+y}+1\\right)\\left(e^{5x}+\\sqrt{5x}\\right)}+\\frac{36x\\left(\\sqrt{13x+y}+1\\right)}{\\left(\\sqrt{13x+y}+1\\right)\\left(e^{5x}+\\sqrt{5x}\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{\\left(7x^{2}+4\\right)\\left(e^{5x}+\\sqrt{5x}\\right)}{\\left(\\sqrt{13x+y}+1\\right)\\left(e^{5x}+\\sqrt{5x}\\right)}+\\frac{36x\\left(\\sqrt{13x+y}+1\\right)}{\\left(\\sqrt{13x+y}+1\\right)\\left(e^{5x}+\\sqrt{5x}\\right)}=\\frac{\\left(7x^{2}+4\\right)\\left(e^{5x}+\\sqrt{5x}\\right)+36x\\left(\\sqrt{13x+y}+1\\right)}{\\left(\\sqrt{13x+y}+1\\right)\\left(e^{5x}+\\sqrt{5x}\\right)}'}], 'finalResult': '\\frac{\\left(7x^{2}+4\\right)\\left(e^{5x}+\\sqrt{5x}\\right)+36x\\left(\\sqrt{13x+y}+1\\right)}{\\left(\\sqrt{13x+y}+1\\right)\\left(e^{5x}+\\sqrt{5x}\\right)}'},
+            },
+            {
+                'expression': 'frac{1}{2}',
+                'keyword': None,
+                'expected_val': {'steps': [], 'finalResult': '\\frac{1}{2}'},
+            },
             {
                 'expression': '1',
+                'keyword': None,
                 'expected_val': {'steps': [], 'finalResult': '1'},
             },
             {
                 'expression': 'a',
+                'keyword': None,
                 'expected_val': {'steps': [], 'finalResult': 'a'}
             }
 
@@ -1344,7 +1508,8 @@ class TestCalc(unittest.TestCase):
             # try:
             expression = Expression(item['expression'])
             expectedVal = item['expected_val']
-            returnedVal = simplifyExpression(expression)
+            keyword = item['keyword']
+            returnedVal = simplifyExpression(expression, keyword=keyword)
             self.assertEqual(expectedVal, returnedVal, f"Failed: {expression}\nLatex: {latexify(expression)}")
             # except Exception as error:
             #     print(f"Error: {error}\nOn: {item['expression']}\nLatex: {latexify(item['expression'])}\n")

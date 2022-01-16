@@ -686,7 +686,23 @@ class Fraction:
         self.numerator = numerator_matches[0][5:-2]
         self.denominator = denominator_matches[0][2:-1]
 
-    def computeFraction(self):
+    def reduceFraction(self):
+        numerator = int(self.numerator)
+        denominator = int(self.denominator)
+
+        numeratorFactors = set(getFactors(numerator))
+        denominatorFactors = set(getFactors(denominator))
+
+        commonFactors = numeratorFactors.intersection(denominatorFactors)
+        gcf = max(commonFactors)
+
+        reducedNumerator = numerator // gcf
+        reducedDenominator = denominator // gcf
+
+        return Fraction(f"frac{'{'}{reducedNumerator}{'}'}{'{'}{reducedDenominator}{'}'}")
+
+
+    def computeFraction(self, reduce=False):
         numerator = Constant(self.numerator)
         denominator = Constant(self.denominator)
         if numerator.is_digit and denominator.is_digit:
@@ -696,11 +712,35 @@ class Fraction:
                     return False
                 return solution
             else:
-                if len(solution) > 7:
+                if len(solution) > 7 and not reduce:
                     decimal_approx = Constant(f'{solution[:7]}...')
                 else:
-                    decimal_approx = solution
+                    if reduce:
+                        # TRY TO REDUCE FRACTION
+                        reducedFraction = self.reduceFraction()
+                        if (reducedFraction.numerator != numerator) and (reducedFraction.denominator != denominator):
+                            return Fraction(f"frac{'{'}{reducedFraction.numerator}{'}'}{'{'}{reducedFraction.denominator}{'}'}")
+                        else:
+                            decimal_approx = solution
+                            return decimal_approx
+                    else:
+                        decimal_approx = solution
+                        return decimal_approx
+
                 return decimal_approx
+        else:
+            return False
+
+    def isSimplified(self):
+        numerator = Expression(self.numerator)
+        denominator = Expression(self.denominator)
+        if numerator.isSimplified() and denominator.isSimplified():
+            numerator, denominator = Constant(str(numerator)), Constant(str(denominator))
+            if numerator.is_integer and denominator.is_integer:
+                reducedFraction = self.reduceFraction()
+                return reducedFraction.numerator == self.numerator and reducedFraction.denominator == self.denominator
+            else:
+                return True
         else:
             return False
 
@@ -733,7 +773,7 @@ class Fraction:
 def parseLatex(latexString: str):
     latexString = latexString.replace('\left(', '(').replace('\\right)', ')').replace('\left\{', '{').replace('\\right\}', '}')\
                              .replace('\cdot', '*').replace(r'\pi', 'pi').replace('\sqrt', 'sqrt').replace('\sqrt[2]','sqrt')\
-                             .replace(r'\frac', 'frac')
+                             .replace(r'\frac', 'frac').replace('^1','').replace('^{1}', '')
 
     """ PARSE b^x as b^{x} """
     exponent_pattern = re.compile(r'\^[a-zA-Z0-9]')
@@ -747,7 +787,7 @@ def parseLatex(latexString: str):
 
 def latexify(expression):
     expression = expression.replace('(', '\left(').replace(')', '\\right)').replace('*', '\cdot').replace('pi', r'\pi')\
-                           .replace('sqrt', '\\sqrt').replace('sqrt[2]','sqrt').replace('frac',r'\frac')
+                           .replace('sqrt', '\\sqrt').replace('sqrt[2]','sqrt').replace('frac',r'\frac').replace('^{1}', '')
 
     multiplication_pattern = re.compile(r'\\cdot\w{1}')
     multiplication_matches = multiplication_pattern.findall(expression)
@@ -761,736 +801,6 @@ def latexify(expression):
 
 
 MAX_SIZE_OF_NUM_BEFORE_CONVERTED_TO_STANDARD_FORM = 10**20
-
-# def evaluateArithmetic(expression, stepCounter=None, Steps=None, returnStepsAsArray=False):
-#     if type(expression) != ArithmeticExpression:
-#         expression = ArithmeticExpression(expression)
-#     if Steps is None:
-#         Steps = {}
-#     if stepCounter is None:
-#         stepCounter = 0
-#     if expression.isSingleExpression():
-#
-#         if expression >= MAX_SIZE_OF_NUM_BEFORE_CONVERTED_TO_STANDARD_FORM:
-#             expression = convertToStandardForm(str(expression))
-#         if returnStepsAsArray:
-#             stepsAsArray = []
-#             for step in Steps:
-#                 stepsAsArray.append(Steps[step])
-#             return (stepsAsArray, str(expression), stepCounter)
-#         return (Steps, str(expression), stepCounter)
-#
-#     allOperators = ['+','-','*','/']
-#     operation = expression.getOperationToPerform()
-#
-#     # expression = expression.convertOutOfStandardForm()
-#
-#     if '++' in expression:
-#         simplifiedExpression = expression.replace('++', '+')
-#         expression = simplifiedExpression
-#
-#         stepDictValue = {
-#             'step': f'Apply rule: a++b = a+b',
-#             'simplification': f'{simplifiedExpression}'
-#         }
-#         stepCounter += 1
-#         Steps.update({stepCounter: stepDictValue})
-#
-#         return evaluateArithmetic(expression, stepCounter, Steps, returnStepsAsArray)
-#
-#     if '+-' in expression:
-#         simplifiedExpression = expression.replace('+-', '-')
-#         expression = simplifiedExpression
-#
-#         stepDictValue = {
-#             'step': f'Apply rule: a+-b = a-b',
-#             'simplification': f'{simplifiedExpression}'
-#         }
-#         stepCounter += 1
-#         Steps.update({stepCounter: stepDictValue})
-#
-#         return evaluateArithmetic(expression, stepCounter, Steps, returnStepsAsArray)
-#
-#     if '--' in expression:
-#         simplifiedExpression = expression.replace('--', '+')
-#         expression = simplifiedExpression
-#
-#         stepDictValue = {
-#             'step': f'Apply rule: a--b = a+b',
-#             'simplification': f'{simplifiedExpression}'
-#         }
-#         stepCounter += 1
-#         Steps.update({stepCounter: stepDictValue})
-#
-#         return evaluateArithmetic(expression, stepCounter, Steps, returnStepsAsArray)
-#
-#
-#
-#     """ CHECK OPERATIONS """
-#     if operation == 'general-arithmetic' and '(' not in expression:
-#         expressionWithOrder = expression.applyPEMDAS()
-#
-#         stepDictValue = {
-#             'step': f'Apply PEMDAS: {expression} = {expressionWithOrder}',
-#             'simplification': f'{expressionWithOrder}'
-#         }
-#         expression = ArithmeticExpression(expressionWithOrder)
-#         stepCounter += 1
-#         Steps.update({stepCounter: stepDictValue})
-#
-#     elif operation == 'radical':
-#         expression = Radical(expression)
-#         expressionInsideRadical = expression.getExpressionInsideRadical()
-#
-#         if expressionInsideRadical.isSingleExpression():
-#             simplifiedExpression = castToFloatOrInt(sqrt(float(str(expressionInsideRadical))), True)
-#
-#             stepCounter += 1
-#             stepDictValue = {
-#                 'step': f"Simplify Radical: sqrt{'{'}{expressionInsideRadical}{'}'} = {simplifiedExpression}",
-#                 'simplification': f"{simplifiedExpression}"
-#             }
-#
-#             Steps.update({stepCounter: stepDictValue})
-#             return evaluateArithmetic(simplifiedExpression, stepCounter, Steps, returnStepsAsArray)
-#
-#         else:
-#             Simplification = evaluateArithmetic(expressionInsideRadical, returnStepsAsArray=True)
-#             result = Simplification[1]
-#             stepsAsArray = Simplification[0]
-#
-#             for stepToAdd in stepsAsArray:
-#                 stepDictValue = {
-#                     'step': stepToAdd['step'],
-#                     'simplification': expression.replace(f"{expressionInsideRadical}", f"{stepToAdd['simplification']}")
-#                 }
-#                 stepCounter += 1
-#                 Steps.update({stepCounter: stepDictValue})
-#
-#             simplifiedExpression = expression.replace(f"{expressionInsideRadical}", result)
-#             return evaluateArithmetic(simplifiedExpression, stepCounter, Steps, returnStepsAsArray)
-#
-#     elif operation == 'fraction-arithmetic':
-#         expression = Fraction(expression)
-#
-#         # expression = frac{1+2+3}{5+2}
-#         Steps = []
-#
-#         numerator = expression.getNumerator()
-#         denominator = expression.getDenominator()
-#
-#         simplifiedNumerator = evaluateArithmetic(numerator)[1]
-#         simplifiedDenominator = evaluateArithmetic(denominator)[1]
-#
-#         if not numerator.isSingleExpression():
-#             stepToAdd = {}
-#             stepToAdd['id'], stepToAdd['type'] = 1, 'e-step'
-#             stepToAdd['heading'] = rf"\displaystyle \text{'{'}Simplify Numerator:{'}'}\ {latexify(expression.getNumerator())}={simplifiedNumerator}"
-#             stepToAdd['e-steps'] = []
-#
-#             intermediateSteps = evaluateArithmetic(numerator)[0]
-#
-#             for stepNum in intermediateSteps:
-#                 currentStep = intermediateSteps[stepNum]
-#                 currentStep['type'] = 'main-step'
-#                 currentStep['description'] = currentStep['step'].split(':')[0]
-#                 currentStep['description'] = rf"\text{'{'}{currentStep['description']}{'}'}"
-#                 currentStep['info'] = latexify(currentStep['step'].split(':')[1].lstrip())
-#
-#                 del currentStep['step']
-#                 del currentStep['simplification']
-#                 stepToAdd['e-steps'].append(currentStep)
-#
-#             Steps.append(stepToAdd)
-#
-#         if not denominator.isSingleExpression():
-#             stepToAdd = {}
-#             stepToAdd['id'], stepToAdd['type'] = 1, 'e-step'
-#             stepToAdd['heading'] = rf"\displaystyle \text{'{'}Simplify Denominator:{'}'}\ {latexify(denominator)}={simplifiedDenominator}"
-#             stepToAdd['e-steps'] = []
-#
-#             intermediateSteps = evaluateArithmetic(denominator)[0]
-#
-#             for stepNum in intermediateSteps:
-#                 currentStep = intermediateSteps[stepNum]
-#                 currentStep['type'] = 'main-step'
-#                 currentStep['description'] = currentStep['step'].split(':')[0]
-#                 currentStep['description'] = rf"\text{'{'}{currentStep['description']}{'}'}"
-#                 currentStep['info'] = latexify(currentStep['step'].split(':')[1].lstrip())
-#
-#                 del currentStep['step']
-#                 del currentStep['simplification']
-#                 stepToAdd['e-steps'].append(currentStep)
-#
-#             Steps.append(stepToAdd)
-#
-#
-#         return {'steps': Steps, 'finalResult': rf"\frac{'{'}{simplifiedNumerator}{'}'}{'{'}{simplifiedDenominator}{'}'}"}
-#
-#     elif operation == 'arithmetic-exponent-multiply':
-#         allExponentsInExpression = expression.getAllExponentsInExpression()
-#         baseToUse = Exponential(allExponentsInExpression[0]).base
-#
-#         exponents = []
-#         for expression in allExponentsInExpression:
-#             expression = Exponential(expression)
-#             if expression.exponent.isSingleExpression():
-#                 exponents.append(f"{expression.exponent}")
-#             else:
-#                 exponents.append(f"({expression.exponent})")
-#
-#         operation = '+'
-#         newExponent = operation.join(exponents)
-#
-#         simplifiedExpression = ArithmeticExpression(f"{baseToUse}^{'{'}{newExponent}{'}'}")
-#
-#         stepCounter += 1
-#         stepDictValue = {
-#             'step': f"Apply rule exponent: a^b * a^c = a^{'{'}b+c{'}'}",
-#             'simplification': f"{simplifiedExpression}"
-#         }
-#
-#         Steps.update({stepCounter: stepDictValue})
-#         return evaluateArithmetic(simplifiedExpression, stepCounter, Steps, returnStepsAsArray)
-#
-#
-#     elif operation == 'arithmetic-exponent-single':
-#         exponentIndex = indexOf(str(expression), '^')
-#         exponentData = expression.splitExpression(exponentIndex, '^', binarySplit=False)
-#
-#         base = ArithmeticExpression(exponentData[0])
-#         exponent = ArithmeticExpression(exponentData[1])
-#
-#         if base == 1:
-#             result = '1'
-#             stepCounter += 1
-#             stepDictValue = {
-#                 'step': f'Apply rule exponent: 1^a = 1',
-#                 'simplification': f"{result}"
-#             }
-#             Steps.update({stepCounter: stepDictValue})
-#             return evaluateArithmetic(ArithmeticExpression(result), stepCounter, Steps, returnStepsAsArray)
-#
-#
-#         if '{' in exponent:
-#             expressionInExponent = ArithmeticExpression(exponent.replace('{', '').replace('}', ''))
-#             if expressionInExponent.isSingleExpression():
-#                 expressionInExponent = expressionInExponent.replace('{', '').replace('}', '')
-#                 if base.isSingleExpression():
-#                     result = castToFloatOrInt(eval(f"{base}**{expressionInExponent}"), True)
-#                     SF = convertToStandardForm
-#                     stepCounter += 1
-#                     stepDictValue = {
-#                         'step': f'Calculate exponent: {expression} = {SF(result, True)}',
-#                         'simplification': f"{SF(result, True)}"
-#                     }
-#                     Steps.update({stepCounter: stepDictValue})
-#                     return evaluateArithmetic(ArithmeticExpression(result), stepCounter, Steps, returnStepsAsArray)
-#             else:
-#                 Simplification = evaluateArithmetic(expressionInExponent, returnStepsAsArray=True)
-#                 result = Simplification[1]
-#                 stepsAsArray = Simplification[0]
-#
-#                 for stepToAdd in stepsAsArray:
-#                     stepDictValue = {
-#                         'step': f"{stepToAdd['step']}",
-#                         'simplification': expression.replace(f'{expressionInExponent}', f"{stepToAdd['simplification']}")
-#                     }
-#                     stepCounter += 1
-#                     Steps.update({stepCounter: stepDictValue})
-#
-#                 simplifiedExpression = expression.replace(f'{expressionInExponent}', result)
-#                 expression = simplifiedExpression
-#
-#                 return evaluateArithmetic(expression, stepCounter, Steps, returnStepsAsArray)
-#
-#         else:
-#             if base.isSingleExpression():
-#                 result = castToFloatOrInt(eval(f"{base}**{exponent}"), True)
-#                 SF = convertToStandardForm
-#
-#                 stepCounter += 1
-#                 stepDictValue = {
-#                     'step': f'Calculate exponent: {expression} = {SF(result, True)}',
-#                     'simplification': f"{SF(result, True)}"
-#                 }
-#                 Steps.update({stepCounter: stepDictValue})
-#                 return evaluateArithmetic(ArithmeticExpression(result), stepCounter, Steps, returnStepsAsArray)
-#
-#     elif operation == 'multiply-only':
-#         result = performOperation(expression, operation='multiply-only')
-#         stepCounter += 1
-#         stepDictValue = {
-#             'step': f'Multiply [left to right]: {expression} = {result}',
-#             'simplification': result
-#         }
-#         Steps.update({stepCounter: stepDictValue})
-#         return evaluateArithmetic(result, stepCounter, Steps, returnStepsAsArray)
-#
-#     elif operation == 'add-subtract-only' and '(' not in expression:
-#         result = performOperation(expression)
-#         stepCounter += 1
-#         stepDictValue = {
-#             'step': f'Add and subtract [left to right]: {expression} = {result}',
-#             'simplification': result
-#         }
-#         Steps.update({stepCounter: stepDictValue})
-#         return evaluateArithmetic(result, stepCounter, Steps, returnStepsAsArray)
-#
-#     """ CHECK FOR PARENTHESES """
-#     if ('(' in expression and ')' in expression) or expression.isSingleExpression():
-#
-#         for i in range(len(expression)):
-#             currentExpressionToEvaluate = ''
-#             if expression[i] == '(' and i == expression.getIndexOfInnerMostParen():
-#                 for j in range(i + 1, len(expression)):
-#                     if expression[j] != ')':
-#                         currentExpressionToEvaluate += expression[j]
-#                     else:
-#                         break
-#
-#                 currentExpressionToEvaluate = ArithmeticExpression(currentExpressionToEvaluate)
-#                 Simplification = evaluateArithmetic(currentExpressionToEvaluate, returnStepsAsArray=True)
-#                 result = Simplification[1]
-#                 stepsAsArray = Simplification[0]
-#
-#                 for stepToAdd in stepsAsArray:
-#                     stepDictValue = {
-#                         'step': wrapStepInParen(f"{stepToAdd['step']}"),
-#                         'simplification': expression.replace(f'({currentExpressionToEvaluate})',
-#                                                              f"({stepToAdd['simplification']})")
-#                     }
-#                     stepCounter += 1
-#                     Steps.update({stepCounter: stepDictValue})
-#
-#                 simplifiedExpression = expression.replace(f'({currentExpressionToEvaluate})', result)
-#                 expression = simplifiedExpression
-#
-#                 return evaluateArithmetic(expression, stepCounter, Steps, returnStepsAsArray)
-#
-#     for i in range(len(expression)):
-#
-#         if expression[i] in allOperators:
-#             operator = expression[i]
-#             operationMessage = getOperationMessage(operator)
-#             Terms = expression.splitExpression(i, operator, operation=operation)
-#             firstTerm, secondTerm = Terms[0], Terms[1]
-#
-#             if firstTerm != '' and secondTerm != '':
-#                 # firstTerm = f"{float(firstTerm):.20f}"
-#                 # secondTerm = f"{float(secondTerm):.20f}"
-#
-#                 # result = castToFloatOrInt(f"{float(eval(f'{firstTerm} {operator} {secondTerm}')):.10f}", True)
-#                 result = castToFloatOrInt(eval(f"float(firstTerm) {operator} float(secondTerm)"), True)
-#                 simplifiedExpression = expression.replace(f'{firstTerm}{operator}{secondTerm}', result)
-#                 expression = simplifiedExpression
-#
-#                 stepDictValue = {
-#                     'step': f'{operationMessage} the first and second term: {firstTerm}{operator}{secondTerm} = {result}',
-#                     'simplification': f'{simplifiedExpression}'
-#                 }
-#                 stepCounter += 1
-#                 Steps.update({stepCounter: stepDictValue})
-#
-#                 return evaluateArithmetic(expression, stepCounter, Steps, returnStepsAsArray)
-#
-# def getOperationMessage(operator):
-#     if operator == '+':
-#         return 'Add'
-#     elif operator == '-':
-#         return 'Subtract'
-#     elif operator == '*':
-#         return 'Multiply'
-#     elif operator == '/':
-#         return 'divide'
-#
-# def castToFloatOrInt(num, castToString=False):
-#     if not isDigit(str(num)):
-#         raise ValueError(f"{num} is not a digit")
-#     else:
-#         if isFloat(num):
-#             if castToString:
-#                 return str(round(float(num), 5))
-#             else:
-#                 return float(num)
-#         if isInt(num):
-#             if castToString:
-#                 return str(int(num))
-#             else:
-#                 return int(num)
-#
-# def isInt(floatNum):
-#     return floor(floatNum) - floatNum == 0
-#
-# def isFloat(floatNum):
-#     return floor(floatNum) - floatNum != 0
-#
-# def addAndSubtractTerms(expression):
-#     if isSingleExpression(expression):
-#         return expression
-#     for i in range(len(expression)):
-#         if expression[i] == '+':
-#             Terms = splitAdditionOrSubtraction(expression, i)
-#             firstTerm, secondTerm = Terms[0], Terms[1]
-#             result = castToFloatOrInt(float(firstTerm) + float(secondTerm), True)
-#             simplifiedExpression = expression.replace(f'{firstTerm}+{secondTerm}', result)
-#             expression = simplifiedExpression
-#             return addAndSubtractTerms(expression)
-#         elif expression[i] == '-':
-#             Terms = splitAdditionOrSubtraction(expression, i)
-#             firstTerm, secondTerm = Terms[0], Terms[1]
-#             result = castToFloatOrInt(float(firstTerm) - float(secondTerm), True)
-#             simplifiedExpression = expression.replace(f'{firstTerm}-{secondTerm}', result)
-#             expression = simplifiedExpression
-#             return addAndSubtractTerms(expression)
-#
-# def performOperation(expression, operation=None):
-#     if isSingleExpression(expression):
-#         return expression
-#     expression = expression.replace('(', '').replace(')', '')
-#     allOperators = ['+','-','*','/']
-#     for i in range(len(expression)):
-#         if expression[i] in allOperators:
-#             operator = expression[i]
-#             Terms = splitExpression(expression, i, operator, operation=operation)
-#             if Terms[0] and Terms[1] != '':
-#                 firstTerm, secondTerm = Terms[0], Terms[1]
-#                 result = castToFloatOrInt(eval(f'float(firstTerm) {operator} float(secondTerm)'), True)
-#                 simplifiedExpression = expression.replace(f'{firstTerm}{operator}{secondTerm}', result)
-#                 expression = simplifiedExpression
-#
-#                 return performOperation(expression, operation)
-#
-# def splitAdditionOrSubtraction(expression, index):
-#     for i in range(len(expression)):
-#         if i == index:
-#             firstTerm, secondTerm = '', ''
-#             # GET FIRST TERM
-#             j = 0
-#             while True:
-#                 if expression[j] == '+' or expression[j] == '-':
-#                     break
-#                 firstTerm += expression[j]
-#                 j+= 1
-#             # GET SECOND TERM
-#             j = i+1
-#             while True:
-#                 if j == len(expression):
-#                     break
-#                 if expression[j] == '+' or expression[j] == '-':
-#                     break
-#                 secondTerm += expression[j]
-#                 j += 1
-#
-#             return (firstTerm, secondTerm)
-#
-# def splitExpression(expression, index, operator, binarySplit=True, operation=None):
-#     """
-#     A BINARY SPLIT OF THE expression 2+43*21-5 ON THE OPERATOR '*' AT INDEX 4 RETURNS ('43', '21')
-#     A NON-BINARY SPLIT OF THE expression 2+43*21-5 ON THE OPERATOR '*' AT INDEX 4 RETURNS ('2+43', '21-5')
-#     """
-#     if not binarySplit:
-#         for i in range(len(expression)):
-#             if i == index:
-#                 firstTerm, secondTerm = '', ''
-#                 """ GET FIRST TERM """
-#                 j = 0
-#                 while True:
-#                     if expression[j] == operator:
-#                         break
-#                     firstTerm += expression[j]
-#                     j+= 1
-#                 """ GET SECOND TERM """
-#                 j = i+1
-#                 while True:
-#                     if j == len(expression):
-#                         break
-#                     if expression[j] == operator:
-#                         break
-#                     secondTerm += expression[j]
-#                     j += 1
-#
-#                 return (firstTerm, secondTerm)
-#     else:
-#         otherOperators = getRestrictedOperators('-')
-#         allOperators = ['+','-','*','/']
-#         for i in range(len(expression)):
-#             if i == index:
-#                 firstTerm, secondTerm = '', ''
-#                 """ GET FIRST TERM """
-#                 j = i-1
-#                 while expression[j] not in otherOperators and j >=0:
-#                     firstTerm += expression[j]
-#                     if expression[j] == '-':
-#                         break
-#                     j -=1
-#                 firstTerm = reverse(firstTerm)
-#                 """ GET SECOND TERM """
-#                 j = i + 1
-#                 while ((expression[j] not in allOperators) or (operation == 'multiply-only')) and expression[j] != operator:
-#                     secondTerm += expression[j]
-#                     j += 1
-#                     operation = None
-#                     if j == len(expression):
-#                         break
-#
-#                 return (firstTerm, secondTerm)
-# def getRestrictedOperators(restrictedOperator):
-#     """ RETURNS ALL OPERATORS EXCEPT THE ONE PASS AS PARAMETER """
-#     allOperators = {'+', '-', '*', '/'}
-#     return allOperators.symmetric_difference(restrictedOperator)
-#
-# def reverse(iterable):
-#     return iterable[::-1]
-#
-# def getNextOperator(expression, index):
-#     """ RETURNS THE NEXT OPERATOR AFTER AN EXPRESSION AT A GIVEN INDEX """
-#     isNegativeNumber = False
-#     if expression[index+1] == '-':
-#         isNegativeNumber = True
-#
-#     allOperators = ['+', '-', '*', '/']
-#     i = index+1
-#     if isNegativeNumber:
-#         i += 1
-#     while i < len(expression):
-#         if expression[i] in allOperators:
-#             return expression[i]
-#         i += 1
-#
-
-#
-# def wrapStepInParen(stepExpression):
-#     """ WRAPS A STEP EXPRESSION IN PARENTHESES: Add and subtract [left to right]: 1+2+3+4 = 10 = Add ... : (1+2+3+4) = (10) """
-#     cpyStepExpression = stepExpression    # GET THE stepExpression BEFORE .split()
-#     if ':' in stepExpression:
-#         stepExpression = stepExpression.split(':')
-#         stepWords = stepExpression[0]
-#         expressionToWrap = stepExpression[1].lstrip()
-#
-#         if alreadyWrapped(expressionToWrap):
-#             return cpyStepExpression
-#
-#         newExpression = '('
-#         checkForEqual = True
-#         wrapExpressionAfterEqualSign = False
-#         for i in range(len(expressionToWrap)):
-#             if checkForEqual:
-#                 if expressionToWrap[i + 1] == '=':
-#                     newExpression += ')'
-#                     checkForEqual = False
-#                     wrapExpressionAfterEqualSign = True
-#             if wrapExpressionAfterEqualSign:
-#                 if newExpression[i] == '=':
-#                     newExpression += '('
-#             newExpression += expressionToWrap[i]
-#         newExpression += ')'
-#
-#         return f"{stepWords}: {newExpression}"
-#     else:
-#         return stepExpression
-#
-# def wrapExponentInParen(expression: str):
-#     if '^' in expression:
-#         allOperations = ['+','-','*','/','^']
-#         indexOfExponent = indexOf(expression, '^')
-#         """ GET THE BASE """
-#         if expression[indexOfExponent - 1] != ')':
-#             # BASE IS SINGLE EXPRESSION
-#             i = indexOfExponent-1
-#             """ GET THE NUMBER BEFORE '^' """
-#             base = ''
-#             while i >= 0 and expression[i] not in allOperations:
-#                 base += expression[i]
-#                 i -= 1
-#             base = reverse(base)
-#         else:
-#             # BASE IS NOT SINGLE EXPRESSION
-#             base = ''
-#             expressionToTheLeftOfExponent = ArithmeticExpression(expression[:indexOfExponent])
-#             indexWhereExponentEnds = expressionToTheLeftOfExponent.getIndexOfInnerMostParen()
-#             for i in range(indexWhereExponentEnds, indexOfExponent):
-#                 base += expression[i]
-#
-#         exponentIsSingleExpression = False
-#         # GET THE EXPONENT
-#         if expression[indexOfExponent + 1] != '{':
-#             exponentIsSingleExpression = True
-#             exponent = ''
-#             i = indexOfExponent+1
-#             if i == len(expression)-1:
-#                 exponent = expression[indexOfExponent + 1]
-#             else:
-#                 """ GET THE ENTER NUM AFTER '^' """
-#                 while i < len(expression) and expression[i] not in allOperations:
-#                     exponent += expression[i]
-#                     i += 1
-#         else:
-#             # EXPONENT IS NOT A SINGLE EXPRESSION
-#             exponent = ''
-#             i = indexOfExponent+2
-#             while expression[i] != '}':
-#                 exponent += expression[i]
-#                 i += 1
-#
-#         if exponentIsSingleExpression:
-#             expression = expression.replace(f"{base}^{exponent}", f"({base}^{exponent})")
-#         else:
-#             expression = expression.replace(f"{base}^{'{'}{exponent}{'}'}", f"({base}^{'{'}{exponent}{'}'})")
-#
-#
-#         return expression
-#
-# def wrapRadicalInParen(expression: str):
-#     wrappedExpression = ''
-#     addedClosingParen = False
-#     for i in range(len(expression)):
-#         if expression[i:i+4] == 'sqrt':
-#             wrappedExpression += '('
-#         if i > 0 and expression[i-1] == '}':
-#             wrappedExpression += ')'
-#             addedClosingParen = True
-#         wrappedExpression += expression[i]
-#
-#     if not addedClosingParen:
-#         wrappedExpression += ')'
-#
-#     return wrappedExpression
-#
-# def alreadyWrapped(expression):
-#     wrappedParentheses = 0
-#     if expression[0] == '(':
-#         wrappedParentheses += 1
-#     if expression[-1] == ')':
-#         wrappedParentheses += 1
-#     for i in range(len(expression)):
-#         if expression[i] == '=':
-#             if expression[i-2] == ')':
-#                 wrappedParentheses += 1
-#             if expression[i+2] == '(':
-#                 wrappedParentheses += 1
-#             break
-#     return wrappedParentheses == 4
-#
-# def isSingleExpression(expression):
-#     allPossibleOperations = ['+', '-', '*', '/', '^']
-#     allOperationsInExpression = set()
-#     for operation in allPossibleOperations:
-#         if operation in expression:
-#             allOperationsInExpression.add(operation)
-#     if len(allOperationsInExpression) == 0:
-#         return True
-#     elif len(allOperationsInExpression) == 1:
-#         operation = list(allOperationsInExpression)[0]
-#         numOperation = getNumOperation(expression, operation)
-#         if numOperation > 1:
-#             return False
-#         else:
-#             checkExpression = expression.split(operation)
-#             if checkExpression[0] != '':
-#                 return False
-#     else:
-#         return False
-#     return True
-#
-# def getNumOperation(expression, operation):
-#     result = 0
-#     for term in expression:
-#         if term == operation:
-#             result += 1
-#
-#     return result
-
-
-# def convertToStandardForm(num: str, autoConvert=False):
-#     try:
-#         float(num)
-#     except:
-#         raise ValueError(f'{num} is not a valid number')
-#
-#     doConversion = True
-#     if autoConvert:
-#         if float(num) <= MAX_SIZE_OF_NUM_BEFORE_CONVERTED_TO_STANDARD_FORM:
-#             doConversion = False
-#
-#
-#     if doConversion:
-#         if float(num) > 1:
-#             standardForm = ''
-#             decimalPlacesMoves = len(num)-1
-#             for i in range(len(num)):
-#                 if i == 1:
-#                     standardForm += '.'
-#                 if num[i] == '0':
-#                     """ REMOVE TRAILING ZEROES IF ANY """
-#                     charsToCheck = num[i:]
-#                     for j in range(len(charsToCheck)):
-#                         if charsToCheck[j] != '0':
-#                             standardForm += charsToCheck
-#                             break
-#                     break
-#                 standardForm += num[i]
-#
-#             roundedStandardForm = str(round(float(standardForm), 5))
-#
-#             if len(standardForm) != len(roundedStandardForm):
-#                 roundedStandardForm += '...'
-#
-#             roundedStandardForm += f'e+{decimalPlacesMoves}'
-#
-#             return roundedStandardForm
-#         else:
-#             i = 2 # START i AT THE FIRST ZERO AFTER THE DECIMAL POINT
-#             decimalPlacesMoves = 1
-#             indexOfFirstNoneZeroDigit = None
-#             while i < len(num):
-#                 if num[i] != '0':
-#                     indexOfFirstNoneZeroDigit = i
-#                     break
-#                 i += 1
-#                 decimalPlacesMoves += 1
-#
-#             standardForm = ''
-#             charsToCheck = num[indexOfFirstNoneZeroDigit:]
-#             for i in range(len(charsToCheck)):
-#                 if i == 1:
-#                     standardForm += '.'
-#                 standardForm += charsToCheck[i]
-#
-#             standardForm += f'e-{decimalPlacesMoves}'
-#             return standardForm
-#     else:
-#         return num
-# def isDigit(numString: str):
-#     allOperations = ['+', '*', '/', '^']
-#     operationInExpression = False
-#     for operation in allOperations:
-#         if operation in numString:
-#             operationInExpression = True
-#     if operationInExpression:
-#         for i in range(len(numString)):
-#             if numString[i] in allOperations:
-#                 operator = numString[i]
-#                 if operator == '^':
-#                     if '{' in numString:
-#                         pass
-#                     else:
-#                         exponentResult = splitExpression(numString, i, operator)
-#                         base = exponentResult[0]
-#                         exponent = exponentResult[1]
-#                         baseIsDigit = isDigit(base)
-#                         exponentIsDigit = isDigit(exponent)
-#
-#                         if baseIsDigit and exponentIsDigit:
-#                             return True
-#     else:
-#         try:
-#             numString = float(numString)
-#         except ValueError:
-#             return False
-#         return True
-
-""" TESTING """
 
 
 class Expression:
@@ -1655,7 +965,9 @@ class Expression:
                 if base[0] == '+': base = base[1:]
                 if base[0] == '-': base = base[1:]
                 exponent = Terms[i].split('^')[1]
-                if parenIsBalanced(base) and parenIsBalanced(exponent):
+                if exponent[-1] == ')':
+                    Terms[i] = Constant(Terms[i])
+                elif parenIsBalanced(base) and parenIsBalanced(exponent):
                     Terms[i] = Exponential(Terms[i])
                     # exponent = Constant(Terms[i].exponent)
                     # if exponent.is_integer:
@@ -1720,17 +1032,21 @@ class Constant(ArithmeticExpression):
         if self.is_integer:
             self.val = int(self.expression)
 
-def simplifyExpression(expression: Expression, Steps=None, groupedTerms=None, recursiveCall=False):
+def simplifyExpression(expression: Expression, keyword=None, Steps=None, groupedTerms=None, recursiveCall=False):
     # FORMAT
     pattern = re.compile(r'^\(.+\)$')
     matches = pattern.findall(str(expression))
-
     if len(matches) != 0:
-        expression = expression[1:-1]
+        checkExpression = expression[1:-1]
+        if '(' not in checkExpression and ')' not in checkExpression:
+            expression = expression[1:-1]
 
-    if Steps == None: Steps = []
-    groupedExpressions = expression.getGroupedExpressions()
+    if Steps is None: Steps = []
+    if keyword is None: keyword = 'simplify'
     if groupedTerms is None: groupedTerms = expression.getGroupedTerms()
+
+    groupedExpressions = expression.getGroupedExpressions()
+
     isSingleGroup = False
     finalResult = ''
 
@@ -2020,6 +1336,7 @@ def simplifyExpression(expression: Expression, Steps=None, groupedTerms=None, re
                     finalResult += f'{sign}{simplification}'
 
             elif group == 'Fractions':
+                simplifiedFractions = []
                 for fraction in groupedTerms['Fractions']:
                     numerator = Expression(fraction.numerator)
                     denominator = Expression(fraction.denominator)
@@ -2058,16 +1375,23 @@ def simplifyExpression(expression: Expression, Steps=None, groupedTerms=None, re
                     simplificationStepInfo = latexify(f"{fraction}={denominator_simplification}")
                     if simplificationStepInfo[0] == '+' or simplificationStepInfo[0] == '-': simplificationStepInfo = simplificationStepInfo[1:]
                     simplificationStep = createMainStep(r'\text{Simplify Denominator}', simplificationStepInfo)
-                    temp_fraction = fraction
+                    temp_fraction = numerator_simplification
                     if temp_fraction[0] == '+' or temp_fraction[0] == '-': temp_fraction = temp_fraction[1:]
                     if str(temp_fraction) != str(denominator_simplification): steps.append(simplificationStep)
 
                     simplifiedFraction = denominator_simplification
 
+                    # if len(Expression(simplifiedFraction.numerator)) == 1 and simplifiedFraction.numerator[0] == '-':
+                    #     simplifiedFraction = Fraction(f"-frac{'{'}{simplifiedFraction.numerator[1:]}{'}'}{'{'}{simplifiedFraction.denominator}{'}'}")
+
                     # COMPUTATION STEP
                     fractionSplit = False
-                    solutionToFraction = simplifiedFraction.computeFraction()
-                    if solutionToFraction != False and solutionToFraction.is_integer:
+                    solutionToFraction = simplifiedFraction.computeFraction(True)
+                    if solutionToFraction != False and type(solutionToFraction) == Fraction:
+                        computationStep = createMainStep(r'\text{Reduce Fraction}', latexify(f'{simplifiedFraction}={solutionToFraction}'))
+                        steps.append(computationStep)
+                        final_simplification = solutionToFraction
+                    elif solutionToFraction != False and solutionToFraction.is_integer:
                         computationStep = createMainStep(r'\text{Divide The Numbers}', latexify(f'{simplifiedFraction}={solutionToFraction}'))
                         steps.append(computationStep)
                         final_simplification = solutionToFraction
@@ -2079,36 +1403,41 @@ def simplifyExpression(expression: Expression, Steps=None, groupedTerms=None, re
                             numeratorTerms = numerator.getTerms()
 
                             """ SPLIT FRACTION """
-                            newFractions = []
-                            if len(denominator) == 1:
-                                for n_term in numeratorTerms:
-                                    if n_term[0] == '+' or n_term[0] == '-':
-                                        sign = n_term[0]
-                                        n_term = n_term[1:]
-                                        newFraction = Fraction(f"{sign}frac{'{'}{n_term}{'}'}{'{'}{denominator}{'}'}")
-                                        newFractions.append(newFraction)
-                                    else:
-                                        newFraction = Fraction(f"frac{'{'}{n_term}{'}'}{'{'}{denominator}{'}'}")
-                                        newFractions.append(newFraction)
+                            if keyword == 'expand':
+                                newFractions = []
+                                if len(denominator) == 1:
+                                    for n_term in numeratorTerms:
+                                        if n_term[0] == '+' or n_term[0] == '-':
+                                            sign = n_term[0]
+                                            n_term = n_term[1:]
+                                            newFraction = Fraction(f"{sign}frac{'{'}{n_term}{'}'}{'{'}{denominator}{'}'}")
+                                            newFractions.append(newFraction)
+                                        else:
+                                            newFraction = Fraction(f"frac{'{'}{n_term}{'}'}{'{'}{denominator}{'}'}")
+                                            newFractions.append(newFraction)
 
-                            splitFractions = ''
-                            for frac in newFractions:
-                                splitFractions += str(frac)
-                            splitFractions = Expression(splitFractions)
+                                splitFractions = ''
+                                for frac in newFractions:
+                                    splitFractions += str(frac)
+                                splitFractions = Expression(splitFractions)
 
-                            splitFractionStepInfo = latexify(f'{simplifiedFraction}={splitFractions}')
-                            splitFractionStep = createMainStep(r'\text{Apply The Fraction Rule:}\ \frac{a \pm b}{c}=\frac{a}{c}\pm\frac{b}{c}', splitFractionStepInfo)
-                            if str(simplifiedFraction) != str(splitFractions):
-                                steps.append(splitFractionStep)
-                                fractionSplit = True
+                                splitFractionStepInfo = latexify(f'{simplifiedFraction}={splitFractions}')
+                                splitFractionStep = createMainStep(r'\text{Apply The Fraction Rule:}\ \frac{a \pm b}{c}=\frac{a}{c}\pm\frac{b}{c}', splitFractionStepInfo)
+                                if str(simplifiedFraction) != str(splitFractions):
+                                    steps.append(splitFractionStep)
+                                    fractionSplit = True
 
+                            else:
+                                splitFractions = Expression(str(simplifiedFraction))
                             """ DIVIDE FRACTIONS """
-                            simplifiedFractions = ''
+                            simplifiedSplitFractions = ''
                             divideFractionSteps = []
                             for split_fraction in splitFractions.getTerms():
                                 sign = split_fraction[0]
                                 if (sign != '+' and sign != '-'): sign = '+'
                                 split_fraction = Fraction(str(split_fraction))
+                                if len(Expression(split_fraction.numerator)) != 1 or len(Expression(split_fraction.denominator)) != 1:
+                                    break
                                 numerator, denominator = Exponential(parseAsExponential(split_fraction.numerator)), Exponential(parseAsExponential(split_fraction.denominator))
                                 if numerator.base == denominator.base:
                                     base = numerator.base
@@ -2116,20 +1445,21 @@ def simplifyExpression(expression: Expression, Steps=None, groupedTerms=None, re
                                         differenceInExp = int(numerator.exponent) - int(denominator.exponent)
                                         if differenceInExp == 0:
                                             simplifiedFraction = Fraction(f"frac{'{'}{numerator.coefficient}{'}'}{'{'}{denominator.coefficient}{'}'}")
-                                            if simplifiedFraction.computeFraction() != False:
-                                                simplifiedFraction = simplifiedFraction.computeFraction()
-                                            simplifiedFractions += f"{sign}{simplifiedFraction}"
+                                            # if simplifiedFraction.computeFraction() != False:
+                                            #     simplifiedFraction = simplifiedFraction.computeFraction()
+                                            if simplifiedFraction.denominator == '1': simplifiedFraction = simplifiedFraction.numerator
+                                            simplifiedSplitFractions += f"{sign}{simplifiedFraction}"
                                         elif differenceInExp > 0:
                                             numExponent = int(numerator.exponent) - int(denominator.exponent)
                                             simplifiedFraction = Fraction(f"frac{'{'}{numerator.coefficient}{base}^{'{'}{numExponent}{'}'}{'}'}{'{'}{denominator.coefficient}{'}'}")
-                                            simplifiedFractions += f"{sign}{simplifiedFraction}"
+                                            simplifiedSplitFractions += f"{sign}{simplifiedFraction}"
                                         else:
                                             numExponent = abs(int(numerator.exponent) - int(denominator.exponent))
                                             simplifiedFraction = Fraction(f"frac{'{'}{numerator.coefficient}{'}'}{'{'}{denominator.coefficient}{base}^{numExponent}{'}'}")
-                                            simplifiedFractions += f"{sign}{simplifiedFraction}"
+                                            simplifiedSplitFractions += f"{sign}{simplifiedFraction}"
                                 else:
                                     simplifiedFraction = str(split_fraction)
-                                    simplifiedFractions += str(split_fraction)
+                                    simplifiedSplitFractions += str(split_fraction)
 
                                 if simplifiedFraction[0] == '+' or simplifiedFraction[0] == '-': simplifiedFraction = simplifiedFraction[1:]
                                 # ADD CANCEL LIKE TERMS STEP
@@ -2140,29 +1470,119 @@ def simplifyExpression(expression: Expression, Steps=None, groupedTerms=None, re
                                 if tmp_fraction[0] == '+' or tmp_fraction[0] == '-': tmp_fraction = tmp_fraction[1:]
                                 if str(tmp_fraction) != str(simplifiedFraction): divideFractionSteps.append(simplifiedFractionStep)
 
-                            # ADD DIVIDE FRACTION STEP
-                            if simplifiedFractions[0] == '+': simplifiedFractions = simplifiedFractions[1:]
-                            heading = latexify(f'{splitFractions}={simplifiedFractions}')
-                            divideFractionStepEStep = createExpandableStep(heading, divideFractionSteps)
-                            steps.append(divideFractionStepEStep)
+                            if simplifiedSplitFractions == '': simplifiedSplitFractions = simplifiedFraction
 
-                            final_simplification = simplifiedFractions
+                            # ADD DIVIDE FRACTION STEP
+                            if simplifiedSplitFractions[0] == '+': simplifiedSplitFractions = simplifiedSplitFractions[1:]
+                            heading = latexify(f'{splitFractions}={simplifiedSplitFractions}')
+                            divideFractionStepEStep = createExpandableStep(heading, divideFractionSteps)
+                            if str(splitFractions) != str(simplifiedSplitFractions): steps.append(divideFractionStepEStep)
+
+                            final_simplification = simplifiedSplitFractions
 
                         else:
                             final_simplification = simplifiedFraction
 
+
                     # CREATE AND ADD E-STEP
+                    cmp_fraction = fraction
+                    if cmp_fraction[0] == '+' or cmp_fraction[0] == '-': cmp_fraction = cmp_fraction[1:]
                     heading = latexify(f"{fraction}={final_simplification}")
                     if heading[0] == '+' or heading[0] == '-': heading = heading[1:]
                     e_step = createExpandableStep(heading, steps)
-                    Steps.append(e_step)
+                    if str(cmp_fraction) != str(final_simplification): Steps.append(e_step)
                     # UPDATE FINAL RESULT
                     sign = fraction[0]
                     if (sign != '+' and sign != '-'): sign = '+'
+                    if keyword == 'combine': simplifiedFractions.append(Fraction(f'{sign}{final_simplification}'))
                     if fractionSplit and sign == '-':
                         finalResult += f'{sign}({final_simplification})'
                     else:
                         finalResult += f'{sign}{final_simplification}'
+
+                if keyword == 'combine':
+                    """ GET SUM OF FRACTIONS STRING """
+                    fractionSumStr = ''
+                    for frac in simplifiedFractions:
+                        fractionSumStr += str(frac)
+                    if fractionSumStr[0] == '+': fractionSumStr = fractionSumStr[1:]
+
+                    denominators = [f.denominator if len(Expression(f.denominator)) == 1 else f'({f.denominator})' for f in simplifiedFractions]
+                    lcmIsDigit = True
+                    for term in denominators:
+                        if not Constant(term).is_digit:
+                            lcmIsDigit = False
+                    if not lcmIsDigit:
+                        lcm = getLCM(denominators)
+                    else:
+                        denominators = [int(f.denominator) for f in simplifiedFractions]
+                        lcm = getLCM(denominators, listOfNumbers=True)
+
+                    """ ADJUST FRACTIONS """
+                    adjustedFractions = []
+                    for frac in simplifiedFractions:
+                        sign = frac.expression[0]
+                        if not lcmIsDigit:
+                            if len(Expression(frac.denominator)) == 1:
+                                lcmFactor = getLCMFactor(frac.denominator, denominators)
+                            else:
+                                lcmFactor = getLCMFactor(f'({frac.denominator})', denominators)
+                            if frac.numerator != '1':
+                                if len(Expression(frac.numerator)) == 1:
+                                    adjustedFrac = Fraction(f"{sign}frac{'{'}{frac.numerator}{lcmFactor}{'}'}{'{'}{lcm}{'}'}")
+                                else:
+                                    adjustedFrac = Fraction(f"{sign}frac{'{'}({frac.numerator}){lcmFactor}{'}'}{'{'}{lcm}{'}'}")
+                            else:
+                                adjustedFrac = Fraction(f"{sign}frac{'{'}{lcmFactor}{'}'}{'{'}{lcm}{'}'}")
+                        else:
+                            lcmFactor = lcm // int(frac.denominator)
+                            if frac.numerator != '1':
+                                adjustedFrac = Fraction(f"{sign}frac{'{'}{int(frac.numerator)*lcmFactor}{'}'}{'{'}{lcm}{'}'}")
+                            else:
+                                adjustedFrac = Fraction(f"{sign}frac{'{'}{lcmFactor}{'}'}{'{'}{lcm}{'}'}")
+
+                        adjustedFractions.append(adjustedFrac)
+
+                    adjustedFractionsStr = ''
+                    for frac in adjustedFractions:
+                        adjustedFractionsStr += str(frac)
+                    if adjustedFractionsStr[0] == '+': adjustedFractionsStr = adjustedFractionsStr[1:]
+
+                    # CREATE STEP
+                    adjustFractionStepInfo = latexify(f"{fractionSumStr}={adjustedFractionsStr}")
+                    adjustedFractionStep = createMainStep(r"\text{Adjust fractions based on their LCM of }" + latexify(str(lcm)), adjustFractionStepInfo)
+                    Steps.append(adjustedFractionStep)
+
+                    """ COMBINE FRACTIONS """
+                    combinedNumerator = ''
+                    for frac in adjustedFractions:
+                        sign = frac.expression[0]
+                        combinedNumerator += f'{sign}{frac.numerator}'
+
+                    if combinedNumerator[0] == '+': combinedNumerator = combinedNumerator[1:]
+                    combinedFraction = Fraction(f"frac{'{'}{combinedNumerator}{'}'}{'{'}{lcm}{'}'}")
+
+                    # CREATE STEP
+                    combineFractionStepInfo = latexify(f"{adjustedFractionsStr}={combinedFraction}")
+                    combineFractionStep = createMainStep(r"\text{Apply The Fraction Rule:}\ \frac{a}{c}\pm\frac{b}{c}=\frac{a \pm b}{c}",combineFractionStepInfo)
+                    Steps.append(combineFractionStep)
+                    # UPDATE FINAL RESULT
+                    originalFractionStr = ''
+                    for frac in groupedTerms['Fractions']:
+                        originalFractionStr += str(frac)
+                    checkReplacement = finalResult.replace(originalFractionStr, str(combinedFraction))
+                    """ 
+                    checkReplacement IS USED TO CHECK IF finalResult != originalFractionStr. IF THAT'S THE CASE, THERE
+                    WAS AN INTERMEDIATE SIMPLIFICATION STEP THAT TOOK PLACE AND originalFractionStr IS NO LONGER IN finalResult
+                    AND THIS WOULD CAUSE finalResult.replace(originalFractionStr, str(combinedFraction)) TO DO NOTHING SO WE HAVE
+                    TO GET THE UPDATED (SIMPLIFIED) RESULT WHICH IS fractionSumStr AND USE THAT INSTEAD.
+                    EXAMPLE WHERE THIS HAPPENS: frac{1}{2}+frac{2}{5}+frac{1}{7}+frac{3}{9}
+                    """
+                    if checkReplacement[0] == '+': checkReplacement = checkReplacement[1:]
+                    if checkReplacement != fractionSumStr:
+                        finalResult = finalResult.replace(originalFractionStr, str(combinedFraction))
+                    else:
+                        finalResult = finalResult.replace(fractionSumStr, str(combinedFraction))
 
             elif group == 'Constants':
                 """ SIMPLIFY CONSTANTS """
@@ -2194,7 +1614,11 @@ def simplifyExpression(expression: Expression, Steps=None, groupedTerms=None, re
 
         for group in groupedTerms:
             if groupedTerms[group] != []:
-                if group != 'Exponential':
+                if group == 'Fractions':
+                    for fraction in groupedTerms[group]:
+                        if '^{1}' in fraction: fraction = Fraction(fraction.replace('^{1}', ''))
+                        newGroupedTerms['Fractions'].append(fraction)
+                elif group != 'Exponential':
                     for term in groupedTerms[group]:
                         newGroupedTerms['Constants'].append(Constant(str(term)))
                 else:
@@ -2300,11 +1724,9 @@ def simplifyConstants(expression, constants: list):
 def createMainStep(description, info):
     mainStep = {'type': 'main-step', 'description': rf'\displaystyle {description}', 'info': rf'\displaystyle {info}'}
     return mainStep
-
 def createExpandableStep(heading, e_steps: list):
     e_step = {'type': 'e-step', 'heading': rf'\displaystyle {heading}', 'e-steps': e_steps}
     return e_step
-
 
 def createGroupedTermsDict():
     return {
@@ -2346,6 +1768,55 @@ def get_var(term: str, start_of_var: int):
 def get_coefficient(term: str, start_of_var: int):
     """ RETURNS THE COEFFICIENT OF A TERM. EXAMPLE get_coefficient(+25xyz) --> +25 """
     return term[:start_of_var]
+
+def getFactors(num: int) -> list:
+    factors = []
+    for i in range(1, num + 1):
+        if num % i == 0:
+            factors.append(i)
+    return factors
+def getLCM(terms: list, listOfNumbers=False):
+    if not listOfNumbers:
+        termsWithoutParen = ''
+        termsWithParen = ''
+        for term in terms:
+            if '(' in term:
+                termsWithParen += term
+            else:
+                termsWithoutParen += term
+
+        lcm = ''
+        for term in termsWithoutParen:
+            lcm += term
+        for term in termsWithParen:
+            lcm += term
+        return lcm
+    else:
+        multiples = []
+        for num in terms:
+            multiplesOfNum = {num * i for i in range(1, 500)}
+            multiples.append(multiplesOfNum)
+        commonMultiples = multiples[0].intersection(*multiples)
+        return min(commonMultiples)
+def getLCMFactor(fracDenominator: str, denominators: list):
+    fracDenominator = [fracDenominator]
+    lcmFactorList = list_diff(denominators, fracDenominator)
+
+    termsWithoutParen = ''
+    termsWithParen = ''
+    for term in lcmFactorList:
+        if '(' in term:
+            termsWithParen += term
+        else:
+            termsWithoutParen += term
+
+    lcmFactor = ''
+    for term in termsWithoutParen:
+        lcmFactor += term
+    for term in termsWithParen:
+        lcmFactor += term
+
+    return lcmFactor
 
 def addNumbers(numbers: list, sum=0):
     if len(numbers) == 0:
@@ -2499,7 +1970,7 @@ def parseAsExponential(expression):
     parsedExpression = ''
     if '^' not in expression:
         for char in expression:
-            if Constant(char).is_digit:
+            if Constant(char).is_digit or char == '-':
                 parsedExpression += char
             else:
                 parsedExpression += f"{char}^{'{'}1{'}'}"
@@ -2543,6 +2014,12 @@ def isDigit2(item: str):
         except:
             return False
 
+def product(numbers: list):
+    prod = 1
+    for num in numbers:
+        prod *= int(num)
+    return prod
+
 def indexOf(iterable, searchFor):
     for i, item in enumerate(iterable):
         if item == searchFor:
@@ -2567,6 +2044,14 @@ def getExponentialStr(exponentials: list):
     if expStr[0] == '+': expStr = expStr[1:]
     return expStr
 
+def list_diff(A: list, B: list):
+    """ RETURN THE SET DIFFERENCE OF LIST A AND B """
+    newList = []
+    for item in A:
+        if item not in B:
+            newList.append(item)
+    return newList
+
 
 def splitAtIndex(expression: iter, index: int):
     splitArray = [expression[0:index], expression[index + 1:]]
@@ -2589,9 +2074,8 @@ def getMaxPerfectPower(index: int, radicand: int):
     return perfect_powers[-1]
 
 def main():
-    # E = Expression('10x^{7}+11y^{3}')
-    E = Expression('frac{10x^{7}-11y^{3}}{3x^{5}}')
-    print(simplifyExpression(E))
+    E = Expression('frac{5x^{2}+2x^{2}+1+3}{1+sqrt{10x+3x+y}}+frac{15x+21x}{e^{3x+2x}+sqrt{7x-2x}}')
+    print(simplifyExpression(E, keyword='combine'))
 
 
 

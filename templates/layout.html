@@ -193,6 +193,8 @@
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
         font-size: 17px;
         margin-bottom: 20px;
+        overflow-y: hidden;
+        overflow-x: auto;
     }
     .final-result {
         font-size: 20px;
@@ -265,8 +267,8 @@
         font-size: 17px;
         margin-top: 10px;
         margin-bottom: 15px;
-        overflow-y: visible;
-        /*overflow-x: auto;*/
+        overflow-y: hidden;
+        overflow-x: auto;
         white-space: nowrap;
     }
     .final-step {
@@ -274,6 +276,8 @@
         font-size: 17px;
         font-weight: 600;
         margin-top: 10px;
+        overflow-y: hidden;
+        overflow-x: auto;
     }
     @keyframes stepExpanded {
         from {
@@ -483,8 +487,13 @@
             })
             // Add latex to .final-step
             StepsUI.addLatexToElement(document.querySelector('.final-step'), `\\displaystyle \\text{Solution:}\\ ${finalResult}`)
-            // Add Latex To Solution Heading
-            StepsUI.addLatexToElement(document.querySelector('#finalSolutionHeading'), `\\displaystyle ${enteredMath}=${finalResult}`)
+            /* Add Latex To Solution Heading */
+
+            // Check for keyword
+            let checkInput = enteredMath.split(" ")
+            if (checkInput.length > 1)
+                enteredMath = checkInput[1]
+            StepsUI.addLatexToElement(document.querySelector('#finalSolutionHeading'), `{\\displaystyle ${enteredMath}=${finalResult}}`)
 
         }
         static makeStepsExpandable() {
