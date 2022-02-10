@@ -1157,6 +1157,15 @@ class TestCalc(unittest.TestCase):
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Apply exponent rule:}\\ a^0=1', 'info': '\\displaystyle \\left(7x+1\\right)^{0}=1'}], 'finalResult': '1'},
             },
             {
+                'expression': '3(2x+x)^{3-1}',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 2x+x=3x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle 3\\left(2x+x\\right)^{3-1}=3\\left(3x\\right)^{3-1}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 3-1=2'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 3\\left(3x\\right)^{3-1}=3\\left(3x\\right)^{2}'}], 'finalResult': '3\\left(3x\\right)^{2}'},
+            },
+            {
                 'expression': '(5x+2x-7x)^{1+2x}',
                 'keyword': None,
                 'expected_val': {'steps': [
@@ -1485,6 +1494,115 @@ class TestCalc(unittest.TestCase):
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{15x+21x}{e^{3x+2x}+\\sqrt{7x-2x}}=\\frac{36x}{e^{5x}+\\sqrt{5x}}'}]},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }\\left(\\sqrt{13x+y}+1\\right)\\left(e^{5x}+\\sqrt{5x}\\right)', 'info': '\\displaystyle \\frac{7x^{2}+4}{\\sqrt{13x+y}+1}+\\frac{36x}{e^{5x}+\\sqrt{5x}}=\\frac{\\left(7x^{2}+4\\right)\\left(e^{5x}+\\sqrt{5x}\\right)}{\\left(\\sqrt{13x+y}+1\\right)\\left(e^{5x}+\\sqrt{5x}\\right)}+\\frac{36x\\left(\\sqrt{13x+y}+1\\right)}{\\left(\\sqrt{13x+y}+1\\right)\\left(e^{5x}+\\sqrt{5x}\\right)}'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{\\left(7x^{2}+4\\right)\\left(e^{5x}+\\sqrt{5x}\\right)}{\\left(\\sqrt{13x+y}+1\\right)\\left(e^{5x}+\\sqrt{5x}\\right)}+\\frac{36x\\left(\\sqrt{13x+y}+1\\right)}{\\left(\\sqrt{13x+y}+1\\right)\\left(e^{5x}+\\sqrt{5x}\\right)}=\\frac{\\left(7x^{2}+4\\right)\\left(e^{5x}+\\sqrt{5x}\\right)+36x\\left(\\sqrt{13x+y}+1\\right)}{\\left(\\sqrt{13x+y}+1\\right)\\left(e^{5x}+\\sqrt{5x}\\right)}'}], 'finalResult': '\\frac{\\left(7x^{2}+4\\right)\\left(e^{5x}+\\sqrt{5x}\\right)+36x\\left(\\sqrt{13x+y}+1\\right)}{\\left(\\sqrt{13x+y}+1\\right)\\left(e^{5x}+\\sqrt{5x}\\right)}'},
+            },
+            {
+                'expression': 'frac{x}{y}+frac{u}{v}+2',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }yv', 'info': '\\displaystyle \\frac{x}{y}+\\frac{u}{v}+2=\\frac{xv}{yv}+\\frac{uy}{yv}+\\frac{2yv}{yv}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{xv}{yv}+\\frac{uy}{yv}+\\frac{2yv}{yv}=\\frac{xv+uy+2yv}{yv}'}], 'finalResult': '\\frac{xv+uy+2yv}{yv}'},
+            },
+            {
+                'expression': 'frac{x}{y}+frac{u}{v}+s',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle s=\\frac{s}{1}', 'e-steps': []},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }yv', 'info': '\\displaystyle \\frac{x}{y}+\\frac{u}{v}+\\frac{s}{1}=\\frac{xv}{yv}+\\frac{uy}{yv}+\\frac{syv}{yv}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{xv}{yv}+\\frac{uy}{yv}+\\frac{syv}{yv}=\\frac{xv+uy+syv}{yv}'}], 'finalResult': '\\frac{xv+uy+syv}{yv}'},
+            },
+            {
+                'expression': 'frac{10}{2}+frac{s}{t}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [{'type': 'e-step', 'heading': '\\displaystyle \\frac{10}{2}=5', 'e-steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Divide The Numbers}', 'info': '\\displaystyle \\frac{10}{2}=5'}]},
+                                           {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }t', 'info': '\\displaystyle 5+\\frac{s}{t}=\\frac{5t}{t}+\\frac{s}{t}'},
+                                           {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{5t}{t}+\\frac{s}{t}=\\frac{5t+s}{t}'}], 'finalResult': '\\frac{5t+s}{t}'},
+            },
+            {
+                'expression': 'frac{10x^{2}}{x}+frac{s}{t}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{10x^{2}}{x}=\\frac{10x}{1}', 'e-steps': [
+                        {'type': 'e-step', 'heading': '\\displaystyle \\frac{10x^{2}}{x}=\\frac{10x}{1}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Cancel like terms}', 'info': '\\displaystyle \\frac{10x^{2}}{x}=\\frac{10x}{1}'}]}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }t', 'info': '\\displaystyle \\frac{10x}{1}+\\frac{s}{t}=\\frac{10xt}{t}+\\frac{s}{t}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{10xt}{t}+\\frac{s}{t}=\\frac{10xt+s}{t}'}], 'finalResult': '\\frac{10xt+s}{t}'},
+            },
+            {
+                'expression': 'e^{2x+x}+frac{s}{t+1}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle e^{2x+x}=\\frac{e^{3x}}{1}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 2x+x=3x'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle e^{2x+x}=e^{3x}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }\\left(t+1\\right)', 'info': '\\displaystyle \\frac{e^{3x}}{1}+\\frac{s}{t+1}=\\frac{e^{3x}\\left(t+1\\right)}{\\left(t+1\\right)}+\\frac{s}{\\left(t+1\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{e^{3x}\\left(t+1\\right)}{\\left(t+1\\right)}+\\frac{s}{\\left(t+1\\right)}=\\frac{e^{3x}\\left(t+1\\right)+s}{\\left(t+1\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\frac{e^{3x}\\left(t+1\\right)+s}{\\left(t+1\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{e^{3x}\\left(t+1\\right)+s}{\\left(t+1\\right)}=\\frac{e^{3x}\\left(t+1\\right)+s}{t+1}'}], 'finalResult': '\\frac{e^{3x}\\left(t+1\\right)+s}{t+1}'},
+            },
+            {
+                'expression': 'frac{x}{2}+frac{3x}{7}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }14', 'info': '\\displaystyle \\frac{x}{2}+\\frac{3x}{7}=\\frac{7\\cdot x}{14}+\\frac{2\\cdot3x}{14}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{7\\cdot x}{14}+\\frac{2\\cdot3x}{14}=\\frac{7\\cdot x+2\\cdot3x}{14}'}], 'finalResult': '\\frac{7\\cdot x+2\\cdot3x}{14}'},
+            },
+            {
+                'expression': 'frac{1}{sqrt{n}}-frac{1}{sqrt{n+1}}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }\\sqrt{n}\\sqrt{n+1}', 'info': '\\displaystyle \\frac{1}{\\sqrt{n}}-\\frac{1}{\\sqrt{n+1}}=\\frac{\\sqrt{n+1}}{\\sqrt{n}\\sqrt{n+1}}-\\frac{\\sqrt{n}}{\\sqrt{n}\\sqrt{n+1}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{\\sqrt{n+1}}{\\sqrt{n}\\sqrt{n+1}}-\\frac{\\sqrt{n}}{\\sqrt{n}\\sqrt{n+1}}=\\frac{\\sqrt{n+1}-\\sqrt{n}}{\\sqrt{n}\\sqrt{n+1}}'}], 'finalResult': '\\frac{\\sqrt{n+1}-\\sqrt{n}}{\\sqrt{n}\\sqrt{n+1}}'},
+            },
+            {
+                'expression': 'frac{n}{sqrt{n}}-frac{5n+1}{sqrt{n^{3}+5n^{2}+1}}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }\\sqrt{n^{3}+5n^{2}+1}\\sqrt{n}', 'info': '\\displaystyle \\frac{n}{\\sqrt{n}}-\\frac{5n+1}{\\sqrt{n^{3}+5n^{2}+1}}=\\frac{n\\sqrt{n^{3}+5n^{2}+1}}{\\sqrt{n^{3}+5n^{2}+1}\\sqrt{n}}-\\frac{\\left(5n+1\\right)\\sqrt{n}}{\\sqrt{n^{3}+5n^{2}+1}\\sqrt{n}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{n\\sqrt{n^{3}+5n^{2}+1}}{\\sqrt{n^{3}+5n^{2}+1}\\sqrt{n}}-\\frac{\\left(5n+1\\right)\\sqrt{n}}{\\sqrt{n^{3}+5n^{2}+1}\\sqrt{n}}=\\frac{-\\left(5n+1\\right)\\sqrt{n}+n\\sqrt{n^{3}+5n^{2}+1}}{\\sqrt{n^{3}+5n^{2}+1}\\sqrt{n}}'}], 'finalResult': '\\frac{-\\left(5n+1\\right)\\sqrt{n}+n\\sqrt{n^{3}+5n^{2}+1}}{\\sqrt{n^{3}+5n^{2}+1}\\sqrt{n}}'},
+            },
+            {
+                'expression': 'frac{1}{x}+frac{2}{x^{2}}+frac{3}{x^{3}}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }x^{3}', 'info': '\\displaystyle \\frac{1}{x}+\\frac{2}{x^{2}}+\\frac{3}{x^{3}}=\\frac{x^{2}}{x^{3}}+\\frac{2x}{x^{3}}+\\frac{3}{x^{3}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{x^{2}}{x^{3}}+\\frac{2x}{x^{3}}+\\frac{3}{x^{3}}=\\frac{x^{2}+2x+3}{x^{3}}'}], 'finalResult': '\\frac{x^{2}+2x+3}{x^{3}}'},
+            },
+            {
+                'expression': 'frac{1}{x+1}+frac{2}{(x+1)^{2}}+frac{3}{(x+1)^{3}}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }\\left(x+1\\right)^{3}', 'info': '\\displaystyle \\frac{1}{x+1}+\\frac{2}{\\left(x+1\\right)^{2}}+\\frac{3}{\\left(x+1\\right)^{3}}=\\frac{\\left(x+1\\right)^{2}}{\\left(x+1\\right)^{3}}+\\frac{2\\left(x+1\\right)}{\\left(x+1\\right)^{3}}+\\frac{3}{\\left(x+1\\right)^{3}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{\\left(x+1\\right)^{2}}{\\left(x+1\\right)^{3}}+\\frac{2\\left(x+1\\right)}{\\left(x+1\\right)^{3}}+\\frac{3}{\\left(x+1\\right)^{3}}=\\frac{\\left(x+1\\right)^{2}+2\\left(x+1\\right)+3}{\\left(x+1\\right)^{3}}'}], 'finalResult': '\\frac{\\left(x+1\\right)^{2}+2\\left(x+1\\right)+3}{\\left(x+1\\right)^{3}}'},
+            },
+            {
+                'expression': 'frac{1}{x+1}+frac{2}{(x+1)^{2}}+frac{3}{(x+1)^{n}}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }\\left(x+1\\right)^{2}', 'info': '\\displaystyle \\frac{1}{x+1}+\\frac{2}{\\left(x+1\\right)^{2}}+\\frac{3}{\\left(x+1\\right)^{n}}=\\frac{x+1}{\\left(x+1\\right)^{2}}+\\frac{2}{\\left(x+1\\right)^{2}}+\\frac{3\\left(x+1\\right)^{-n+2}}{\\left(x+1\\right)^{2}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{x+1}{\\left(x+1\\right)^{2}}+\\frac{2}{\\left(x+1\\right)^{2}}+\\frac{3\\left(x+1\\right)^{-n+2}}{\\left(x+1\\right)^{2}}=\\frac{3\\left(x+1\\right)^{-n+2}+x+1+2}{\\left(x+1\\right)^{2}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\frac{3\\left(x+1\\right)^{-n+2}+x+1+2}{\\left(x+1\\right)^{2}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle x+1+2=x+3'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{3\\left(x+1\\right)^{-n+2}+x+1+2}{\\left(x+1\\right)^{2}}=\\frac{3\\left(x+1\\right)^{-n+2}+x+3}{\\left(x+1\\right)^{2}}'}], 'finalResult': '\\frac{3\\left(x+1\\right)^{-n+2}+x+3}{\\left(x+1\\right)^{2}}'},
+            },
+            {
+                'expression': 'frac{1}{n}-frac{1}{n+1}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }n\\left(n+1\\right)', 'info': '\\displaystyle \\frac{1}{n}-\\frac{1}{n+1}=\\frac{n+1}{n\\left(n+1\\right)}-\\frac{n}{n\\left(n+1\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{n+1}{n\\left(n+1\\right)}-\\frac{n}{n\\left(n+1\\right)}=\\frac{n-n+1}{n\\left(n+1\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\frac{n-n+1}{n\\left(n+1\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle n-n+1=0+1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle 0+1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 0+1=1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{n-n+1}{n\\left(n+1\\right)}=\\frac{1}{n\\left(n+1\\right)}'}], 'finalResult': '\\frac{1}{n\\left(n+1\\right)}'},
+            },
+            {
+                'expression': 'frac{y}{3}+frac{1}{x}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }3x', 'info': '\\displaystyle \\frac{y}{3}+\\frac{1}{x}=\\frac{yx}{3x}+\\frac{3}{3x}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{yx}{3x}+\\frac{3}{3x}=\\frac{yx+3}{3x}'}], 'finalResult': '\\frac{yx+3}{3x}'},
             },
             {
                 'expression': 'frac{1}{2}',

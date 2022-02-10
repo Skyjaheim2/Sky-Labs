@@ -493,7 +493,7 @@ class ArithmeticExpression:
         return float(self.expression) <= float(other.expression)
 
 class Exponential:
-    def __init__(self, expression):
+    def __init__(self, expression, cast_as_non_exponential=False, cast_entire_term_as_exp=False):
         self.expression = expression
         self.exponential = self.expression
         sign = self.exponential[0]
@@ -504,11 +504,41 @@ class Exponential:
 
         expression = str(self.exponential)
 
-        if '^' not in expression:
+        if expression[0] == '(' and expression[-1] == ')':
+            tmp_expression = expression[1:-1]
+            if len(Expression(tmp_expression)) > 1:
+                self.coefficient = '1'
+                self.base = expression
+                self.exponent = '1'
+                return
+            else:
+                expression = tmp_expression
+
+        if cast_entire_term_as_exp:
             self.base = expression
             self.coefficient = '1'
             self.exponent = '1'
             return
+
+        if '^' not in expression or cast_as_non_exponential:
+            if Constant(expression).is_digit:
+                self.base = expression
+                self.coefficient = '1'
+                self.exponent = '1'
+                return
+            else:
+                self.coefficient = ''
+                for char in expression:
+                    if Constant(char).is_digit:
+                        self.coefficient += char
+                    if char == '(' or char == '{':
+                        break
+
+                self.base = expression[len(self.coefficient):]
+                self.exponent = '1'
+                if self.coefficient == '': self.coefficient = '1'
+                return
+
         else:
             if '{' in expression:
                 base_pattern = re.compile(r".+\^{")
@@ -524,6 +554,12 @@ class Exponential:
                     self.exponent = exponent_matches[0][2:-1]
                 else:
                     self.exponent = exponent_matches[0]
+
+                if not parenIsBalanced(self.base, 'both') or not parenIsBalanced(self.exponent, 'both'):
+                    newExp = Exponential(self.expression, cast_as_non_exponential=True)
+                    self.coefficient, self.base, self.exponent = newExp.coefficient, newExp.base, newExp.exponent
+                    return
+
             else:
                 i_lc = getIndexOfLastOccurrence(expression, '^')
                 exponentData = splitAtIndex(expression, i_lc)
@@ -546,7 +582,15 @@ class Exponential:
         else:
             self.coefficient = coefficient
             if self.coefficient[-1] == '*': self.coefficient = self.coefficient[:-1]
-            self.base = expression[len(coefficient)]
+            if len(self.base) == len(coefficient)+1:
+                self.base = expression[len(coefficient)]
+            else:
+                if self.base[len(coefficient)] == '(' and self.base[-1] == ')':
+                    self.base = expression[len(coefficient): len(self.exponent)]
+                    i = 1
+                    while not parenIsBalanced(self.base, 'both') or self.base == '':
+                        self.base = expression[len(coefficient): len(self.exponent) + i]
+                        i += 1
             self.coefficient = f"{sign}{self.coefficient}"
 
     def computeExponential(self):
@@ -584,7 +628,7 @@ class Exponential:
             tmp_base = Constant(self.base[1:-1])
             if tmp_base.is_integer or len(tmp_base) == 1:
                 self.base = tmp_base
-                self.expression = f"{self.base}^{'{'}{self.exponent}{'}'}"
+                self.expression = f"{self.coefficient if self.coefficient != '1' else ''}{self.base}^{'{'}{self.exponent}{'}'}"
 
         # self.expression = f"{self.base}^{'{'}{self.exponent}{'}'}"
 
@@ -681,10 +725,13 @@ class Fraction:
         denominator_matches = denominator_pattern.findall(expression)
 
         if len(numerator_matches) == 0 or len(denominator_matches) == 0:
-            raise ExpressionFormatError(expression)
-
-        self.numerator = numerator_matches[0][5:-2]
-        self.denominator = denominator_matches[0][2:-1]
+            self.numerator = expression
+            if self.numerator[0] == '+': self.numerator = self.numerator[1:]
+            self.denominator = '1'
+            # raise ExpressionFormatError(expression)
+        else:
+            self.numerator = numerator_matches[0][5:-2]
+            self.denominator = denominator_matches[0][2:-1]
 
     def reduceFraction(self):
         numerator = int(self.numerator)
@@ -751,10 +798,15 @@ class Fraction:
         return self.expression.split(char)
 
     def __str__(self):
+        # sign = self.expression[0]
+        # if sign != '+' and sign != '-': sign = ''
+        # return f"{sign}frac{'{'}{self.numerator}{'}'}{'{'}{self.denominator}{'}'}"
         return self.expression
-
     def __repr__(self):
         return self.expression
+        sign = self.expression[0]
+        if sign != '+' and sign != '-': sign = ''
+        return f"{sign}frac{'{'}{self.numerator}{'}'}{'{'}{self.denominator}{'}'}"
 
     def __len__(self):
         return len(self.expression)
@@ -789,6 +841,7 @@ def latexify(expression):
     expression = expression.replace('(', '\left(').replace(')', '\\right)').replace('*', '\cdot').replace('pi', r'\pi')\
                            .replace('sqrt', '\\sqrt').replace('sqrt[2]','sqrt').replace('frac',r'\frac').replace('^{1}', '')
 
+    """ REPLACE \cdotx with \cdot x """
     multiplication_pattern = re.compile(r'\\cdot\w{1}')
     multiplication_matches = multiplication_pattern.findall(expression)
 
@@ -796,6 +849,16 @@ def latexify(expression):
         charToSpace = match[-1]
         if not charToSpace.isdigit():
             expression = expression.replace(match, f'{match[:-1]} {charToSpace}')
+
+    pi_multiplication_pattern = re.compile(r'\\pi\w{1}')
+    pi_multiplication_matches = pi_multiplication_pattern.findall(expression)
+
+    for match in pi_multiplication_matches:
+        charToSpace = match[-1]
+        if not charToSpace.isdigit():
+            expression = expression.replace(match, f'{match[:-1]} {charToSpace}')
+
+
 
     return expression
 
@@ -1041,9 +1104,23 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
         if '(' not in checkExpression and ')' not in checkExpression:
             expression = expression[1:-1]
 
+    radical_product_pattern = re.compile(r'sqrt{.+}sqrt{.+}')
+    matches = radical_product_pattern.findall(str(expression))
+    if len(matches) > 0:
+        return {'steps': [], 'finalResult': latexify(str(expression))}
+
+
     if Steps is None: Steps = []
     if keyword is None: keyword = 'simplify'
     if groupedTerms is None: groupedTerms = expression.getGroupedTerms()
+
+    if keyword == 'combine':
+        """ CONVERT ALL TERMS TO FRACTION """
+        groupedTerms = createGroupedTermsDict()
+        for term in expression.getTerms():
+            term = Fraction(str(term))
+            groupedTerms['Fractions'].append(term)
+
 
     groupedExpressions = expression.getGroupedExpressions()
 
@@ -1067,6 +1144,8 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                 for exponential in groupedTerms['Exponential']:
                     base = Expression(exponential.base)
                     exponent = Expression(exponential.exponent)
+                    coefficient = exponential.coefficient
+                    if coefficient == '1': coefficient = ''
 
                     if base.isSingleExpression():
                         tmp_base = str(base)
@@ -1142,7 +1221,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                                 for e_step in step['e-steps']:
                                     steps.append(e_step)
 
-                        base_simplification = Exponential(f"({parseLatex(simplifiedBase['finalResult'])})^{'{'}{exponent}{'}'}")
+                        base_simplification = Exponential(f"{coefficient}({parseLatex(simplifiedBase['finalResult'])})^{'{'}{exponent}{'}'}")
                         base_simplification.format()
                         # SIMPLIFICATION STEP #1
                         simplificationStepInfo = latexify(f"{exponential}={base_simplification}")
@@ -1161,7 +1240,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                                 for e_step in step['e-steps']:
                                     steps.append(e_step)
 
-                        exponent_simplification = Exponential(f"{base_simplification.base}^{'{'}{parseLatex(simplifiedExponent['finalResult'])}{'}'}")
+                        exponent_simplification = Exponential(f"{coefficient}{base_simplification.base}^{'{'}{parseLatex(simplifiedExponent['finalResult'])}{'}'}")
                         exponent_simplification.format()
                         # SIMPLIFICATION STEP #2
                         simplificationStepInfo = latexify(f"{base_simplification}={exponent_simplification}")
@@ -1358,7 +1437,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                     simplificationStep = createMainStep(r'\text{Simplify Numerator}', simplificationStepInfo)
                     temp_fraction = fraction
                     if temp_fraction[0] == '+' or temp_fraction[0] == '-': temp_fraction = temp_fraction[1:]
-                    if str(temp_fraction) != str(numerator_simplification): steps.append(simplificationStep)
+                    if (str(temp_fraction) != str(numerator_simplification)) and fraction.denominator != '1': steps.append(simplificationStep)
 
                     """ SIMPLIFY DENOMINATOR """
                     simplifiedDenominator = simplifyExpression(denominator)
@@ -1508,12 +1587,22 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                     if fractionSumStr[0] == '+': fractionSumStr = fractionSumStr[1:]
 
                     denominators = [f.denominator if len(Expression(f.denominator)) == 1 else f'({f.denominator})' for f in simplifiedFractions]
-                    lcmIsDigit = True
+                    termsType = 'Numbers'
+                    seenDigitTerm = True
                     for term in denominators:
+                        if Constant(term).is_digit and not seenDigitTerm:
+                            termsType = 'Mixed'
+                            break
                         if not Constant(term).is_digit:
-                            lcmIsDigit = False
-                    if not lcmIsDigit:
-                        lcm = getLCM(denominators)
+                            termsType = 'Variables'
+                            seenDigitTerm = False
+
+                    if termsType == 'Mixed':
+                        lcm = getLCM(denominators, listOfNumbers=False, termsType=termsType)
+                    elif termsType == 'Variables':
+                        lcm = getLCM(denominators, termsType=termsType)
+                        if lcm[0] == '1': lcm = lcm[1:]
+                        if lcm[-1] == '1': lcm = lcm[:-1]
                     else:
                         denominators = [int(f.denominator) for f in simplifiedFractions]
                         lcm = getLCM(denominators, listOfNumbers=True)
@@ -1522,22 +1611,46 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                     adjustedFractions = []
                     for frac in simplifiedFractions:
                         sign = frac.expression[0]
-                        if not lcmIsDigit:
+                        if not seenDigitTerm:
+                            if frac.denominator[0] != '(' and len(Expression(frac.denominator)) > 1: frac.denominator = f'({frac.denominator})'
                             if len(Expression(frac.denominator)) == 1:
-                                lcmFactor = getLCMFactor(frac.denominator, denominators)
+                                if '^' not in frac.denominator and '^' not in lcm:
+                                    exp_denominator = Exponential(frac.denominator, cast_entire_term_as_exp=True)
+                                    exp_lcm = Exponential(lcm, cast_entire_term_as_exp=True)
+                                else:
+                                    exp_denominator = Exponential(frac.denominator)
+                                    exp_lcm = Exponential(lcm)
+                                if exp_denominator.base == exp_lcm.base:
+                                    lcmFactorExponentExpression = Expression(f'{Exponential(lcm).exponent}-{Exponential(frac.denominator).exponent}')
+                                    lcmFactorExponentExpression = simplifyExpression(lcmFactorExponentExpression)['finalResult']
+                                    if lcmFactorExponentExpression == '0':
+                                        lcmFactor = '1'
+                                    else:
+                                        lcmFactor = f"{Exponential(frac.denominator).base}^{'{'}{lcmFactorExponentExpression}{'}'}"
+                                else:
+                                    lcmFactor = getLCMFactor(frac.denominator, denominators)
+                                if lcmFactor[0] == '1' and len(lcmFactor)>1 and not Constant(lcmFactor).is_digit: lcmFactor = lcmFactor[1:]
+                                if len(lcmFactor) > 1:
+                                    if lcmFactor[-1] == '1': lcmFactor = lcmFactor[:-1]
                             else:
                                 lcmFactor = getLCMFactor(f'({frac.denominator})', denominators)
+                            if lcmFactor == '1': lcmFactor = ''
                             if frac.numerator != '1':
                                 if len(Expression(frac.numerator)) == 1:
                                     adjustedFrac = Fraction(f"{sign}frac{'{'}{frac.numerator}{lcmFactor}{'}'}{'{'}{lcm}{'}'}")
                                 else:
                                     adjustedFrac = Fraction(f"{sign}frac{'{'}({frac.numerator}){lcmFactor}{'}'}{'{'}{lcm}{'}'}")
                             else:
+                                if numOccurrences(lcmFactor, '(') == 1 and Exponential(lcmFactor).exponent == '1':
+                                    lcmFactor = Exponential(lcmFactor).base[1:-1]  # REMOVE UNNECESSARY PARENTHESES
                                 adjustedFrac = Fraction(f"{sign}frac{'{'}{lcmFactor}{'}'}{'{'}{lcm}{'}'}")
                         else:
                             lcmFactor = lcm // int(frac.denominator)
                             if frac.numerator != '1':
-                                adjustedFrac = Fraction(f"{sign}frac{'{'}{int(frac.numerator)*lcmFactor}{'}'}{'{'}{lcm}{'}'}")
+                                if Constant(frac.numerator).is_digit:
+                                    adjustedFrac = Fraction(f"{sign}frac{'{'}{int(frac.numerator)*lcmFactor}{'}'}{'{'}{lcm}{'}'}")
+                                else:
+                                    adjustedFrac = Fraction(f"{sign}frac{'{'}{lcmFactor}*{frac.numerator}{'}'}{'{'}{lcm}{'}'}")
                             else:
                                 adjustedFrac = Fraction(f"{sign}frac{'{'}{lcmFactor}{'}'}{'{'}{lcm}{'}'}")
 
@@ -1560,7 +1673,10 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                         combinedNumerator += f'{sign}{frac.numerator}'
 
                     if combinedNumerator[0] == '+': combinedNumerator = combinedNumerator[1:]
-                    combinedFraction = Fraction(f"frac{'{'}{combinedNumerator}{'}'}{'{'}{lcm}{'}'}")
+                    combinedFraction = Fraction(f"frac{'{'}{convertToStandardForm(combinedNumerator)}{'}'}{'{'}{lcm}{'}'}")
+
+                    # combinedFraction.numerator = convertToStandardForm(combinedNumerator)
+
 
                     # CREATE STEP
                     combineFractionStepInfo = latexify(f"{adjustedFractionsStr}={combinedFraction}")
@@ -1592,7 +1708,6 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                 steps = Solution['Steps']
                 simplification = Solution['finalExpression']
                 # CREATE E-STEP
-                addParen = True if not isSingleGroup else False
                 heading = createEStepHeadingFromGroup(Constants, False)
                 e_step = createExpandableStep(latexify(f"{heading}={simplification}"), steps)
                 if steps != []: Steps.append(e_step)
@@ -1775,21 +1890,73 @@ def getFactors(num: int) -> list:
         if num % i == 0:
             factors.append(i)
     return factors
-def getLCM(terms: list, listOfNumbers=False):
-    if not listOfNumbers:
-        termsWithoutParen = ''
-        termsWithParen = ''
-        for term in terms:
-            if '(' in term:
-                termsWithParen += term
-            else:
-                termsWithoutParen += term
+def getLCM(terms: list, listOfNumbers=False, termsType=None):
+    if termsType is None: termsType = 'Numbers'
 
+    if termsType == 'Mixed':
+        numberTerms, variableTerms = [], []
+        for term in terms:
+            if Constant(term).is_digit: numberTerms.append(term)
+            else: variableTerms.append(term)
+
+        variableLCM = getLCM(variableTerms, termsType='Variables')
+        numbersLCM = product(numberTerms)
+
+        lcm = f'{numbersLCM}{variableLCM}'
+        if numbersLCM == 1: lcm = lcm[1:]
+
+        return lcm
+
+
+    elif termsType == 'Variables':
         lcm = ''
-        for term in termsWithoutParen:
+        maxPowersOfTerms = {}
+        lcmTerms = []
+        for term in terms:
+            if len(Expression(term)) > 1 and (term[0] != '(' and term[-1] != ')'): term = f'({term})'
+            term = Exponential(term)
+
+            if term.coefficient != '1':
+                lcmTerms.append(f'*{term.coefficient}')
+
+            if Constant(term.exponent).is_digit:
+                if term.base not in maxPowersOfTerms:
+                    maxPowersOfTerms.update({term.base: int(term.exponent)})
+                else:
+                    maxPower = maxPowersOfTerms[term.base]
+                    if int(term.exponent) > maxPower:
+                        maxPowersOfTerms.update({term.base: int(term.exponent)})
+
+        for term in maxPowersOfTerms:
+            termToAddToLCM = f"{term}^{'{'}{maxPowersOfTerms[term]}{'}'}"
+            termToAddToLCM = termToAddToLCM.replace('^{1}', '')
+            lcmTerms.append(termToAddToLCM)
+
+        digitTerms = ''
+        termsWithExponentsAndNoParen = ''
+        termsWithoutExponent = ''
+        termsWithParen = ''
+
+        for term in lcmTerms:
+            if term[0] == '*' or Constant(term).is_digit:
+                digitTerms += term
+            elif '^{' in term and '(' not in Exponential(term).base:
+                termsWithExponentsAndNoParen += term
+            elif '^{' not in term and '(' not in term and Exponential(term).exponent == '1':
+                termsWithoutExponent += term
+            else:
+                termsWithParen += term
+
+        for term in digitTerms:
+            lcm += term
+        for term in termsWithExponentsAndNoParen:
+            lcm += term
+        for term in termsWithoutExponent:
             lcm += term
         for term in termsWithParen:
             lcm += term
+
+        if lcm[0] == '*': lcm = lcm[1:]
         return lcm
     else:
         multiples = []
@@ -1799,8 +1966,24 @@ def getLCM(terms: list, listOfNumbers=False):
         commonMultiples = multiples[0].intersection(*multiples)
         return min(commonMultiples)
 def getLCMFactor(fracDenominator: str, denominators: list):
+    denominatorDigits = []
+    denominatorVariables = []
+    for term in denominators:
+        if Constant(term).is_digit: denominatorDigits.append(term)
+        else: denominatorVariables.append(term)
+
     fracDenominator = [fracDenominator]
     lcmFactorList = list_diff(denominators, fracDenominator)
+
+    if len(denominatorDigits) > 1:
+        variableLCMFactor = list_diff(denominatorVariables, fracDenominator)
+        digitsLCM = product(denominatorDigits)
+        denominatorCoefficient = float(Exponential(fracDenominator).coefficient)
+        lcmFactor = f'{digitsLCM/denominatorCoefficient}'
+        if Constant(lcmFactor).is_integer: lcmFactor = lcmFactor[:-2]
+        for var in variableLCMFactor: lcmFactor += var
+        return lcmFactor
+
 
     termsWithoutParen = ''
     termsWithParen = ''
@@ -2026,6 +2209,45 @@ def indexOf(iterable, searchFor):
             return i
     return None
 
+
+def convertToStandardForm(expression):
+    if type(expression) != Expression: expression = Expression(expression)
+
+    terms = expression.getTerms()
+
+    newExpression = ''
+    digits = ''
+    termsWithoutParen = ''
+    termsWithParen = ''
+    for term in terms:
+        term = str(term)
+        if term[0] != '+' and term[0] != '-': term = f'+{term}'
+        if Constant(term).is_digit:
+            digits += term
+        elif '(' in term:
+            termsWithParen += term
+        elif '^{' in term or 'sqrt{' in term or '*' in term:
+            termsWithoutParen += term
+        else:
+            charDigits, variables, newTerm = '', '', ''
+            for char in term:
+                if Constant(char).is_digit or char in {'+', '-'}:
+                    charDigits += char
+                else:
+                    variables += char
+
+            for digit in charDigits:  newTerm += digit
+            for var in variables: newTerm += var
+
+            termsWithoutParen += newTerm
+
+    for term in termsWithParen: newExpression += term
+    for term in termsWithoutParen: newExpression += term
+    for term in digits: newExpression += term
+
+    if newExpression[0] == '+': newExpression = newExpression[1:]
+    return newExpression
+
 def getIndexOfLastOccurrence(expression: str, charToFind: str):
     indexes = []
     for i, char in enumerate(expression):
@@ -2052,6 +2274,13 @@ def list_diff(A: list, B: list):
             newList.append(item)
     return newList
 
+def numOccurrences(expression, charToCheck):
+    """ RETURNS THE NUMBER OF SPECIFIED OCCURRENCE IN A STRING """
+    counter = 0
+    for char in expression:
+        if char == charToCheck:
+            counter += 1
+    return counter
 
 def splitAtIndex(expression: iter, index: int):
     splitArray = [expression[0:index], expression[index + 1:]]
@@ -2074,7 +2303,7 @@ def getMaxPerfectPower(index: int, radicand: int):
     return perfect_powers[-1]
 
 def main():
-    E = Expression('frac{5x^{2}+2x^{2}+1+3}{1+sqrt{10x+3x+y}}+frac{15x+21x}{e^{3x+2x}+sqrt{7x-2x}}')
+    E = Expression('frac{1}{n}-frac{1}{n+1}')
     print(simplifyExpression(E, keyword='combine'))
 
 
