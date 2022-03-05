@@ -586,10 +586,10 @@ class Exponential:
                 self.base = expression[len(coefficient)]
             else:
                 if self.base[len(coefficient)] == '(' and self.base[-1] == ')':
-                    self.base = expression[len(coefficient): len(self.exponent)]
+                    self.base = expression[len(coefficient): len(coefficient)+1]
                     i = 1
                     while not parenIsBalanced(self.base, 'both') or self.base == '':
-                        self.base = expression[len(coefficient): len(self.exponent) + i]
+                        self.base = expression[len(coefficient): len(self.coefficient) + i]
                         i += 1
             self.coefficient = f"{sign}{self.coefficient}"
 
@@ -632,6 +632,8 @@ class Exponential:
 
         # self.expression = f"{self.base}^{'{'}{self.exponent}{'}'}"
 
+    def split(self, char):
+        return self.expression.split(char)
 
     def replace(self, subStringToBeReplace, replacement):
         return self.expression.replace(subStringToBeReplace, replacement)
@@ -859,7 +861,6 @@ def latexify(expression):
             expression = expression.replace(match, f'{match[:-1]} {charToSpace}')
 
 
-
     return expression
 
 
@@ -1019,7 +1020,12 @@ class Expression:
             exponent_pattern = re.compile(r"^[0-9a-zA-Z()+-]+\^{*.+")
             exponent_matches = exponent_pattern.findall(Terms[i])
 
-            if 'frac' in Terms[i][0:5] or fraction_matches != []:
+            exponent_product = re.compile(r'[a-z]\^{.+}[a-z]\^{.+}')
+            matches = exponent_product.findall(str(Terms[i]))
+
+            if  len(matches) > 0:
+                Terms[i] = Constant(Terms[i])
+            elif 'frac' in Terms[i][0:5] or fraction_matches != []:
                 Terms[i] = Fraction(Terms[i])
             elif ('sqrt' in Terms[i][0:5] and parenIsBalanced(Terms[i][0:5])) or radical_matches != []:
                 Terms[i] = Radical(Terms[i])
@@ -1096,6 +1102,7 @@ class Constant(ArithmeticExpression):
             self.val = int(self.expression)
 
 def simplifyExpression(expression: Expression, keyword=None, Steps=None, groupedTerms=None, recursiveCall=False):
+    expression = Expression(expression.replace(' ', ''))
     # FORMAT
     pattern = re.compile(r'^\(.+\)$')
     matches = pattern.findall(str(expression))
@@ -1112,6 +1119,62 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
 
     if Steps is None: Steps = []
     if keyword is None: keyword = 'simplify'
+
+
+    """ MULTIPLY TERMS """
+    if '*' in expression or len(matches)>0:
+        for term in expression.getTerms():
+            if term[0] == '+' or term[0] == '-': term = term[1:]
+            if '*' in term and type(term) != Fraction:
+                if '(' in term:
+                    pass
+                else:
+                    termsToBeMultiplied = term.split('*')
+                    if listIsInt(termsToBeMultiplied):
+                        solution = product(termsToBeMultiplied)
+                        productStep = createMainStep(r'\text{Multiply And Divide (left to right)}',
+                                                    latexify(f'{term}={solution}'))
+                        Steps.append(productStep)
+                        expression = expression.replace(str(term), str(solution))
+                    else:
+                        solution = getProduct2(termsToBeMultiplied)
+                        productStep = createMainStep(r'\text{Multiply And Divide (left to right)}',
+                                                    latexify(f'{term}={solution}'))
+                        Steps.append(productStep)
+                        expression = expression.replace(str(term), solution)
+                # Steps.append(createMainStep(r'\text{Combine Results}', latexify(f'{expression}')))
+            else:
+                pass
+
+        expression = Expression(expression)
+        for term in expression.getTerms():
+            product_pattern = re.compile(r'}\w')
+            matches = product_pattern.findall(str(term))
+            if len(matches) > 0:
+                sign = term[0]
+                if (sign != '+' and sign != '-'): sign = '+'
+                if term[0] == '+': term = term[1:]
+                productTerms = []
+                termToAdd = ''
+                for char in term:
+                    termToAdd += char
+                    if char == '}':
+                        termToAdd = Expression(termToAdd)
+                        termSimplification = simplifyExpression(termToAdd)
+                        simplifiedTerm = parseLatex(termSimplification['finalResult'])
+                        if simplifiedTerm != str(termToAdd):
+                            # CREATE AND ADD E-STEP
+                            heading = latexify(f'{termToAdd}={simplifiedTerm}')
+                            e_step = createExpandableStep(heading, termSimplification['steps'])
+                            Steps.append(e_step)
+                        productTerms.append(simplifiedTerm)
+                        termToAdd = ''
+
+                simplifiedProduct = getProduct2(productTerms)
+                expression = Expression(expression.replace(str(term), simplifiedProduct))
+
+
+
     if groupedTerms is None: groupedTerms = expression.getGroupedTerms()
 
     if keyword == 'combine':
@@ -2202,13 +2265,81 @@ def product(numbers: list):
     for num in numbers:
         prod *= int(num)
     return prod
+def getProduct2(terms: list):
+    Coefficients = []
+
+    """ GET COEFFICIENTS """
+    for term in terms:
+        C = ''
+        for char in term:
+            if not Constant(char).is_digit and char != '.':
+                break
+            else:
+                C += char
+        if C == '': C = '1'
+
+        Coefficients.append(C)
+
+    seenTerms = {}
+    for term in terms:
+        if term[0] == '+' or term[0] == '-': term = term[1:]
+        term = Exponential(term)
+
+        if term.base not in seenTerms:
+            seenTerms.update({str(term.base): term.exponent})
+        else:
+            counter = seenTerms[term.base]
+            seenTerms.update({term.base: f'{counter}+{term.exponent}'})
+
+
+    finalCoefficient = product(Coefficients)
+
+    finalProduct = f'{finalCoefficient}'
+
+
+    for term in seenTerms:
+        if term != finalProduct and not Constant(term).is_digit:
+            finalProduct += f"{term}^{'{'}{seenTerms[term]}{'}'}"
+
+    finalProduct = finalProduct.replace('^{1}', '')
+
+
+    return finalProduct
+
+def listIsInt(X: list):
+    """ RETURNS THE TYPE OF THE ELEMENTS IN A LIST """
+    isInt = True
+    for item in X:
+        if not Constant(item).is_digit:
+            isInt = False
+
+    return isInt
+
+def multiplyTerms(terms: list):
+    seenTerms = {}
+    for term in terms:
+        if term[0] == '+' or term[0] == '-': term = term[1:]
+        if term not in seenTerms:
+            seenTerms.update({term: 1})
+        else:
+            counter = seenTerms[term]
+            seenTerms.update({term: counter+1})
+
+    product = ''
+    for term in seenTerms:
+        if '^' not in term:
+            product += f"{term}^{'{'}{seenTerms[term]}{'}'}"
+        else:
+            product += f"*{term}^{'{'}{seenTerms[term]}{'}'}"
+
+    product = product.replace('^{1}', '')
+    return product
 
 def indexOf(iterable, searchFor):
     for i, item in enumerate(iterable):
         if item == searchFor:
             return i
     return None
-
 
 def convertToStandardForm(expression):
     if type(expression) != Expression: expression = Expression(expression)
@@ -2303,8 +2434,9 @@ def getMaxPerfectPower(index: int, radicand: int):
     return perfect_powers[-1]
 
 def main():
-    E = Expression('frac{1}{n}-frac{1}{n+1}')
-    print(simplifyExpression(E, keyword='combine'))
+    E = Expression('2*3*4*x+5*3*2*y*y')
+    # E = Expression('6+x^{2}*y^{3}')
+    print(simplifyExpression(E, keyword='simplify'))
 
 
 

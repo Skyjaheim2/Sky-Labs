@@ -493,7 +493,9 @@
             // Check for keyword
             let checkInput = enteredMath.split(" ")
             if (checkInput.length > 1)
-                enteredMath = checkInput[1]
+                if (checkInput[0] === 'simplify\\' || checkInput[0] === 'combine\\')
+                    enteredMath = checkInput[1]
+
             StepsUI.addLatexToElement(document.querySelector('#finalSolutionHeading'), `{\\displaystyle ${enteredMath}=${finalResult}}`)
 
         }
