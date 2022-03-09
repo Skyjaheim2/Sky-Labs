@@ -12,6 +12,7 @@ from math import inf
 
 
 app = Flask(__name__)
+app.config['TESTING'] = False
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['SESSION_PERMANENT'] = False
@@ -64,7 +65,7 @@ def solve(liveSolve):
     keyword = None
     allKeyWords = ['simplify', 'combine']
     splitInput = userInput.split(' ')
-    print(userInput)
+    # print(userInput)
     if len(splitInput) > 1:
         keyword = splitInput[0][:-1]
         if keyword in allKeyWords:
@@ -73,18 +74,25 @@ def solve(liveSolve):
             keyword = None
 
 
-
-    print(f"Subject And Topic: {subjectAndTopic}")
-    print(f"Keyword: {keyword}")
-    print(f'Before parse: {userInput}')
+    # print(f"Subject And Topic: {subjectAndTopic}")
+    # print(f"Keyword: {keyword}")
+    # print(f'Before parse: {userInput}')
     userInput = parseLatex(userInput)
-    print(f'After parse: {userInput}')
+    # print(f'After parse: {userInput}')
 
     if subjectAndTopic['subject'] == 'algebra':
-        # return ""
+        
         userInput = Expression(userInput)
-        Solution = simplifyExpression(userInput, keyword=keyword)
-        return jsonify(Solution)
+        if not app.config['TESTING']:
+            try:
+                Solution = simplifyExpression(userInput, keyword=keyword)
+                return jsonify(Solution)
+            except:
+                return "Unable to solve"
+        else:
+            Solution = simplifyExpression(userInput, keyword=keyword)
+            return jsonify(Solution)
+
 
     if subjectAndTopic['subject'] == 'discreteMath':
         Solution = solveDiscreteMath(subjectAndTopic['selectedTopic'], userInput)
