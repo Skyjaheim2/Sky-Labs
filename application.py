@@ -25,11 +25,9 @@ app.config['SESSION_FILE_THRESHOLD'] = 500
 # ENABLE SESSION
 Session(app)
 
-from Methods import parseLatex, latexify
+from Methods import parseLatex, latexify, simplifyExpression, Expression
 from methodsDiscreteMath import solveDiscreteMath
 from calculusMethods import solveCalculus
-# from test import simplifyExpression, Expression
-
 
 
 @app.route("/")
