@@ -28,7 +28,7 @@ Session(app)
 from Methods import parseLatex, latexify
 from methodsDiscreteMath import solveDiscreteMath
 from calculusMethods import solveCalculus
-from test import simplifyExpression, Expression
+# from test import simplifyExpression, Expression
 
 
 
