@@ -1,8 +1,29 @@
 import os
-from flask import Flask, render_template, request, redirect, jsonify
 import json
+from flask import Flask, session, render_template, request, redirect, jsonify
+from flask_session import Session
+from dotenv import load_dotenv
+
+from sqlalchemy import and_
+import datetime
+from datetime import date, timedelta, tzinfo, datetime
+from pytz import timezone
+from math import inf
+
 
 app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config['SESSION_PERMANENT'] = False
+app.config["SESSION_TYPE"] = "filesystem"
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=5)
+# The maximum number of items the session stores
+# before it starts deleting some, default 500
+app.config['SESSION_FILE_THRESHOLD'] = 500
+# db.init_app(app)
+
+# ENABLE SESSION
+Session(app)
 
 from Methods import parseLatex, latexify
 from methodsDiscreteMath import solveDiscreteMath

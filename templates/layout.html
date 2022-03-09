@@ -6,8 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <!-- BOOTSTRAP -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+
+    <!-- SKY-RATINGS STYLING -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='sky-ratings-static/fonts/simple-line-icons.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='sky-ratings-static/css/smoothproducts.css') }}">
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='sky-ratings-static/bootstrap/css/bootstrap.min.css') }}">
+
+    <!-- BOOTSTRAP -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -75,6 +84,7 @@
     .subject-tabs {
         height: 55px;
         background-color: #393737;
+        margin-top: 80px;
         margin-bottom: 0;
         padding-left: 19.4%;
     }
@@ -227,6 +237,9 @@
         /*font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;*/
         font-family: 'Computer Modern',serif;
     }
+    .nav-item {
+        cursor: pointer;
+    }
     .expandable-step-container {
         background-color: rgba(215, 213, 213, 0.45);
         font-family: "Times New Roman", Symbola, serif;
@@ -314,7 +327,34 @@
     <div class="container-1">
 
         <div class="heading-container">
-            <div id="mainHeading"><span style="color: #007bff">Sky</span>Labs</div>
+
+            <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-white clean-navbar">
+        <div class="container"><a id="skyRatingsHeaderBtn" class="navbar-brand logo" href="#">Sky Labs</a><button id="navBarBtn" data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div id="alertDiv">
+                <!--                        <div id="alertMessage" class="alert alert-warning" role="alert">You Are Not Registered</div>-->
+            </div>
+
+
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a id="homeHeaderBtn" class="nav-link">Practice</a></li>
+                    <li class="nav-item"><a id="moviesHeaderBtn" class="nav-link">Notebook</a></li>
+               <li class="nav-item"><a id="tvShowsHeaderBtn" class="nav-link" href="#">History</a></li>
+
+                    <li class="nav-item"></li>
+                    <li class="nav-item"></li>
+
+                    <li class="nav-item"><a id="loginBtn" href="#loginModal" class="nav-link edit" data-toggle="modal">Login</a></li>
+                    <li class="nav-item"><a id="signUpBtn" href="#signUpModal" class="nav-link edit" data-toggle="modal">Sign Up</a></li>
+                    <li class="nav-item"><a id="signOutBtn" class="nav-link edit" data-toggle="modal">Sign Out</a></li>
+                    {% block navBarItems %}
+                    {% endblock %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+            <!-- <div id="mainHeading"><span style="color: #007bff">Sky</span>Labs</div> -->
 
             <div class="subject-tabs">
                 <div class="btn-group">
@@ -417,6 +457,87 @@
         </div>
 
 
+    </div>
+
+    <!-- MODAL BOXES  -->
+
+    <!-- LOGIN MODAL -->
+    <div id="loginModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="loginForm">
+                    <!-- HEADER -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Login</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <!-- BODY -->
+                    <div class="modal-body">
+                        <!-- USERNAME -->
+                        <div class="form-group">
+                            <label class="inputLabel" for="userNameInput">Username</label>
+                            <input id="userNameInput" class="form-control" autocomplete="off">
+                        </div>
+                        <!-- USER PASSWORD -->
+                        <div class="form-group">
+                            <label class="inputLabel" for="userPasswordInput">Password</label>
+                            <input id="userPasswordInput" class="form-control" autocomplete="off" type="password">
+                        </div>
+                        <p id="loginModalErrorMessage" class="text-warning"></p>
+                    </div>
+                    <!-- LOGIN AND CANCEL BUTTON -->
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" id="loginModalCancelBtn" data-dismiss="modal" value="Cancel">
+                        <button id="loginModalBtn" class="btn btn-primary" type="button">Login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIGN UP MODAL -->
+    <div id="signUpModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="signUpForm">
+                    <!-- HEADER -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Sign Up</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <!-- BODY -->
+                    <div class="modal-body">
+                        <!-- USERNAME -->
+                        <div class="form-group">
+                            <label class="inputLabel" for="signUpUserNameInput">Username</label>
+                            <input id="signUpUserNameInput" class="form-control" autocomplete="off">
+                        </div>
+                        <!-- EMAIL -->
+                        <div class="form-group">
+                            <label class="inputLabel" for="signUpUserEmailInput">Email</label>
+                            <input id="signUpUserEmailInput" class="form-control" autocomplete="off">
+                        </div>
+                        <p class="text-warning"><small></small></p>
+                        <!-- USER PASSWORD -->
+                        <div class="form-group">
+                            <label class="inputLabel" for="signUpUserPasswordInput">Password</label>
+                            <input id="signUpUserPasswordInput" class="form-control" autocomplete="off" type="password">
+                        </div>
+                        <!-- CONFIRM PASSWORD -->
+                        <div class="form-group">
+                            <label class="inputLabel" for="signUpConfirmPasswordInput">Confirm Password</label>
+                            <input id="signUpConfirmPasswordInput" class="form-control" autocomplete="off" type="password">
+                        </div>
+                        <p id="signUpModalErrorMessage" class="text-warning"></p>
+                    </div>
+                    <!-- SAVE AND CANCEL BUTTON -->
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" id="signUpModalCancelBtn" data-dismiss="modal" value="Cancel">
+                        <button id="signUpModalBtn" class="btn btn-primary" type="button" disabled>Sign Up</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
 
@@ -1469,6 +1590,15 @@
 <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>-->
 <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>-->
+
+<!-- SKY-RATINGS-SCRIPTS -->
+<script src="{{ url_for('static', filename='sky-ratings-static/js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='sky-ratings-static/bootstrap/js/bootstrap.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+<script src="{{ url_for('static', filename='sky-ratings-static/js/smoothproducts.min.js') }}"></script>
+<script src="{{ url_for('static', filename='sky-ratings-static/js/theme.js') }}"></script>
+
+
 
 {% block script %}
 {% endblock %}
