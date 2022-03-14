@@ -12,11 +12,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='sky-ratings-static/fonts/simple-line-icons.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='sky-ratings-static/css/smoothproducts.css') }}">
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='sky-ratings-static/bootstrap/css/bootstrap.min.css') }}">
 
     <!-- BOOTSTRAP -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -54,7 +53,7 @@
     </script>
 
 
-    <title>Title</title>
+    <title>Sky Labs</title>
     {% block head %}
     {% endblock %}
 
@@ -328,33 +327,32 @@
 
         <div class="heading-container">
 
-            <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-white clean-navbar">
-        <div class="container"><a id="skyRatingsHeaderBtn" class="navbar-brand logo" href="#">Sky Labs</a><button id="navBarBtn" data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
-            <div id="alertDiv">
-                <!--                        <div id="alertMessage" class="alert alert-warning" role="alert">You Are Not Registered</div>-->
+        <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-white clean-navbar">
+            <div class="container"><a id="skyRatingsHeaderBtn" class="navbar-brand logo" href="#">Sky Labs</a><button id="navBarBtn" data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+                <div id="alertDiv">
+                    <!--                        <div id="alertMessage" class="alert alert-warning" role="alert">You Are Not Registered</div>-->
+                </div>
+
+
+                <div class="collapse navbar-collapse" id="navcol-1">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item"><a id="homeHeaderBtn" class="nav-link">Practice</a></li>
+                        <li class="nav-item"><a id="moviesHeaderBtn" class="nav-link">Notebook</a></li>
+                        <li class="nav-item"><a id="tvShowsHeaderBtn" class="nav-link" href="#">History</a></li>
+
+                        <li class="nav-item"></li>
+                        <li class="nav-item"></li>
+
+                        <li class="nav-item"><a id="loginBtn" href="#loginModal" class="nav-link edit" data-toggle="modal">Login</a></li>
+                        <li class="nav-item"><a id="signUpBtn" href="#signUpModal" class="nav-link edit" data-toggle="modal">Sign Up</a></li>
+                        <li class="nav-item"><a id="signOutBtn" class="nav-link edit" style="display: none;" data-toggle="modal">Sign Out</a></li>
+                        {% block navBarItems %}
+                        {% endblock %}
+                    </ul>
+                </div>
             </div>
+        </nav>
 
-
-            <div class="collapse navbar-collapse" id="navcol-1">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item"><a id="homeHeaderBtn" class="nav-link">Practice</a></li>
-                    <li class="nav-item"><a id="moviesHeaderBtn" class="nav-link">Notebook</a></li>
-               <li class="nav-item"><a id="tvShowsHeaderBtn" class="nav-link" href="#">History</a></li>
-
-                    <li class="nav-item"></li>
-                    <li class="nav-item"></li>
-
-                    <li class="nav-item"><a id="loginBtn" href="#loginModal" class="nav-link edit" data-toggle="modal">Login</a></li>
-                    <li class="nav-item"><a id="signUpBtn" href="#signUpModal" class="nav-link edit" data-toggle="modal">Sign Up</a></li>
-                    <li class="nav-item"><a id="signOutBtn" class="nav-link edit" data-toggle="modal">Sign Out</a></li>
-                    {% block navBarItems %}
-                    {% endblock %}
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-            <!-- <div id="mainHeading"><span style="color: #007bff">Sky</span>Labs</div> -->
 
             <div class="subject-tabs">
                 <div class="btn-group">
@@ -367,7 +365,6 @@
 
             </div>
 
-            <!--        <div class="subject-topics"><button class="btn btn-light subject-option-btn">Basic Operation</button><button class="btn btn-light subject-option-btn">Equations</button><button class="btn btn-light subject-option-btn">Summation</button><button class="btn btn-light subject-option-btn">Pi (Product) Notation</button><button class="btn btn-light subject-option-btn">Polynomials</button></div>-->
             <div class="subject-topics"></div>
         </div>
 
@@ -387,64 +384,9 @@
                 {% endblock %}
 
                 <div class="results-container">
-<!--                    <div id="fooDiv" style="overflow-x: scroll; white-space: nowrap;">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi assumenda, delectus deserunt dicta ducimus error excepturi, hic minima officia pariatur possimus quas tenetur! Amet dignissimos iure magnam quis quos? Mollitia?</div>-->
                     <div id="finalSolutionHeading"></div>
                     <div class="steps-heading">Steps</div>
                     <div class="steps-container">
-<!--                        <div class="step-description">Apply Sum/Diff Rule: $ \left( f \pm g \right)' = f' \pm g' $</div>-->
-<!--                        <div class="step-info">$ \displaystyle \frac{d}{dx}\left( 5x^3+3x^2 \right) = \frac{d}{dx}\left( x^3 \right) + \frac{d}{dx}\left( x^2 \right) $</div>-->
-
-<!--                        &lt;!&ndash; E-STEP 1 &ndash;&gt;-->
-<!--                        <div id="step-1" class="expandable-step-container">$ \displaystyle \frac{d}{dx}\left( 5x^3 \right) = 15x^2  $<span class="show-steps-span">Show Steps <img class="show-steps-icon" src="{{ url_for('static', filename='img/add.svg') }}"></span></div>-->
-<!--                        <div id="step-solution-1" class="expandable-step-solution-container" data-expanded="false">-->
-<!--                            <div class="expanded-step-heading">$ \displaystyle \frac{d}{dx}\left( 5x^3 \right) $</div>-->
-<!--                            <hr>-->
-<!--                            -->
-<!--                            <div id="step-3" class="expandable-step-container">$ \displaystyle \frac{d}{dx}\left( x^2-->
-<!--                                \right) = 2x $<span class="show-steps-span">Show Steps <img class="show-steps-icon"-->
-<!--                                                                                            src="{{ url_for('static', filename='img/add.svg') }}"></span>-->
-<!--                            </div>-->
-<!--                            <div id="step-solution-3" class="expandable-step-solution-container" data-expanded="false">-->
-<!--                                <div class="expanded-step-heading">$ \displaystyle \frac{d}{dx}\left( x^2 \right) $-->
-<!--                                </div>-->
-<!--                                <hr>-->
-<!--                                <div class="step-description">Apply the Power Rule: $ \left( x^n \right)' = nx^{n-1} $-->
-<!--                                </div>-->
-<!--                                <div class="step-info">$ \displaystyle \frac{d}{dx}\left( x^2 \right) = 2\cdot x^{2-1}-->
-<!--                                    $-->
-<!--                                </div>-->
-
-<!--                                <div class="step-description">Simplify</div>-->
-<!--                                <div class="step-info">$ \displaystyle 2\cdot x^{2-1} = 2x $</div>-->
-
-<!--                            </div>-->
-
-
-<!--                            <div class="step-description">Take the constant out: $ \left(n\cdot f \right)' = n\cdot f' $</div>-->
-<!--                            <div class="step-info">$ \displaystyle \frac{d}{dx}\left( 5x^3\right) = 5 \frac{d}{dx}\left( x^3 \right) $</div>-->
-
-<!--                            <div class="step-description">Apply the Power Rule: $ \left( x^n  \right)' = nx^{n-1} $</div>-->
-<!--                            <div class="step-info">$ \displaystyle 5 \frac{d}{dx}\left( x^3 \right) = 5\cdot 3x^{3-1} $</div>-->
-
-<!--                            <div class="step-description">Simplify</div>-->
-<!--                            <div class="step-info">$ \displaystyle 5\cdot 3x^{3-1} = 15x^2 $</div>-->
-<!--                        </div>-->
-
-<!--                        &lt;!&ndash; E-Step 2 &ndash;&gt;-->
-<!--                        <div id="step-2" class="expandable-step-container">$ \displaystyle \frac{d}{dx}\left( x^2 \right) = 2x  $<span class="show-steps-span">Show Steps <img class="show-steps-icon" src="{{ url_for('static', filename='img/add.svg') }}"></span></div>-->
-<!--                        <div id="step-solution-2" class="expandable-step-solution-container" data-expanded="false">-->
-<!--                            <div class="expanded-step-heading">$ \displaystyle \frac{d}{dx}\left( x^2 \right) $</div>-->
-<!--                            <hr>-->
-<!--                            <div class="step-description">Apply the Power Rule: $ \left( x^n  \right)' = nx^{n-1} $</div>-->
-<!--                            <div class="step-info">$ \displaystyle \frac{d}{dx}\left( x^2 \right) = 2\cdot x^{2-1} $</div>-->
-
-<!--                            <div class="step-description">Simplify</div>-->
-<!--                            <div class="step-info">$ \displaystyle 2\cdot x^{2-1} = 2x $</div>-->
-
-<!--                        </div>-->
-
-<!--                         Solution-->
-<!--                        <div class="final-step">Solution: $ 15x^2+2x $</div>-->
 
 
                     </div>
@@ -533,7 +475,7 @@
                     <!-- SAVE AND CANCEL BUTTON -->
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default" id="signUpModalCancelBtn" data-dismiss="modal" value="Cancel">
-                        <button id="signUpModalBtn" class="btn btn-primary" type="button" disabled>Sign Up</button>
+                        <button id="signUpModalBtn" class="btn btn-primary" type="button">Sign Up</button>
                     </div>
                 </form>
             </div>
@@ -705,7 +647,6 @@
         static getUserInput() {
             return document.querySelector('#userInput').value
         }
-
     }
     class Step {
         constructor(stepDict) {
@@ -725,6 +666,29 @@
         }
     }
     class BaseUI {
+        static userLoggedIn() {
+                let loginBtn = document.querySelector('#loginBtn')
+                let signUpBtn = document.querySelector('#signUpBtn')
+                let signOutBtn = document.querySelector('#signOutBtn')
+
+                // Hide login and sign-up btn
+                loginBtn.style.display = 'none'
+                signUpBtn.style.display = 'none'
+                // Show signOutBtn btn
+                signOutBtn.style.display = 'block'
+            }
+
+            static userSignedOut() {
+                let loginBtn = document.querySelector('#loginBtn')
+                let signUpBtn = document.querySelector('#signUpBtn')
+                let signOutBtn = document.querySelector('#signOutBtn')
+
+                // Show login and sign-up btn
+                loginBtn.style.display = 'block'
+                signUpBtn.style.display = 'block'
+                // Hide signOutBtn
+                signOutBtn.style.display = 'none'
+            }
         static loadDefaultOptions(defaultSubject) {
             // Load Default Subject Tab
             let defaultSubjectTabBtn = document.querySelector(`#${defaultSubject}SubjectTabBtn`)
@@ -929,10 +893,6 @@
             }
 
             // mainHeading.innerHTML += `<span class="topic-extension-heading"> ${mainTopic}→${extensionTopic}</span>`
-
-
-
-
         }
         static getSelectedTopic() {
             let selectedSubjectHeading = document.querySelector('#selectedSubjectTabHeading')
@@ -942,7 +902,6 @@
             else {
                 return selectedSubjectHeading.textContent
             }
-
         }
     }
     class subjectTabsUI {
@@ -960,7 +919,6 @@
             subjectTabHeading.innerHTML = `${btnObj.textContent}`
             // this.loadSideBarBtn(btnObj.dataset.subject)
             this.loadSideBarBtn2(btnObj.dataset.subject)
-
         }
         static showSubjectTopics() {
             let subjectOptionsContainer = document.querySelector('.subject-topics')
@@ -1040,8 +998,7 @@
                 `
             })
             sideBar.innerHTML = sideBarBtnHtml
-
-    }
+        }
         static getTopicsExtension2(subject, topic) {
             let topicsExtension = {
                 'algebra': {
@@ -1099,8 +1056,6 @@
                 `
             })
             return htmlToReturn
-
-
         }
         static getTopicsExtension(subject, topic) {
             switch (subject) {
@@ -1408,7 +1363,6 @@
                 'physics': ['Kinematics', 'Circular-Motion', 'Rotational-Motion', 'Rotational-Dynamics', "Newtons-2nd-Law", 'Momentum', 'Work-and-Energy', 'Fluid-Mechanics', 'Temperature-and-KT', 'Heat', 'Laws-of-Thermodynamics'],
             }
         }
-        
     }
     class Animations {
         static animateShowSteps(stepContainer) {
@@ -1438,16 +1392,120 @@
 
 
     document.addEventListener('DOMContentLoaded', () => {
-
-        // BaseUI.loadDefaultOptions('algebra')
-        let foo = document.querySelector('#fooDiv')
-        // StepsUI.addLatexToElement(foo, '\\text{Apply Sum/Diff Rule:}\\ 5x^2')
+        checkIfUserIsStillLoggedIn()
         BaseUI.loadSymbolsContainer()
 
 
     })
 
+    /* Validate Login Form */
+    document.querySelector('#loginForm').addEventListener('keyup', () => {
+        let usernameInput = document.querySelector('#userNameInput')
+        let passwordInput = document.querySelector('#userPasswordInput')
+        let loginBtn = document.querySelector('#loginModalBtn')
+
+        if (usernameInput.value === '' || passwordInput.value === '') {
+            loginBtn.disabled = true
+        }
+        else {
+            loginBtn.disabled = false
+        }
+    })
+    /* Validate Sign Up Form */
+    document.querySelector('#signUpForm').addEventListener('keyup', () => {
+        let usernameInput = document.querySelector('#signUpUserNameInput')
+        let emailInput = document.querySelector('#signUpUserEmailInput')
+        let passwordInput = document.querySelector('#signUpUserPasswordInput')
+        let confirmPasswordInput = document.querySelector('#signUpConfirmPasswordInput')
+        let signUpBtn = document.querySelector('#signUpModalBtn')
+
+        if (usernameInput.value === '' || emailInput.value === '' || (passwordInput.value !== confirmPasswordInput.value)) {
+            signUpBtn.disabled = true
+        }
+        else {
+            signUpBtn.disabled = false
+        }
+
+        if (confirmPasswordInput.value !== '') {
+            if (passwordInput.value !== confirmPasswordInput.value) {
+            confirmPasswordInput.style.borderColor = 'red'
+            }
+            else {
+                confirmPasswordInput.style.borderColor = ''
+            }
+
+        }
+        
+
+    })
+
     /* ONCLICK EVENTS */
+
+    // Sign up btn
+    document.querySelector('#signUpModalBtn').addEventListener('click', () => {
+        let username = document.querySelector('#signUpUserNameInput').value
+        let email = document.querySelector('#signUpUserEmailInput').value
+        let password = document.querySelector('#signUpUserPasswordInput').value
+        let confirmPassword = document.querySelector('#signUpConfirmPasswordInput').value
+        let cancelBtn = document.querySelector('#signUpModalCancelBtn')
+        let signUpModalErrorMessages = document.querySelector('#signUpModalErrorMessage')
+
+        const request = new XMLHttpRequest();
+
+        request.open('POST', `/signUpUser/${username}/${email}/${password}`)
+        request.onload = () => {
+            const Response = request.responseText
+            if (Response === 'Signed Up') {
+                cancelBtn.click()
+                BaseUI.userLoggedIn()
+
+            }
+            else if (Response === 'User already signed up') {
+                signUpModalErrorMessages.textContent = 'Account Already Exist'
+                    setTimeout(() => {
+                        signUpModalErrorMessages.textContent = ''
+                    }, 2000)
+            }
+        }
+        request.send()
+    })
+
+    // Login btn
+    document.querySelector('#loginModalBtn').addEventListener('click', () => {
+        let username = document.querySelector('#userNameInput').value
+        let password = document.querySelector('#userPasswordInput').value
+        let loginModalErrorMessage = document.querySelector('#loginModalErrorMessage')
+        let cancelBtn = document.querySelector('#loginModalCancelBtn')
+
+        const request = new XMLHttpRequest()
+        request.open('POST', `/loginUser/${username}/${password}`)
+        request.onload = () => {
+            const Response = request.responseText
+            if (Response === "Logged In") {
+                cancelBtn.click()
+                BaseUI.userLoggedIn()
+                showAlert('Logged In', 'primary')
+            }
+            else if (Response === "Invalid Credentials") {
+                loginModalErrorMessage.textContent = 'Invalid Credentials'
+                    setTimeout(() => {
+                        loginModalErrorMessage.textContent = ''
+                    }, 2000)
+            }
+
+        }
+        request.send()
+    })
+    // Sign-Out Btn
+    document.querySelector('#signOutBtn').addEventListener('click', () => {
+        BaseUI.userSignedOut()
+        const request = new XMLHttpRequest()
+        request.open('POST', `/signOut`)
+        request.onload = () => {
+            showAlert('Signed Out', 'danger')
+        }
+        request.send()
+    })
 
     // Show Steps
 
@@ -1491,10 +1549,12 @@
         if (e.target.classList.contains('topics-btn')) {
             let pm = ''
             if (e.target.textContent.includes('+')) {
+                e.target.style.ariaExpanded = 'true'
                 pm = '-'
                 e.target.innerHTML = e.target.innerHTML.replace('+', pm)
             }
             else {
+                e.target.style. ariaExpanded = 'false'
                 pm = '+'
                 e.target.innerHTML = e.target.innerHTML.replace('-', pm)
             }
@@ -1564,6 +1624,55 @@
         }
     })
 
+    function showAlert(alertText, type) {
+
+        if (type === undefined || !(['primary', 'warning', 'danger', 'success'].includes(type))) {
+            type = 'primary'
+        }
+        // Create alert div
+        const alertDiv = document.createElement('div')
+        alertDiv.role = 'alert'
+        alertDiv.className = `alert alert-${type}`
+        alertDiv.id = 'alertMessage'
+        alertDiv.style.borderRadius = '10px'
+        alertDiv.style.margin = '0'
+        alertDiv.textContent = alertText
+        if (type === 'danger') {
+            // alertDiv.style.backgroundColor = 'rgb(209,13,13)'
+        }
+        if (type === 'primary') {
+            // alertDiv.style.backgroundColor = 'rgb(80, 113, 213)'
+        }
+        if (type === 'success') {
+            // alertDiv.style.backgroundColor = 'rgb(76, 180, 40)'
+        }
+        if (type === 'warning') {
+            // alertDiv.style.backgroundColor = 'rgb(227, 148, 16)'
+        }
+        // Add alert to page
+        document.querySelector('#alertDiv').appendChild(alertDiv)
+
+        // Remove alert
+        setTimeout(()=>{alertDiv.remove()}, 2000)
+    }
+
+    function checkIfUserIsStillLoggedIn() {
+        const request = new XMLHttpRequest()
+
+        request.open('GET', `/checkIfUserIsStillLoggedIn`)
+        request.onload = () =>{
+            const Response = JSON.parse(request.responseText)
+            if (Response === true) {
+                BaseUI.userLoggedIn()
+            }
+            else {
+                BaseUI.userSignedOut()
+            }
+
+        }
+        request.send()
+    }   
+
     function extractAllSimplificationsFromSolution(solution) {
         let allSimplifications = {}
         let i = 1
@@ -1572,7 +1681,6 @@
 
         }
         return allSimplifications
-
     }
     function escapeRegExp(string) {
         return string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -1593,7 +1701,7 @@
 
 <!-- SKY-RATINGS-SCRIPTS -->
 <script src="{{ url_for('static', filename='sky-ratings-static/js/jquery.min.js') }}"></script>
-<script src="{{ url_for('static', filename='sky-ratings-static/bootstrap/js/bootstrap.min.js') }}"></script>
+<!-- <script src="{{ url_for('static', filename='sky-ratings-static/bootstrap/js/bootstrap.min.js') }}"></script> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
 <script src="{{ url_for('static', filename='sky-ratings-static/js/smoothproducts.min.js') }}"></script>
 <script src="{{ url_for('static', filename='sky-ratings-static/js/theme.js') }}"></script>

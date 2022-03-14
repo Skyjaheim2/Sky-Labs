@@ -1,18 +1,28 @@
 import os
 import json
+import hashlib
+import datetime
+
 from flask import Flask, session, render_template, request, redirect, jsonify
 from flask_session import Session
 from dotenv import load_dotenv
 
 from sqlalchemy import and_
-import datetime
+from models import *
+
+
 from datetime import date, timedelta, tzinfo, datetime
 from pytz import timezone
 from math import inf
 
+# Check for environment variables
+load_dotenv()
+if not os.getenv("DATABASE_URL"):
+    raise RuntimeError("DATABASE_URL is not set")
+
 
 app = Flask(__name__)
-app.config['TESTING'] = False
+app.config['TESTING'] = True
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['SESSION_PERMANENT'] = False
@@ -21,7 +31,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=5)
 # The maximum number of items the session stores
 # before it starts deleting some, default 500
 app.config['SESSION_FILE_THRESHOLD'] = 500
-# db.init_app(app)
+db.init_app(app)
 
 # ENABLE SESSION
 Session(app)
@@ -36,6 +46,39 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/loginUser/<string:userName>/<string:userPassword>", methods=['POST', 'GET'])
+def loginUser(userName, userPassword):
+    checkUser = User.query.filter(and_(User.name == userName, User.password == hash_password(userPassword))).all()
+
+
+    if len(checkUser) != 0:
+        session['user_id'] = checkUser[0].id
+        session['logged_in'] = True
+        return "Logged In"
+
+    else:
+        if request.method == 'GET':
+            return "Signed Up"
+        return "Invalid Credentials"
+
+
+@app.route("/signUpUser/<string:userName>/<string:userEmail>/<string:userPassword>", methods=['POST'])
+def signUpUser(userName, userEmail, userPassword):
+    newUser = User(name=userName, email=userEmail, password=userPassword)
+    if newUser.addUser() == -1:
+        return "User already signed up"
+    else:
+        return redirect(f"/loginUser/{userEmail}/{userPassword}")
+
+
+@app.route("/signOut", methods=['POST'])
+def signOut():
+    session.clear()
+    return "Signed Out"
+
+@app.route("/checkIfUserIsStillLoggedIn", methods=['GET'])
+def checkIfUserIsStillLoggedIn():
+    return json.dumps(True) if 'logged_in' in session else json.dumps(False)
 
 @app.route("/algebra")
 def algebra():
@@ -104,6 +147,13 @@ def solve(liveSolve):
 
 
 
+def hash_password(password):
+    return hashlib.sha256(str.encode(password)).hexdigest()
+
+def check_password_hash(password, hash):
+    if hash_password(password) == hash:
+        return True
+    return False
 
 
 
