@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block head %}
+{% endblock %}
+
+{% block style %}
+	<style>
+		#mainHeading {
+			text-align: center;
+	        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+	        font-size: 35px;
+	        font-weight: 500;
+		}
+		.main-container {
+			height: auto;
+			width: 100px;
+			/*border: 2px solid #e0dddd;*/
+			border-radius: 10px;
+			margin: auto;
+			margin-top: 100px;
+			width: 70%;
+		}
+		.history-date {
+			font-size: 22px;
+			font-family: ''Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;';
+		}
+		.expandable-date-container {
+			background-color: rgba(215, 213, 213, 0.45);
+	        font-family: "Times New Roman", Symbola, serif;
+	        font-size: 17px;
+	        padding: 7px;
+	        border-radius: 10px;
+	        margin: auto;
+	        width: 93%;
+		}	
+		.history-item {
+			font-size: 20px;
+			margin: auto;
+			margin-top: 10px;
+			margin-bottom: 10px;
+			width: 90%;
+			border-radius: 10px;
+			padding: 10px;
+			box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.5);
+		}
+		.history-container {
+			overflow: hidden;
+			/*border-radius: 10px;*/
+			border: none;
+			margin-top: 3px;
+			margin-bottom: 3px;
+			height: 0;
+		}
+		.show-steps-span {
+	        font-family: "Times New Roman", Symbola, serif;
+	        font-size: 16px;
+	        float: right;
+	        cursor: pointer;
+	    }
+	    .show-steps-icon {
+	        width: 25px;
+	        height: 25px;
+	    }
+	    @keyframes stepExpanded {
+	        from {
+	            height: 0;
+	            padding: 0;
+	            box-shadow: none;
+	        }
+	        to {
+	            height: 300px;
+	            padding: 10px;
+	            /*box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.5);*/
+	        }
+
+	    }
+	    @keyframes stepCollapsed {
+	        from {
+	            height: 300px;
+	            padding: 10px;
+	            /*box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.5);*/
+	        }
+	        to {
+	            height: 0;
+	            padding: 0;
+	            box-shadow: none;
+	            /*padding-top: 40px;*/
+	        }
+	    }
+	</style>
+{% endblock %}
+
+{% block body %}
+	<div class="main-container">
+		<div id="mainHeading">History</div>
+
+		<!-- <div class="expandable-date-container">
+			<span class="history-date">March 15, 2022</span>
+			<span class="show-steps-span">Show <img class="show-steps-icon" src="/static/img/add.svg"></span>
+		</div>
+		<div class="history-container" data-expanded="false">
+			<div class="history-item">x+3x</div>
+			<div class="history-item">35x+9x^2+12x+9</div>
+			<div class="history-item">\cfrac{1}{1+x+x^2}+\cfrac{1+x}{e^x+x^2+x}</div>
+			<div class="history-item">\sqrt{12+x^2+3x^2+2y+16y+1}</div>
+			<div class="history-item">\cfrac{\partial}{\partial x}\left(e^{-3t}\cos(3x+1)\right)</div>
+		</div>
+		
+
+		<div class="expandable-date-container">
+			<span class="history-date">March 16, 2022</span>
+			<span class="show-steps-span">Show <img class="show-steps-icon" src="/static/img/add.svg"></span>
+		</div>
+		<div class="history-container" data-expanded="false">
+			<div class="history-item">\text{simplify}\ x+3x</div>
+			<div class="history-item">35x+9x^2+12x+9</div>
+			<div class="history-item">\text{combine}\ \cfrac{1}{1+x+x^2}+\cfrac{1+x}{e^x+x^2+x}</div>
+			<div class="history-item">\sqrt{12+x^2+3x^2+2y+16y+1}</div>
+			<div class="history-item">\cfrac{\partial}{\partial x}\left(e^{-3t}\cos(3x+1)\right)</div>
+		</div> -->
+		
+
+	</div>
+	
+{% endblock %}
+
+{% block script %}
+	<script>
+		class HistoryItem {
+			constructor(history_item_obj) {
+				this.expression = history_item_obj.expression
+				this.keyword = history_item_obj.keyword
+				this.subject = history_item_obj.subject
+			}
+		}
+		class HistoryUI {
+			static displayHistory() {
+				let mainContainer = document.querySelector('.main-container')
+				const request = new XMLHttpRequest()
+				request.open('GET', '/getUserHistory')
+				request.onload = () => {
+					if (request.status === 200) {
+						const History = JSON.parse(request.responseText)
+						for (const date in History) {
+							/* Add expandable-date container div */
+							mainContainer.innerHTML += `
+								<div class="expandable-date-container">
+									<span class="history-date">${date}</span>
+									<span class="show-steps-span">Show <img class="show-steps-icon" src="/static/img/add.svg"></span>
+								</div>
+							`
+							/* Create history-container div */
+							let historyContainerDiv = document.createElement('div')
+							historyContainerDiv.className = 'history-container'
+							historyContainerDiv.dataset.expanded = 'false'
+
+							History[date].forEach((item) => {
+								/* Populate history-container-div */
+								let history_item = new HistoryItem(item)
+								let historyItemDiv = document.createElement('div')
+								historyItemDiv.className = 'history-item'
+
+								if (history_item.keyword === null) {
+									historyItemDiv.textContent = `\\displaystyle ${history_item.expression}`
+								}
+								else {
+									historyItemDiv.textContent = `\\displaystyle \\text{${history_item.keyword}}\\ ${history_item.expression}`
+								}
+								historyContainerDiv.appendChild(historyItemDiv)
+							})
+							/* Add history-container-div */
+							mainContainer.appendChild(historyContainerDiv)
+						}
+						/* Show History on-click functionality */
+						const numHistory = document.querySelectorAll('.expandable-date-container').length
+						const expandableDates = document.querySelectorAll('.expandable-date-container')
+						const historyContainers = document.querySelectorAll('.history-container')
+
+						for (let i=0; i<numHistory; i++) {
+							expandableDates[i].addEventListener('click', (e) => {
+								let historyContainer = historyContainers[i]
+								if (e.target.className === 'show-steps-span') {
+
+									if (historyContainer.dataset.expanded === 'false') {
+										HistoryUI.expandHistoryContainer(historyContainer)
+									}
+									else {
+										HistoryUI.collapseHistoryContainer(historyContainer)
+									}
+								}
+								
+							})
+						}
+						HistoryUI.addLatexToHistoryItems()
+
+						// Open the first history item after half a second
+						setTimeout(() => {
+							let historyContainer = document.querySelector('.history-container')
+							HistoryUI.expandHistoryContainer(historyContainer)
+						}, 500)
+							
+
+
+						
+					}
+					
+				}
+				request.send()
+			}
+			static expandHistoryContainer(historyContainer) {
+				const numHistory = document.querySelectorAll('.expandable-date-container').length
+				if (numHistory > 0) {
+					let pmButton = historyContainer.previousElementSibling.children[1] // Show/Hide btn
+					pmButton.innerHTML = `Hide <img class="show-steps-icon" src="{{ url_for('static', filename='img/minus.svg') }}">`
+	                historyContainer.style.overflow = 'auto'
+	                Animations.animateShowDate(historyContainer)
+				}
+				
+
+			}
+			static collapseHistoryContainer(historyContainer) {
+				const numHistory = document.querySelectorAll('.expandable-date-container').length
+				if (numHistory > 0) {
+					let pmButton = historyContainer.previousElementSibling.children[1] // Show/Hide btn
+					pmButton.innerHTML = `Show <img class="show-steps-icon" src="{{ url_for('static', filename='img/add.svg') }}">`
+	                Animations.animateHideDate(historyContainer)
+	                $(historyContainer).animate({scrollTop: 0}, "fast");
+	                historyContainer.style.overflow = 'hidden'
+				}
+				
+
+			}
+			static addLatexToHistoryItems() {
+				let historyItems = document.querySelectorAll('.history-item')
+				historyItems.forEach((item) => {
+					UI.addLatexToElement(item, item.textContent)
+				})
+			}
+		}
+		class Animations {
+	        static animateShowDate(stepContainer) {
+	            // stepContainer.style.display = 'block'
+	            stepContainer.overflow = 'auto'
+	            stepContainer.style.animationName = 'stepExpanded'
+	            stepContainer.style.animationDuration = '0.5s'
+	            stepContainer.style.animationFillMode = 'forwards'
+	            stepContainer.dataset.expanded = 'true'
+
+	            stepContainer.addEventListener('animationend', () => {
+	                // stepContainer.overflow = 'auto'
+	                // stepContainer.style.display = 'block'
+	            })
+	        }
+	        static animateHideDate(stepContainer) {
+	            stepContainer.style.animationName = 'stepCollapsed'
+	            stepContainer.style.animationDuration = '0.5s'
+	            stepContainer.style.animationFillMode = 'forwards'
+	            stepContainer.dataset.expanded = 'false'
+
+	            stepContainer.addEventListener('animationend', () => {
+	                // stepContainer.style.overflow = 'hidden'
+	            })
+	        }
+    	}
+		document.addEventListener('DOMContentLoaded', () => {
+			UI.updateHeaderButtons('history')
+			HistoryUI.displayHistory()
+			
+
+		})
+		
+
+
+		
+	</script>
+{% endblock %}	

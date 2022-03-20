@@ -22,7 +22,7 @@ if not os.getenv("DATABASE_URL"):
 
 
 app = Flask(__name__)
-app.config['TESTING'] = True
+app.config['TESTING'] = False
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['SESSION_PERMANENT'] = False
@@ -36,20 +36,24 @@ db.init_app(app)
 # ENABLE SESSION
 Session(app)
 
-from Methods import parseLatex, latexify, simplifyExpression, Expression
+from Methods import parseLatex, latexify, simplifyExpression, Expression, reverseList
 from methodsDiscreteMath import solveDiscreteMath
 from calculusMethods import solveCalculus
 
 
 @app.route("/")
-def index():
-    return render_template("index.html")
+def index(message=None):
+    return redirect("/algebra")
+
+@app.route("/history")
+def history():
+    return render_template("history.html")
+    
 
 
 @app.route("/loginUser/<string:userName>/<string:userPassword>", methods=['POST', 'GET'])
 def loginUser(userName, userPassword):
     checkUser = User.query.filter(and_(User.name == userName, User.password == hash_password(userPassword))).all()
-
 
     if len(checkUser) != 0:
         session['user_id'] = checkUser[0].id
@@ -68,6 +72,8 @@ def signUpUser(userName, userEmail, userPassword):
     if newUser.addUser() == -1:
         return "User already signed up"
     else:
+        session['user_id'] = User.query.all()[-1].id
+        session['logged_in'] = True
         return redirect(f"/loginUser/{userEmail}/{userPassword}")
 
 
@@ -80,9 +86,39 @@ def signOut():
 def checkIfUserIsStillLoggedIn():
     return json.dumps(True) if 'logged_in' in session else json.dumps(False)
 
+
+@app.route("/getUserHistory", methods=['GET'])
+def getUserHistory():
+    history = History.query.filter_by(user_id=session['user_id']).all()
+    historyDictToReturn = {}
+
+    seenDates = set()
+    for item in history:
+        f_date = item.date.strftime("%B %d, %Y")
+        if f_date not in seenDates:
+            seenDates.add(f_date)
+            historyDictToReturn.update({f_date: [{
+                'keyword': item.keyword,
+                'expression': item.expression,
+                'subject': item.subject,
+            }]})
+        else:
+            historyDictToReturn[f_date].append({
+                'keyword': item.keyword,
+                'expression': item.expression,
+                'subject': item.subject,
+                'date': item.date.strftime("%B %d, %Y")
+            })
+
+    # REVERSE THE LISTS IN historyDictToReturn SO THAT IT DISPLAYS FROM NEWEST TO OLDEST WHEN TRAVERSED
+    for item in historyDictToReturn:
+        historyDictToReturn[item] = reverseList(historyDictToReturn[item])
+
+    return json.dumps(historyDictToReturn)
+
 @app.route("/algebra")
 def algebra():
-    return render_template("algebra.html")
+    return render_template("algebra.html", solution="2x+1")
 
 @app.route("/discrete_math")
 def discreteMath():
@@ -108,7 +144,7 @@ def solve(liveSolve):
     keyword = None
     allKeyWords = ['simplify', 'combine']
     splitInput = userInput.split(' ')
-    # print(userInput)
+   
     if len(splitInput) > 1:
         keyword = splitInput[0][:-1]
         if keyword in allKeyWords:
@@ -116,13 +152,18 @@ def solve(liveSolve):
         else:
             keyword = None
 
+    if app.config['TESTING']:
+        print(f"Subject And Topic: {subjectAndTopic}")
+        print(f"Keyword: {keyword}")
+        print(f'Before parse: {userInput}')
+        print(f'After parse: {parseLatex(userInput)}')
 
-    # print(f"Subject And Topic: {subjectAndTopic}")
-    # print(f"Keyword: {keyword}")
-    # print(f'Before parse: {userInput}')
+     # ADD HISTORY
+    if 'user_id' in session:
+        history = History(keyword=keyword, expression=userInput, subject=subjectAndTopic['subject'], user_id=session['user_id'])
+        history.addHistory()
+
     userInput = parseLatex(userInput)
-    # print(f'After parse: {userInput}')
-
     if subjectAndTopic['subject'] == 'algebra':
         
         userInput = Expression(userInput)

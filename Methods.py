@@ -2433,6 +2433,9 @@ def getMaxPerfectPower(index: int, radicand: int):
 
     return perfect_powers[-1]
 
+def reverseList(L):
+    return L[::-1]
+
 def main():
     E = Expression('2*3*4*x+5*3*2*y*y')
     # E = Expression('6+x^{2}*y^{3}')

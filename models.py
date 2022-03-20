@@ -1,11 +1,21 @@
 import hashlib
-import datetime
+from datetime import date, datetime, timedelta, tzinfo
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import and_, func
 
 
 db = SQLAlchemy()
+
+class EST(tzinfo):
+    def utcoffset(self, dt):
+        return timedelta(hours = -5)
+
+    def tzname(self, dt):
+        return "EST"
+
+    def dst(self, dt):
+        return timedelta(0)
 
 class User(db.Model):
 	__tablename__ = "users"
@@ -25,6 +35,23 @@ class User(db.Model):
 			db.session.add(newUser)
 			db.session.commit()
 
+class History(db.Model):
+	__tablename__ = "history"
+	id = db.Column(db.Integer, primary_key=True)
+	keyword = db.Column(db.String, nullable=True)
+	expression = db.Column(db.String, nullable=False)
+	subject = db.Column(db.String, nullable=False)
+	date = db.Column(db.Date, nullable=False)
+	user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+	now = datetime.now(EST()).date()
+
+	def addHistory(self):
+		H = History(keyword=self.keyword, expression=self.expression, subject=self.subject, date=History.now, user_id=self.user_id)
+		db.session.add(H)
+		db.session.commit()
+
+	
 
 def hash_password(password):
     return hashlib.sha256(str.encode(password)).hexdigest()

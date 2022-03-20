@@ -1,9 +1,10 @@
 {% extends "layout.html" %}
 
 {% block head %}
+<meta id="solutionData" data-solution="{{ solution }}"></meta>
 {% endblock %}
 
-{% block style %}
+{% block style1 %}
 <style>
     #solveBtn {
         margin-bottom: 10px;
@@ -30,10 +31,6 @@
         overflow-x: auto;
 
     }
-
-
-
-
 </style>
 {% endblock %}
 
@@ -50,14 +47,14 @@
     </label>
 </div>
 <br>
-
 <div id="liveSolveSolutionContainer"></div>
+
+
 {% endblock %}
 
-{% block script %}
+{% block script1 %}
 
 <script>
-
 
     document.addEventListener('DOMContentLoaded', () => {
         var MQ = MathQuill.getInterface(2)
@@ -266,7 +263,7 @@
                 <div class="steps-heading">Steps</div>
                 <div class="steps-container"></div>
             `
-
+            // console.log(enteredMath)
             let selectedTopic = BaseUI.getSelectedTopic()
             let subjectAndTopic = {'subject': 'algebra', 'selectedTopic': selectedTopic}
 
@@ -284,7 +281,8 @@
                         Steps.forEach((step) => {
                             if (step['type'] === 'main-step') {
                                 StepsUI.displayStep(stepsContainer, step, 'main-step')
-                            } else if (step['type'] === 'e-step') {
+                            }
+                            else if (step['type'] === 'e-step') {
                                 StepsUI.displayStep(stepsContainer, step, 'e-step', e_step_id)
                                 let num_e_steps_added = document.querySelectorAll('.expandable-step-container').length
                                 e_step_id = num_e_steps_added + 1
@@ -294,6 +292,8 @@
 
                         StepsUI.addLatexToSteps(finalResult, enteredMath)
                         StepsUI.makeStepsExpandable()
+
+                        // window.location.href = `/algebra/${enteredMath}`
 
                         // Make the first main-step scrollable if content is too long
 

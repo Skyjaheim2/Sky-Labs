@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+
+    <!-- SKY-RATINGS STYLING -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='sky-ratings-static/fonts/simple-line-icons.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='sky-ratings-static/css/smoothproducts.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='sky-ratings-static/bootstrap/css/bootstrap.min.css') }}">
+
+    <!-- BOOTSTRAP -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- MATH QUILL -->
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'mathquill.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename = 'mathquill.js') }}"></script>
+
+
+    <!-- KATEX   -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css" integrity="sha384-Um5gpz1odJg5Z4HAmzPtgZKdTBHZdw8S29IecapCSB31ligYPhHQZMIlWLYQGVoc" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.css" integrity="sha384-D+9gmBxUQogRLqvARvNLmA9hS2x//eK1FhVb9PiU86gmcrBrJAQT8okdJ4LMp2uv" crossorigin="anonymous">
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.js" integrity="sha384-483A6DwYfKeDa0Q52fJmxFXkcPCFfnXMoXblOkJ4JcA8zATN6Tm78UNL72AKk+0O" crossorigin="anonymous"></script>
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/contrib/auto-render.min.js" integrity="sha384-yACMu8JWxKzSp/C1YV86pzGiQ/l1YUfE8oPuahJQxzehAjEt2GiQuy/BIvl9KyeF" crossorigin="anonymous"
+            onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                // customised options
+                // • auto-render specific keys, e.g.:
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true},
+                    {left: '\\begin{equation}', right: '\\end{equation}', display: true}
+                ],
+                // • rendering keys, e.g.:
+                throwOnError : false
+            });
+        });
+    </script>
+
+
+    <title>Sky Labs</title>
+    {% block head %}
+    {% endblock %}
+
+</head>
+
+<style>
+
+    #mainHeading {
+        text-align: center;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 35px;
+        font-weight: bold;
+    }
+    .inputLabel {
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: 18px;
+        font-weight: 500;
+    }
+    .nav-item {
+        cursor: pointer;
+    }
+    /* width */
+    ::-webkit-scrollbar {
+      width: 15px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      box-shadow: inset 0 0 5px grey; 
+      border-radius: 10px;
+    }
+     
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: grey; 
+      border-radius: 10px;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: darkgray; 
+    }
+    
+    
+</style>
+{% block style %}
+{% endblock %}
+<body>
+
+    <div class="container-1">
+
+        <div class="heading-container">
+
+            <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-white clean-navbar">
+                <div class="container"><a id="skyRatingsHeaderBtn" class="navbar-brand logo" href="{{url_for('index') }}">Sky Labs</a><button id="navBarBtn" data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+                    <div id="alertDiv">
+                        <!--                        <div id="alertMessage" class="alert alert-warning" role="alert">You Are Not Registered</div>-->
+                    </div>
+
+
+                    <div class="collapse navbar-collapse" id="navcol-1">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item"><a id="practiceHeaderBtn" class="nav-link">Practice</a></li>
+                            <li class="nav-item"><a id="notebookHeaderBtn" class="nav-link">Notebook</a></li>
+                            <li class="nav-item"><a id="historyHeaderBtn" class="nav-link"> History</a></li>
+
+                            <li class="nav-item"></li>
+                            <li class="nav-item"></li>
+
+                            <li class="nav-item"><a id="loginBtn" href="#loginModal" class="nav-link edit" data-toggle="modal">Login</a></li>
+                            <li class="nav-item"><a id="signUpBtn" href="#signUpModal" class="nav-link edit" data-toggle="modal">Sign Up</a></li>
+                            <li class="nav-item"><a id="signOutBtn" class="nav-link edit" style="display: none;" data-toggle="modal">Sign Out</a></li>
+                            {% block navBarItems %}
+                            {% endblock %}
+                        </ul>
+                    </div>
+                </div></nav>
+
+            {% block heading_items %}
+            {% endblock %}
+
+        </div>
+
+        {% block body %}
+        {% endblock %}
+        
+
+    <!-- MODAL BOXES  -->
+
+    <!-- LOGIN MODAL -->
+    <div id="loginModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="loginForm">
+                    <!-- HEADER -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Login</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <!-- BODY -->
+                    <div class="modal-body">
+                        <!-- USERNAME -->
+                        <div class="form-group">
+                            <label class="inputLabel" for="userNameInput">Username</label>
+                            <input id="userNameInput" class="form-control" autocomplete="off">
+                        </div>
+                        <!-- USER PASSWORD -->
+                        <div class="form-group">
+                            <label class="inputLabel" for="userPasswordInput">Password</label>
+                            <input id="userPasswordInput" class="form-control" autocomplete="off" type="password">
+                        </div>
+                        <p id="loginModalErrorMessage" class="text-warning"></p>
+                    </div>
+                    <!-- LOGIN AND CANCEL BUTTON -->
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" id="loginModalCancelBtn" data-dismiss="modal" value="Cancel">
+                        <button id="loginModalBtn" class="btn btn-primary" type="button" disabled>Login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIGN UP MODAL -->
+    <div id="signUpModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="signUpForm">
+                    <!-- HEADER -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Sign Up</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <!-- BODY -->
+                    <div class="modal-body">
+                        <!-- USERNAME -->
+                        <div class="form-group">
+                            <label class="inputLabel" for="signUpUserNameInput">Username</label>
+                            <input id="signUpUserNameInput" class="form-control" autocomplete="off">
+                        </div>
+                        <!-- EMAIL -->
+                        <div class="form-group">
+                            <label class="inputLabel" for="signUpUserEmailInput">Email</label>
+                            <input id="signUpUserEmailInput" class="form-control" autocomplete="off">
+                        </div>
+                        <p class="text-warning"><small></small></p>
+                        <!-- USER PASSWORD -->
+                        <div class="form-group">
+                            <label class="inputLabel" for="signUpUserPasswordInput">Password</label>
+                            <input id="signUpUserPasswordInput" class="form-control" autocomplete="off" type="password">
+                        </div>
+                        <!-- CONFIRM PASSWORD -->
+                        <div class="form-group">
+                            <label class="inputLabel" for="signUpConfirmPasswordInput">Confirm Password</label>
+                            <input id="signUpConfirmPasswordInput" class="form-control" autocomplete="off" type="password">
+                        </div>
+                        <p id="signUpModalErrorMessage" class="text-warning"></p>
+                    </div>
+                    <!-- SAVE AND CANCEL BUTTON -->
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" id="signUpModalCancelBtn" data-dismiss="modal" value="Cancel">
+                        <button id="signUpModalBtn" class="btn btn-primary" type="button" disabled>Sign Up</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+<script>
+    class UI {
+        static userLoggedIn() {
+            let loginBtn = document.querySelector('#loginBtn')
+            let signUpBtn = document.querySelector('#signUpBtn')
+            let signOutBtn = document.querySelector('#signOutBtn')
+            let historyBtn = document.querySelector('#historyHeaderBtn')
+
+            // Hide login and sign-up btn
+            loginBtn.style.display = 'none'
+            signUpBtn.style.display = 'none'
+            // Show signOutBtn btn
+            signOutBtn.style.display = 'block'
+            // Add url to historyBtn
+            historyBtn.dataset.accessible = 'true'
+        
+        }
+        static userSignedOut() {
+            let loginBtn = document.querySelector('#loginBtn')
+            let signUpBtn = document.querySelector('#signUpBtn')
+            let signOutBtn = document.querySelector('#signOutBtn')
+            let historyBtn = document.querySelector('#historyHeaderBtn')
+
+            // Show login and sign-up btn
+            loginBtn.style.display = 'block'
+            signUpBtn.style.display = 'block'
+            // Hide signOutBtn
+            signOutBtn.style.display = 'none'
+
+            historyBtn.dataset.accessible = 'false'
+            
+        }
+        static loadDefaultOptions(defaultSubject) {
+            // Load Default Subject Tab
+            let defaultSubjectTabBtn = document.querySelector(`#${defaultSubject}SubjectTabBtn`)
+            let subjectTopicsContainer = document.querySelector('.subject-topics')
+            let subjectOptions = subjectTabsUI.getSubjectOptions()
+
+            subjectOptions[defaultSubject].forEach((topic) => {
+                subjectTopicsContainer.innerHTML += `<button class="btn btn-light subject-option-btn">${topic}</button>`
+            })
+            subjectTabsUI.subjectTabBtnSelected(defaultSubjectTabBtn)
+        }
+        static updateHeaderButtons(btn) {
+            let headerBtn
+            switch(btn) {
+                case 'history':
+                    headerBtn = document.querySelector('#historyHeaderBtn')
+                    break
+                case 'practice':
+                    headerBtn = document.querySelector('#practiceHeaderBtn')
+                    break
+                case 'notebook':
+                    headerBtn = document.querySelector('#notebookHeaderBtn')
+                    break
+            }
+            let allHeaderBtn = document.querySelectorAll('.nav-link')
+            allHeaderBtn.forEach((btn) => {
+                if (btn.className === 'nav-link active') {
+                    btn.className = 'nav-link'
+                }
+            })
+            headerBtn.classList.add('active')
+        }
+        static addLatexToElement(element, latexString) {
+            katex.render(String.raw`${latexString}`, element, {
+                throwOnError: false
+            });
+        }
+    }
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        checkIfUserIsStillLoggedIn()
+
+    })
+
+    /* Validate Login Form */
+    document.querySelector('#loginForm').addEventListener('keyup', () => {
+        let usernameInput = document.querySelector('#userNameInput')
+        let passwordInput = document.querySelector('#userPasswordInput')
+        let loginBtn = document.querySelector('#loginModalBtn')
+
+        if (usernameInput.value === '' || passwordInput.value === '') {
+            loginBtn.disabled = true
+        }
+        else {
+            loginBtn.disabled = false
+        }
+    })
+    /* Validate Sign Up Form */
+    document.querySelector('#signUpForm').addEventListener('keyup', () => {
+        let usernameInput = document.querySelector('#signUpUserNameInput')
+        let emailInput = document.querySelector('#signUpUserEmailInput')
+        let passwordInput = document.querySelector('#signUpUserPasswordInput')
+        let confirmPasswordInput = document.querySelector('#signUpConfirmPasswordInput')
+        let signUpBtn = document.querySelector('#signUpModalBtn')
+
+        if (usernameInput.value === '' || emailInput.value === '' || (passwordInput.value !== confirmPasswordInput.value)) {
+            signUpBtn.disabled = true
+        }
+        else {
+            signUpBtn.disabled = false
+        }
+
+        if (confirmPasswordInput.value !== '') {
+            if (passwordInput.value !== confirmPasswordInput.value) {
+            confirmPasswordInput.style.borderColor = 'red'
+            }
+            else {
+                confirmPasswordInput.style.borderColor = ''
+            }
+
+        }
+        
+
+    })
+
+    /* ONCLICK EVENTS */
+
+    // Sign up btn
+    document.querySelector('#signUpModalBtn').addEventListener('click', () => {
+        let username = document.querySelector('#signUpUserNameInput').value
+        let email = document.querySelector('#signUpUserEmailInput').value
+        let password = document.querySelector('#signUpUserPasswordInput').value
+        let confirmPassword = document.querySelector('#signUpConfirmPasswordInput').value
+        let cancelBtn = document.querySelector('#signUpModalCancelBtn')
+        let signUpModalErrorMessages = document.querySelector('#signUpModalErrorMessage')
+
+        const request = new XMLHttpRequest();
+
+        request.open('POST', `/signUpUser/${username}/${email}/${password}`)
+        request.onload = () => {
+            const Response = request.responseText
+            if (Response === 'Signed Up') {
+                cancelBtn.click()
+                UI.userLoggedIn()
+
+            }
+            else if (Response === 'User already signed up') {
+                signUpModalErrorMessages.textContent = 'Account Already Exist'
+                    setTimeout(() => {
+                        signUpModalErrorMessages.textContent = ''
+                    }, 2000)
+            }
+        }
+        request.send()
+    })
+    // Login btn
+    document.querySelector('#loginModalBtn').addEventListener('click', () => {
+        let username = document.querySelector('#userNameInput').value
+        let password = document.querySelector('#userPasswordInput').value
+        let loginModalErrorMessage = document.querySelector('#loginModalErrorMessage')
+        let cancelBtn = document.querySelector('#loginModalCancelBtn')
+
+        const request = new XMLHttpRequest()
+        request.open('POST', `/loginUser/${username}/${password}`)
+        request.onload = () => {
+            const Response = request.responseText
+            if (Response === "Logged In") {
+                cancelBtn.click()
+                UI.userLoggedIn()
+                showAlert('Logged In', 'primary')
+            }
+            else if (Response === "Invalid Credentials") {
+                loginModalErrorMessage.textContent = 'Invalid Credentials'
+                    setTimeout(() => {
+                        loginModalErrorMessage.textContent = ''
+                    }, 2000)
+            }
+
+        }
+        request.send()
+    })
+    // Sign-Out Btn
+    document.querySelector('#signOutBtn').addEventListener('click', () => {
+        UI.userSignedOut()
+        const request = new XMLHttpRequest()
+        request.open('POST', `/signOut`)
+        request.onload = () => {
+            showAlert('Signed Out', 'danger')
+        }
+        request.send()
+    })
+    // historyBtn
+    document.querySelector('#historyHeaderBtn').addEventListener('click', function() {
+        if (this.dataset.accessible === 'true') {
+            window.location.href = '/history'
+        }
+        else {
+            showAlert('Login to View History', 'warning')
+        }
+        
+        
+
+    })
+
+
+   
+
+    function showAlert(alertText, type) {
+
+        if (type === undefined || !(['primary', 'warning', 'danger', 'success'].includes(type))) {
+            type = 'primary'
+        }
+        // Create alert div
+        const alertDiv = document.createElement('div')
+        alertDiv.role = 'alert'
+        alertDiv.className = `alert alert-${type}`
+        alertDiv.id = 'alertMessage'
+        alertDiv.style.borderRadius = '10px'
+        alertDiv.style.margin = '0'
+        alertDiv.textContent = alertText
+        if (type === 'danger') {
+            // alertDiv.style.backgroundColor = 'rgb(209,13,13)'
+        }
+        if (type === 'primary') {
+            // alertDiv.style.backgroundColor = 'rgb(80, 113, 213)'
+        }
+        if (type === 'success') {
+            // alertDiv.style.backgroundColor = 'rgb(76, 180, 40)'
+        }
+        if (type === 'warning') {
+            // alertDiv.style.backgroundColor = 'rgb(227, 148, 16)'
+        }
+        // Add alert to page
+        document.querySelector('#alertDiv').appendChild(alertDiv)
+
+        // Remove alert
+        setTimeout(()=>{alertDiv.remove()}, 2000)
+    }
+
+    function checkIfUserIsStillLoggedIn() {
+        const request = new XMLHttpRequest()
+
+        request.open('GET', `/checkIfUserIsStillLoggedIn`)
+        request.onload = () =>{
+            const Response = JSON.parse(request.responseText)
+            if (Response === true) {
+                UI.userLoggedIn()
+            }
+            else {
+                UI.userSignedOut()
+            }
+
+        }
+        request.send()
+    }   
+
+    function escapeRegExp(string) {
+        return string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+    }
+    function replaceAll(str, find, replace) {
+        return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+    }
+
+</script>
+
+{% block script %}
+{% endblock %}
+
+<!--<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>-->
+<!--<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>-->
+<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>-->
+<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>-->
+
+<!-- SKY-RATINGS-SCRIPTS -->
+<script src="{{ url_for('static', filename='sky-ratings-static/js/jquery.min.js') }}"></script>
+<!-- <script src="{{ url_for('static', filename='sky-ratings-static/bootstrap/js/bootstrap.min.js') }}"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+<script src="{{ url_for('static', filename='sky-ratings-static/js/smoothproducts.min.js') }}"></script>
+<script src="{{ url_for('static', filename='sky-ratings-static/js/theme.js') }}"></script>
+
+
+
+</html>
