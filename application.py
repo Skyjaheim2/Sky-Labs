@@ -22,7 +22,7 @@ if not os.getenv("DATABASE_URL"):
 
 
 app = Flask(__name__)
-app.config['TESTING'] = True
+app.config['TESTING'] = False
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['SESSION_PERMANENT'] = False
@@ -140,7 +140,6 @@ def physics():
 
 @app.route("/solve/<string:requestFromHistory>", methods=["POST"])
 def solve(requestFromHistory):
-    print(requestFromHistory)
     userInput = request.form.get('userInput')
     subjectAndTopic = json.loads(request.form.get('subjectAndTopic'))
 
