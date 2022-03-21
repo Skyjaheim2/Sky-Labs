@@ -708,6 +708,7 @@
                 StepsUI.addLatexToElement(symbolButton, symbol)
             })
         }
+
         static extensionTopicClicked(mainTopic, extensionTopic) {
             let mainHeading = document.querySelector('#selectedSubjectTabHeading')
             let delimiter
@@ -735,6 +736,50 @@
                 return selectedSubjectHeading.textContent
             }
         }
+        static loadSolution(answerMathField) {
+            let solution = document.querySelector('#solutionData').dataset.solution
+            if (solution !== '') {
+                solution = solution.replaceAll("'", '"')
+            
+                if (solution !== 'Unable To Solve') {
+                    solution = JSON.parse(solution)
+                    let enteredMath = solution['enteredMath']
+                    answerMathField.write(enteredMath)
+                    let Steps = solution['steps']
+                    let finalResult = solution['finalResult']
+                    let stepsContainer = document.querySelector('.steps-container')
+                    
+
+                    let e_step_id = 1
+                    Steps.forEach((step) => {
+                        if (step['type'] === 'main-step') {
+                            StepsUI.displayStep(stepsContainer, step, 'main-step')
+                        }
+                        else if (step['type'] === 'e-step') {
+                            StepsUI.displayStep(stepsContainer, step, 'e-step', e_step_id)
+                            let num_e_steps_added = document.querySelectorAll('.expandable-step-container').length
+                            e_step_id = num_e_steps_added + 1
+                        }
+                    })
+                    stepsContainer.innerHTML += `<div class="final-step"></div>`
+
+                    StepsUI.addLatexToSteps(finalResult, enteredMath)
+                    StepsUI.makeStepsExpandable()
+
+                    // window.location.href = `/algebra/${enteredMath}`
+
+                    // Make the first main-step scrollable if content is too long
+
+                    // if (Steps.length !== 0)
+                    //     document.querySelector('.step-info').style.overflowX = 'auto'
+                }
+                else {
+
+                }
+
+            }
+        }
+        
     }
     class subjectTabsUI {
         static subjectTabBtnSelected(btnObj) {
@@ -1221,11 +1266,126 @@
             })
         }
     }
+    class Storage {
+        static instantiateStorage() {
+            if (!(localStorage.getItem('last-solution'))) {
+                localStorage.setItem('last-solution', JSON.stringify('empty'))
+            }
+
+        }
+        static reloadSolution(answerMathField) {
+            this.instantiateStorage()
+            let lastSolution = localStorage.getItem('last-solution')
+            
+            if (lastSolution !== 'empty') {
+                lastSolution = JSON.parse(lastSolution)
+                let enteredMath = lastSolution['enteredMath']
+                answerMathField.write(enteredMath)
+                let resultsContainer = document.querySelector('.results-container')
+                let selectedTopic = BaseUI.getSelectedTopic()
+                let subjectAndTopic = {'subject': 'algebra', 'selectedTopic': selectedTopic}
+
+                const request = new XMLHttpRequest()
+                request.open('POST', `/solve/true`)
+                request.onload = () => {
+                    if (request.status === 200) {
+                        let solution = request.responseText
+                        if (solution !== 'Unable To Solve') {
+                            solution = JSON.parse(solution)
+                            let Steps = solution['steps']
+                            let finalResult = solution['finalResult']
+                            let stepsContainer = document.querySelector('.steps-container')
+
+                            let e_step_id = 1
+                            Steps.forEach((step) => {
+                                if (step['type'] === 'main-step') {
+                                    StepsUI.displayStep(stepsContainer, step, 'main-step')
+                                }
+                                else if (step['type'] === 'e-step') {
+                                    StepsUI.displayStep(stepsContainer, step, 'e-step', e_step_id)
+                                    let num_e_steps_added = document.querySelectorAll('.expandable-step-container').length
+                                    e_step_id = num_e_steps_added + 1
+                                }
+                            })
+                            stepsContainer.innerHTML += `<div class="final-step"></div>`
+
+                            StepsUI.addLatexToSteps(finalResult, enteredMath)
+                            StepsUI.makeStepsExpandable()
+
+                        }
+                        else {
+
+                        }
+                    }
+                }
+                const data = new FormData()
+                data.set('userInput', enteredMath)
+                data.set('subjectAndTopic', JSON.stringify(subjectAndTopic))
+                request.send(data)
+            }
+            
+            
+        }
+        static addLastSolution(solution) {
+            this.instantiateStorage()
+            localStorage.setItem('last-solution', JSON.stringify(solution))
+        }
+        static clear() {
+            localStorage.setItem('last-solution', 'empty')
+        }
+    }
 
 
     document.addEventListener('DOMContentLoaded', () => {
+        var MQ = MathQuill.getInterface(2)
+        var config = {
+            spaceBehavesLikeTab: false,
+            leftRightIntoCmdGoes: 'up',
+            restrictMismatchedBrackets: true,
+            sumStartsWithNEquals: true,
+            supSubsRequireOperand: true,
+            charsThatBreakOutOfSupSub: '=',
+            autoSubscriptNumerals: true,
+            autoCommands: 'pi theta sqrt sum int',
+            autoOperatorNames: 'sin cos tan sinh cosh tanh arcsin arccos arctan ln log csc sec cot',
+            maxDepth: 10,
+        }
+
+        var userInput = document.getElementById('userInput');
+
+        var answerMathField = MQ.MathField(userInput, config, {
+            handlers: {
+                edit: function() {},
+                upOutOf: function(mathField) {},
+                moveOutOf: function(dir, mathField) {
+                    if (dir === MQ.L) {
+
+                    }
+                    else {
+
+                    }
+                },
+                enter: function () {
+                    alert('enter')
+                }
+            }
+        });
+
+        
+        if (performance.navigation.type == performance.navigation.TYPE_RELOAD) { // Page reloaded
+          // Storage.reloadSolution(answerMathField)
+        }
+        else {
+            // console.log('not reloaded')
+            // Storage.clear()
+        }
+
+        Storage.reloadSolution(answerMathField)
+
+
         checkIfUserIsStillLoggedIn()
         BaseUI.loadSymbolsContainer()
+        
 
 
     })
@@ -1275,6 +1435,11 @@
         }
     })
 
+
+    /* ON-CLICK EVENTS */
+    document.querySelector('#skyRatingsHeaderBtn').addEventListener('click', () => {
+        Storage.clear()
+    })
 
     /* ON-HOVER EVENTS */
 

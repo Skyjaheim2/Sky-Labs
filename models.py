@@ -47,9 +47,14 @@ class History(db.Model):
 	now = datetime.now(EST()).date()
 
 	def addHistory(self):
-		H = History(keyword=self.keyword, expression=self.expression, subject=self.subject, date=History.now, user_id=self.user_id)
-		db.session.add(H)
-		db.session.commit()
+		newHistory = History(keyword=self.keyword, expression=self.expression, subject=self.subject, date=History.now, user_id=self.user_id)
+		lastHistory = History.query.filter_by(user_id=self.user_id).all()[-1]
+		print(f"New history: {newHistory.expression}")
+		print(f"Last History: {lastHistory.expression}")
+		print(newHistory.expression == lastHistory.expression)
+		if newHistory.expression != lastHistory.expression:
+			db.session.add(newHistory)
+			db.session.commit()
 
 	
 

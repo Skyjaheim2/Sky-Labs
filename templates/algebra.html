@@ -263,7 +263,6 @@
                 <div class="steps-heading">Steps</div>
                 <div class="steps-container"></div>
             `
-            // console.log(enteredMath)
             let selectedTopic = BaseUI.getSelectedTopic()
             let subjectAndTopic = {'subject': 'algebra', 'selectedTopic': selectedTopic}
 
@@ -273,8 +272,9 @@
                 if (request.status === 200) {
                     let solution = request.responseText
                     if (solution !== 'Unable To Solve') {
-                        let Steps = JSON.parse(solution)['steps']
-                        let finalResult = JSON.parse(solution)['finalResult']
+                        solution = JSON.parse(solution)
+                        let Steps = solution['steps']
+                        let finalResult = solution['finalResult']
                         let stepsContainer = document.querySelector('.steps-container')
 
                         let e_step_id = 1
@@ -292,6 +292,10 @@
 
                         StepsUI.addLatexToSteps(finalResult, enteredMath)
                         StepsUI.makeStepsExpandable()
+
+                        // Add to solution to LS
+                        solution['enteredMath'] = enteredMath
+                        Storage.addLastSolution(solution)
 
                         // window.location.href = `/algebra/${enteredMath}`
 
@@ -331,6 +335,7 @@
         })
 
     })
+
 
 
 </script>

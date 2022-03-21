@@ -42,6 +42,7 @@
 			border-radius: 10px;
 			padding: 10px;
 			box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.5);
+			cursor: pointer;
 		}
 		.history-container {
 			overflow: hidden;
@@ -135,6 +136,7 @@
 		}
 		class HistoryUI {
 			static displayHistory() {
+
 				let mainContainer = document.querySelector('.main-container')
 				const request = new XMLHttpRequest()
 				request.open('GET', '/getUserHistory')
@@ -155,10 +157,13 @@
 							historyContainerDiv.dataset.expanded = 'false'
 
 							History[date].forEach((item) => {
-								/* Populate history-container-div */
+								/* Populate history-container-div with history-item */
 								let history_item = new HistoryItem(item)
 								let historyItemDiv = document.createElement('div')
 								historyItemDiv.className = 'history-item'
+								historyItemDiv.dataset.expression = `${history_item.expression}`
+								historyItemDiv.dataset.subject = `${history_item.subject}`
+								historyItemDiv.dataset.keyword = `${history_item.keyword}`
 
 								if (history_item.keyword === null) {
 									historyItemDiv.textContent = `\\displaystyle ${history_item.expression}`
@@ -171,7 +176,7 @@
 							/* Add history-container-div */
 							mainContainer.appendChild(historyContainerDiv)
 						}
-						/* Show History on-click functionality */
+						/* Add History on-click functionality */
 						const numHistory = document.querySelectorAll('.expandable-date-container').length
 						const expandableDates = document.querySelectorAll('.expandable-date-container')
 						const historyContainers = document.querySelectorAll('.history-container')
@@ -188,14 +193,54 @@
 										HistoryUI.collapseHistoryContainer(historyContainer)
 									}
 								}
-								
 							})
 						}
 						HistoryUI.addLatexToHistoryItems()
 
-						// Open the first history item after half a second
+						/* history-item ON-CLICK */
+						let historyItems = document.querySelectorAll('.history-item')
+						historyItems.forEach((item) => {
+							item.addEventListener('click', function() {
+								let enteredMath
+								if (item.dataset.keyword === 'null') {
+									enteredMath = item.dataset.expression
+								}
+								else {
+									enteredMath = `${item.dataset.keyword}\\ ${item.dataset.expression}`
+								}
+								const solutionRequest = new XMLHttpRequest()
+								solutionRequest.open('POST', '/solve/true')
+								solutionRequest.onload = () => {
+									if (solutionRequest.status === 200) {
+										let solution = solutionRequest.responseText
+										if (solution !== 'Unable to Solve') {
+											solution = JSON.parse(solution)
+											solution['enteredMath'] = enteredMath
+											localStorage.setItem('last-solution', JSON.stringify(solution))
+				
+										}
+										else {
+											localStorage.setItem('last-solution', 'empty')
+										}
+										switch (item.dataset.subject) {
+											case 'algebra':
+												window.location.assign('/algebra')
+												break
+										}
+									}
+								}
+
+								let subjectAndTopic = {'subject': item.dataset.subject, 'topic': null}
+								const data = new FormData()
+					            data.set('userInput', enteredMath)
+					            data.set('subjectAndTopic', JSON.stringify(subjectAndTopic))
+					            solutionRequest.send(data)
+							})
+						})
+
+						// Open the most recent history item after half a second
 						setTimeout(() => {
-							let historyContainer = document.querySelector('.history-container')
+							let historyContainer = document.querySelectorAll('.history-container')[numHistory-1]
 							HistoryUI.expandHistoryContainer(historyContainer)
 						}, 500)
 							
@@ -268,6 +313,13 @@
 			
 
 		})
+
+		/* ON-CLICK EVENTS */
+		/* ON-CLICK EVENTS */
+	    document.querySelector('#skyRatingsHeaderBtn').addEventListener('click', () => {
+	        localStorage.setItem('last-solution', 'empty')
+	    })
+
 		
 
 

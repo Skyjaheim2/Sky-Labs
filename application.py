@@ -22,7 +22,7 @@ if not os.getenv("DATABASE_URL"):
 
 
 app = Flask(__name__)
-app.config['TESTING'] = False
+app.config['TESTING'] = True
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['SESSION_PERMANENT'] = False
@@ -47,9 +47,11 @@ def index(message=None):
 
 @app.route("/history")
 def history():
-    return render_template("history.html")
+    if 'user_id' in session:
+        return render_template("history.html")
+    else:
+        return redirect("/")
     
-
 
 @app.route("/loginUser/<string:userName>/<string:userPassword>", methods=['POST', 'GET'])
 def loginUser(userName, userPassword):
@@ -118,7 +120,7 @@ def getUserHistory():
 
 @app.route("/algebra")
 def algebra():
-    return render_template("algebra.html", solution="2x+1")
+    return render_template("algebra.html")
 
 @app.route("/discrete_math")
 def discreteMath():
@@ -136,8 +138,9 @@ def probability():
 def physics():
     return render_template('physics.html')
 
-@app.route("/solve/<string:liveSolve>", methods=["POST"])
-def solve(liveSolve):
+@app.route("/solve/<string:requestFromHistory>", methods=["POST"])
+def solve(requestFromHistory):
+    print(requestFromHistory)
     userInput = request.form.get('userInput')
     subjectAndTopic = json.loads(request.form.get('subjectAndTopic'))
 
@@ -159,7 +162,7 @@ def solve(liveSolve):
         print(f'After parse: {parseLatex(userInput)}')
 
      # ADD HISTORY
-    if 'user_id' in session:
+    if 'user_id' in session and requestFromHistory == 'false':
         history = History(keyword=keyword, expression=userInput, subject=subjectAndTopic['subject'], user_id=session['user_id'])
         history.addHistory()
 
@@ -184,8 +187,6 @@ def solve(liveSolve):
         userInput = Expression(userInput)
         Solution = simplifyExpression(userInput)
         return jsonify(Solution)
-
-
 
 
 def hash_password(password):
