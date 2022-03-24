@@ -62,6 +62,18 @@
 	        width: 25px;
 	        height: 25px;
 	    }
+	    .delete-history-icon, .copy-history-icon {
+	    	width: 25px;
+	        height: 25px;
+	    	float: right;
+	    }
+	    .history-textarea {
+	    	width: 0;
+	    	height: 0;
+	    	border: none;
+	    	margin-left: 5px;
+	    	margin-bottom: 3px;
+	    }
 	    @keyframes stepExpanded {
 	        from {
 	            height: 0;
@@ -105,10 +117,10 @@
 			<div class="history-item">\cfrac{1}{1+x+x^2}+\cfrac{1+x}{e^x+x^2+x}</div>
 			<div class="history-item">\sqrt{12+x^2+3x^2+2y+16y+1}</div>
 			<div class="history-item">\cfrac{\partial}{\partial x}\left(e^{-3t}\cos(3x+1)\right)</div>
-		</div>
+		</div> -->
 		
 
-		<div class="expandable-date-container">
+		<!-- <div class="expandable-date-container">
 			<span class="history-date">March 16, 2022</span>
 			<span class="show-steps-span">Show <img class="show-steps-icon" src="/static/img/add.svg"></span>
 		</div>
@@ -171,15 +183,16 @@
 								else {
 									historyItemDiv.textContent = `\\displaystyle \\text{${history_item.keyword}}\\ ${history_item.expression}`
 								}
+								
 								historyContainerDiv.appendChild(historyItemDiv)
 							})
 							/* Add history-container-div */
 							mainContainer.appendChild(historyContainerDiv)
 						}
 						/* Add History on-click functionality */
-						const numHistory = document.querySelectorAll('.expandable-date-container').length
-						const expandableDates = document.querySelectorAll('.expandable-date-container')
-						const historyContainers = document.querySelectorAll('.history-container')
+						const numHistory = document.querySelectorAll('.expandable-date-container').length;
+						const expandableDates = document.querySelectorAll('.expandable-date-container');
+						const historyContainers = document.querySelectorAll('.history-container');
 
 						for (let i=0; i<numHistory; i++) {
 							expandableDates[i].addEventListener('click', (e) => {
@@ -195,12 +208,29 @@
 								}
 							})
 						}
-						HistoryUI.addLatexToHistoryItems()
+						HistoryUI.addLatexToHistoryItems();
+
+						let historyItems = document.querySelectorAll('.history-item');
+						/* Add delete btn, copy btn and textarea */
+						historyItems.forEach((item => {
+							item.innerHTML += `<img class="delete-history-icon" src="/static/img/delete.svg">`;
+							item.innerHTML += `<img class="copy-history-icon" src="/static/img/copy.svg">`;
+							let enteredMath;
+							if (item.dataset.keyword === 'null') {
+								enteredMath = item.dataset.expression
+							}
+							else {
+								enteredMath = `${item.dataset.keyword}\\ ${item.dataset.expression}`
+							}
+							item.innerHTML += `<textarea class="history-textarea">${enteredMath}</textarea>`
+						}))
+
+						
 
 						/* history-item ON-CLICK */
-						let historyItems = document.querySelectorAll('.history-item')
 						historyItems.forEach((item) => {
-							item.addEventListener('click', function() {
+							item.addEventListener('click', function(e) {
+								// console.log(e.target)
 								let enteredMath
 								if (item.dataset.keyword === 'null') {
 									enteredMath = item.dataset.expression
@@ -208,33 +238,47 @@
 								else {
 									enteredMath = `${item.dataset.keyword}\\ ${item.dataset.expression}`
 								}
-								const solutionRequest = new XMLHttpRequest()
-								solutionRequest.open('POST', '/solve/true')
-								solutionRequest.onload = () => {
-									if (solutionRequest.status === 200) {
-										let solution = solutionRequest.responseText
-										if (solution !== 'Unable to Solve') {
-											solution = JSON.parse(solution)
-											solution['enteredMath'] = enteredMath
-											localStorage.setItem('last-solution', JSON.stringify(solution))
-				
-										}
-										else {
-											localStorage.setItem('last-solution', 'empty')
-										}
-										switch (item.dataset.subject) {
-											case 'algebra':
-												window.location.assign('/algebra')
-												break
+								if (!(e.target.classList.contains('delete-history-icon') || e.target.classList.contains('copy-history-icon'))) {
+									const solutionRequest = new XMLHttpRequest()
+									solutionRequest.open('POST', '/solve/true')
+									solutionRequest.onload = () => {
+										if (solutionRequest.status === 200) {
+											let solution = solutionRequest.responseText
+											if (solution !== 'Unable to Solve') {
+												solution = JSON.parse(solution)
+												solution['enteredMath'] = enteredMath
+												localStorage.setItem('last-solution', JSON.stringify(solution))
+					
+											}
+											else {
+												localStorage.setItem('last-solution', 'empty')
+											}
+											switch (item.dataset.subject) {
+												case 'algebra':
+													window.location.assign('/algebra')
+													break
+											}
 										}
 									}
-								}
 
-								let subjectAndTopic = {'subject': item.dataset.subject, 'topic': null}
-								const data = new FormData()
-					            data.set('userInput', enteredMath)
-					            data.set('subjectAndTopic', JSON.stringify(subjectAndTopic))
-					            solutionRequest.send(data)
+									let subjectAndTopic = {'subject': item.dataset.subject, 'topic': null}
+									const data = new FormData()
+						            data.set('userInput', enteredMath)
+						            data.set('subjectAndTopic', JSON.stringify(subjectAndTopic))
+						            solutionRequest.send(data)
+								}
+								else {
+									/* Copy btn clicked */
+									if (e.target.classList.contains('copy-history-icon')) {
+										var content = item.children[3];
+									    content.select();
+									    document.execCommand('copy');
+									    item.style.transform = 'scale(0.98)';
+									    setTimeout(() => item.style.transform = 'scale(1)', 200);
+									    showAlert('Copied!');
+									}
+								}
+								
 							})
 						})
 
@@ -244,9 +288,6 @@
 							HistoryUI.expandHistoryContainer(historyContainer)
 						}, 500)
 							
-
-
-						
 					}
 					
 				}
