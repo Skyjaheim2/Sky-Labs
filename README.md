@@ -2,7 +2,7 @@
 
 Sky Labs is a flask application inspired by https://www.symbolab.com/ that allows users to do mathematical computations.
 
-![ss6](https://user-images.githubusercontent.com/64718777/160222532-f7a5cdac-4a5f-493b-beb1-9ce4152479e7.png)
+![image](https://user-images.githubusercontent.com/64718777/160222769-b98b45a5-01c8-416d-b0a3-b2ac1212238c.png)
 ![ss7](https://user-images.githubusercontent.com/64718777/160222561-184628a2-5317-4769-8824-1a72ec96c9d0.png)
 ![ss10](https://user-images.githubusercontent.com/64718777/160222573-67394226-9da5-428d-bc60-e41604a62cc2.png)
 
