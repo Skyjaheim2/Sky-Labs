@@ -42,7 +42,7 @@ from calculusMethods import solveCalculus
 
 
 @app.route("/")
-def index(message=None):
+def index():
     return redirect("/algebra")
 
 @app.route("/history")

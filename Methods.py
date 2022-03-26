@@ -1892,8 +1892,6 @@ def simplifyConstants(expression, constants: list):
             Steps.append(mainStep)
             newExpression = newExpression.replace(numbersStr, str(sumOfNumbers))
 
-
-
     finalExpression = newExpression
     finalExpression = finalExpression.replace('++','+').replace('--','+').replace('+-','-').replace('-+','-').replace('+0','').replace('-0','')
 
