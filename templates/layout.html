@@ -1269,14 +1269,14 @@
     class Storage {
         static instantiateStorage() {
             if (!(localStorage.getItem('last-solution'))) {
-                localStorage.setItem('last-solution', JSON.stringify('empty'))
+                localStorage.setItem('last-solution', 'empty')
             }
 
         }
         static reloadSolution(answerMathField) {
             this.instantiateStorage()
             let lastSolution = localStorage.getItem('last-solution')
-            
+
             if (lastSolution !== 'empty') {
                 lastSolution = JSON.parse(lastSolution)
                 let enteredMath = lastSolution['enteredMath']
@@ -1379,9 +1379,7 @@
             // console.log('not reloaded')
             // Storage.clear()
         }
-
         Storage.reloadSolution(answerMathField)
-
 
         checkIfUserIsStillLoggedIn()
         BaseUI.loadSymbolsContainer()
@@ -1391,7 +1389,7 @@
     })
 
 
-    // Subject Tabs
+    // Subject Tabs - onclick
     document.querySelector('.subject-tabs').addEventListener('click', (e) => {
         if (e.target.classList.contains('subject-tab-btn')) {
             let subject = e.target.textContent
@@ -1402,6 +1400,7 @@
                 'Probability': '/probability',
                 'Physics': '/physics',
             }
+            Storage.clear()
             window.location.href = routes[subject]
             // subjectTabsUI.subjectTabBtnSelected(e.target)
             // console.log('after')
