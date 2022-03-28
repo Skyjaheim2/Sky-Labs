@@ -30,7 +30,13 @@ python -m unittest test_Methods.py
 ````
 
 ## Usage
-Visit https://sky-labs.herokuapp.com/ or execute `` flask run application.py `` to run locally.
+Visit https://sky-labs.herokuapp.com/ or execute
+
+````
+set FLASK_APP=application.py 
+flask run
+````
+in the terminal.
 
 As of now, only operations done under the 'Algebra' tab are functional.
 
