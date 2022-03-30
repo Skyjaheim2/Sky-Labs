@@ -124,7 +124,7 @@ def deleteHistory(historyItemID):
     history = History.query.get(historyItemID)
     if history != None:
         db.session.delete(history)
-        # db.session.commit()
+        db.session.commit()
         return "history deleted"
     else:
         return "history not found"
