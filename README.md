@@ -4,6 +4,7 @@ Sky Labs is a flask application inspired by https://www.symbolab.com/ that allow
 
 ![image](https://user-images.githubusercontent.com/64718777/160222769-b98b45a5-01c8-416d-b0a3-b2ac1212238c.png)
 ![ss7](https://user-images.githubusercontent.com/64718777/160222561-184628a2-5317-4769-8824-1a72ec96c9d0.png)
+![image](https://user-images.githubusercontent.com/64718777/160734861-a7e43995-607c-4a57-a440-f7800f3cf887.png)
 ![ss10](https://user-images.githubusercontent.com/64718777/160222573-67394226-9da5-428d-bc60-e41604a62cc2.png)
 
 ## Requirements
