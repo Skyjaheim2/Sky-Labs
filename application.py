@@ -100,16 +100,17 @@ def getUserHistory():
         if f_date not in seenDates:
             seenDates.add(f_date)
             historyDictToReturn.update({f_date: [{
+                'id': item.id,
                 'keyword': item.keyword,
                 'expression': item.expression,
                 'subject': item.subject,
             }]})
         else:
             historyDictToReturn[f_date].append({
+                'id': item.id,
                 'keyword': item.keyword,
                 'expression': item.expression,
                 'subject': item.subject,
-                'date': item.date.strftime("%B %d, %Y")
             })
 
     # REVERSE THE LISTS IN historyDictToReturn SO THAT IT DISPLAYS FROM NEWEST TO OLDEST WHEN TRAVERSED
@@ -117,6 +118,17 @@ def getUserHistory():
         historyDictToReturn[item] = reverseList(historyDictToReturn[item])
 
     return json.dumps(historyDictToReturn)
+
+@app.route("/deleteHistory/<string:historyItemID>", methods=['POST'])
+def deleteHistory(historyItemID):
+    history = History.query.get(historyItemID)
+    if history != None:
+        db.session.delete(history)
+        # db.session.commit()
+        return "history deleted"
+    else:
+        return "history not found"
+    
 
 @app.route("/algebra")
 def algebra():

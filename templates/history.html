@@ -34,6 +34,7 @@
 	        width: 93%;
 		}	
 		.history-item {
+			position: relative;
 			font-size: 20px;
 			margin: auto;
 			margin-top: 10px;
@@ -100,6 +101,14 @@
 	            /*padding-top: 40px;*/
 	        }
 	    }
+	    @keyframes historyItemDeleted {
+		    from {
+		        left: 0;
+		    }
+		    to {
+		        left: -150%;
+		    }
+		}
 	</style>
 {% endblock %}
 
@@ -141,20 +150,22 @@
 	<script>
 		class HistoryItem {
 			constructor(history_item_obj) {
-				this.expression = history_item_obj.expression
-				this.keyword = history_item_obj.keyword
-				this.subject = history_item_obj.subject
+				this.id = history_item_obj.id;
+				this.expression = history_item_obj.expression;
+				this.keyword = history_item_obj.keyword;
+				this.subject = history_item_obj.subject;
 			}
 		}
 		class HistoryUI {
 			static displayHistory() {
 
-				let mainContainer = document.querySelector('.main-container')
-				const request = new XMLHttpRequest()
-				request.open('GET', '/getUserHistory')
+				let mainContainer = document.querySelector('.main-container');
+				const request = new XMLHttpRequest();
+				request.open('GET', '/getUserHistory');
 				request.onload = () => {
 					if (request.status === 200) {
-						const History = JSON.parse(request.responseText)
+						const History = JSON.parse(request.responseText);
+						// console.log(History);
 						for (const date in History) {
 							/* Add expandable-date container div */
 							mainContainer.innerHTML += `
@@ -162,32 +173,33 @@
 									<span class="history-date">${date}</span>
 									<span class="show-steps-span">Show <img class="show-steps-icon" src="/static/img/add.svg"></span>
 								</div>
-							`
+							`;
 							/* Create history-container div */
-							let historyContainerDiv = document.createElement('div')
-							historyContainerDiv.className = 'history-container'
-							historyContainerDiv.dataset.expanded = 'false'
+							let historyContainerDiv = document.createElement('div');
+							historyContainerDiv.className = 'history-container';
+							historyContainerDiv.dataset.expanded = 'false';
 
 							History[date].forEach((item) => {
 								/* Populate history-container-div with history-item */
-								let history_item = new HistoryItem(item)
-								let historyItemDiv = document.createElement('div')
-								historyItemDiv.className = 'history-item'
-								historyItemDiv.dataset.expression = `${history_item.expression}`
-								historyItemDiv.dataset.subject = `${history_item.subject}`
-								historyItemDiv.dataset.keyword = `${history_item.keyword}`
+								let history_item = new HistoryItem(item);
+								let historyItemDiv = document.createElement('div');
+								historyItemDiv.className = 'history-item';
+								historyItemDiv.dataset.id = `${history_item.id}`;
+								historyItemDiv.dataset.expression = `${history_item.expression}`;
+								historyItemDiv.dataset.subject = `${history_item.subject}`;
+								historyItemDiv.dataset.keyword = `${history_item.keyword}`;
 
 								if (history_item.keyword === null) {
-									historyItemDiv.textContent = `\\displaystyle ${history_item.expression}`
+									historyItemDiv.textContent = `\\displaystyle ${history_item.expression}`;
 								}
 								else {
-									historyItemDiv.textContent = `\\displaystyle \\text{${history_item.keyword}}\\ ${history_item.expression}`
+									historyItemDiv.textContent = `\\displaystyle \\text{${history_item.keyword}}\\ ${history_item.expression}`;
 								}
 								
-								historyContainerDiv.appendChild(historyItemDiv)
+								historyContainerDiv.appendChild(historyItemDiv);
 							})
 							/* Add history-container-div */
-							mainContainer.appendChild(historyContainerDiv)
+							mainContainer.appendChild(historyContainerDiv);
 						}
 						/* Add History on-click functionality */
 						const numHistory = document.querySelectorAll('.expandable-date-container').length;
@@ -196,14 +208,14 @@
 
 						for (let i=0; i<numHistory; i++) {
 							expandableDates[i].addEventListener('click', (e) => {
-								let historyContainer = historyContainers[i]
+								let historyContainer = historyContainers[i];
 								if (e.target.className === 'show-steps-span') {
 
 									if (historyContainer.dataset.expanded === 'false') {
-										HistoryUI.expandHistoryContainer(historyContainer)
+										HistoryUI.expandHistoryContainer(historyContainer);
 									}
 									else {
-										HistoryUI.collapseHistoryContainer(historyContainer)
+										HistoryUI.collapseHistoryContainer(historyContainer);
 									}
 								}
 							})
@@ -217,55 +229,54 @@
 							item.innerHTML += `<img class="copy-history-icon" src="/static/img/copy.svg">`;
 							let enteredMath;
 							if (item.dataset.keyword === 'null') {
-								enteredMath = item.dataset.expression
+								enteredMath = item.dataset.expression;
 							}
 							else {
-								enteredMath = `${item.dataset.keyword}\\ ${item.dataset.expression}`
+								enteredMath = `${item.dataset.keyword}\\ ${item.dataset.expression}`;
 							}
-							item.innerHTML += `<textarea class="history-textarea">${enteredMath}</textarea>`
+							item.innerHTML += `<textarea class="history-textarea">${enteredMath}</textarea>`;
 						}))
 
-						
 
-						/* history-item ON-CLICK */
+						/* history-item onclick */
 						historyItems.forEach((item) => {
 							item.addEventListener('click', function(e) {
-								// console.log(e.target)
-								let enteredMath
+								let enteredMath;
 								if (item.dataset.keyword === 'null') {
-									enteredMath = item.dataset.expression
+									enteredMath = item.dataset.expression;
 								}
 								else {
-									enteredMath = `${item.dataset.keyword}\\ ${item.dataset.expression}`
+									enteredMath = `${item.dataset.keyword}\\ ${item.dataset.expression}`;
 								}
+								/* history-item clicked */
 								if (!(e.target.classList.contains('delete-history-icon') || e.target.classList.contains('copy-history-icon'))) {
-									const solutionRequest = new XMLHttpRequest()
-									solutionRequest.open('POST', '/solve/true')
+									const solutionRequest = new XMLHttpRequest();
+									solutionRequest.open('POST', '/solve/true');
 									solutionRequest.onload = () => {
 										if (solutionRequest.status === 200) {
-											let solution = solutionRequest.responseText
+											let solution = solutionRequest.responseText;
 											if (solution !== 'Unable to Solve') {
-												solution = JSON.parse(solution)
-												solution['enteredMath'] = enteredMath
-												localStorage.setItem('last-solution', JSON.stringify(solution))
+												solution = JSON.parse(solution);
+												solution['enteredMath'] = enteredMath;
+												localStorage.setItem('last-solution', JSON.stringify(solution));
 					
 											}
 											else {
-												localStorage.setItem('last-solution', 'empty')
+												localStorage.setItem('last-solution', 'empty');
 											}
 											switch (item.dataset.subject) {
 												case 'algebra':
-													window.location.assign('/algebra')
+													window.location.assign('/algebra');
 													break
 											}
 										}
 									}
 
-									let subjectAndTopic = {'subject': item.dataset.subject, 'topic': null}
-									const data = new FormData()
-						            data.set('userInput', enteredMath)
-						            data.set('subjectAndTopic', JSON.stringify(subjectAndTopic))
-						            solutionRequest.send(data)
+									let subjectAndTopic = {'subject': item.dataset.subject, 'topic': null};
+									const data = new FormData();
+						            data.set('userInput', enteredMath);
+						            data.set('subjectAndTopic', JSON.stringify(subjectAndTopic));
+						            solutionRequest.send(data);
 								}
 								else {
 									/* Copy btn clicked */
@@ -277,6 +288,36 @@
 									    setTimeout(() => item.style.transform = 'scale(1)', 200);
 									    showAlert('Copied!');
 									}
+									/* Delete btn clicked */
+									if (e.target.classList.contains('delete-history-icon')) {
+										const historyItem = e.target.parentElement;
+										const historyContainer = historyItem.parentElement;
+										const historyDateContainer = historyContainer.previousElementSibling;
+										const historyItemID = historyItem.dataset.id;
+										
+										const deleteHistoryRequest = new XMLHttpRequest();
+										deleteHistoryRequest.open('POST', `/deleteHistory/${historyItemID}`);
+										deleteHistoryRequest.onload = () => {
+											const Response = deleteHistoryRequest.responseText;
+											if (Response === 'history deleted') {
+										        Animations.animateDeleteHistoryItem(historyItem);
+
+										        historyItem.addEventListener('animationend', () => {
+										            historyItem.remove();
+										        })
+												showAlert('History Deleted', 'danger');
+												setTimeout(() => {
+													/* Check if last history-item was deleted */
+													if (historyContainer.children.length === 0) {
+														historyDateContainer.remove();
+													}
+
+												}, 2000);
+											}
+										}
+										deleteHistoryRequest.send();
+
+									}
 								}
 								
 							})
@@ -284,22 +325,25 @@
 
 						// Open the most recent history item after half a second
 						setTimeout(() => {
-							let historyContainer = document.querySelectorAll('.history-container')[numHistory-1]
-							HistoryUI.expandHistoryContainer(historyContainer)
+							let historyContainer = document.querySelectorAll('.history-container')[numHistory-1];
+							HistoryUI.expandHistoryContainer(historyContainer);
 						}, 500)
 							
 					}
 					
 				}
-				request.send()
+				request.send();
+			}
+			static addHistoryItemsOnClick() {
+
 			}
 			static expandHistoryContainer(historyContainer) {
-				const numHistory = document.querySelectorAll('.expandable-date-container').length
+				const numHistory = document.querySelectorAll('.expandable-date-container').length;
 				if (numHistory > 0) {
-					let pmButton = historyContainer.previousElementSibling.children[1] // Show/Hide btn
-					pmButton.innerHTML = `Hide <img class="show-steps-icon" src="{{ url_for('static', filename='img/minus.svg') }}">`
-	                historyContainer.style.overflow = 'auto'
-	                Animations.animateShowDate(historyContainer)
+					let pmButton = historyContainer.previousElementSibling.children[1]; // Show/Hide btn
+					pmButton.innerHTML = `Hide <img class="show-steps-icon" src="{{ url_for('static', filename='img/minus.svg') }}">`;
+	                historyContainer.style.overflow = 'auto';
+	                Animations.animateShowDate(historyContainer);
 				}
 				
 
@@ -347,6 +391,11 @@
 	                // stepContainer.style.overflow = 'hidden'
 	            })
 	        }
+	        static animateDeleteHistoryItem(historyItem) {
+		        historyItem.style.animationName = 'historyItemDeleted'
+		        historyItem.style.animationDuration = '1s'
+		        historyItem.style.animationFillMode = 'forwards'
+		    }
     	}
 		document.addEventListener('DOMContentLoaded', () => {
 			UI.updateHeaderButtons('history')
@@ -355,7 +404,6 @@
 
 		})
 
-		/* ON-CLICK EVENTS */
 		/* ON-CLICK EVENTS */
 	    document.querySelector('#skyRatingsHeaderBtn').addEventListener('click', () => {
 	        localStorage.setItem('last-solution', 'empty')
