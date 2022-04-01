@@ -60,12 +60,18 @@
 </head>
 
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
 
     #mainHeading {
         text-align: center;
         font-family: 'Times New Roman', Times, serif;
         font-size: 35px;
         font-weight: bold;
+    }
+    #changelogBtn {
+        margin-top: 5px;
+        width: 30px;
+        height: 30px;
     }
     .inputLabel {
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
@@ -74,6 +80,9 @@
     }
     .nav-item {
         cursor: pointer;
+    }
+    body {
+        font-family: 'Lato', sans-serif;
     }
     /* width */
     ::-webkit-scrollbar {
@@ -121,7 +130,7 @@
                             <li class="nav-item"><a id="notebookHeaderBtn" class="nav-link">Notebook</a></li>
                             <li class="nav-item"><a id="historyHeaderBtn" class="nav-link"> History</a></li>
 
-                            <li class="nav-item"></li>
+                            <li class="nav-item"><a href="/changelog"><img id="changelogBtn" src="/static/img/paper.svg"></a></li>
                             <li class="nav-item"></li>
 
                             <li class="nav-item"><a id="loginBtn" href="#loginModal" class="nav-link edit" data-toggle="modal">Login</a></li>

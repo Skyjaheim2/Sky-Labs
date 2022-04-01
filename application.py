@@ -128,7 +128,10 @@ def deleteHistory(historyItemID):
         return "history deleted"
     else:
         return "history not found"
-    
+
+@app.route("/changelog")
+def changelog():
+    return render_template("changelog.html")
 
 @app.route("/algebra")
 def algebra():

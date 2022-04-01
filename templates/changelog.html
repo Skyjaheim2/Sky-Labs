@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block head %}
+{% endblock %}
+
+{% block style %}
+	<style>
+		#mainHeading {
+			text-align: center;
+	        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+	        font-size: 35px;
+	        font-weight: 500;
+		}
+		#changelogSubHeading {
+			color: #828580;
+			font-weight: 700;
+		}
+		.main-container {
+			height: auto;
+			/*border: 2px solid #e0dddd;*/
+			border-radius: 10px;
+			margin: auto;
+			margin-top: 100px;
+			width: 60%;
+		}
+		.changelog-container {
+			border-radius: 15px;
+			padding: 10px;
+			box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.5);
+			height: 350px;
+			overflow-y: scroll;
+		}
+		.changelog-item {
+			margin-bottom: 15px;
+			cursor: pointer;
+		}
+		.changelog-date {
+			color: #828580;
+		}
+		.feature-icon, .bug-icon {
+			height: 40px;
+			width: 40px;
+		}
+
+		
+	</style>
+{% endblock %}
+
+{% block body %}
+	<div class="main-container">
+		<div id="mainHeading">Changelog</div>
+		<div id="changelogSubHeading">Release notes for new features and bug fixes</div>
+		<hr>
+		<div class="changelog-container">
+			<!-- <div class="changelog-item">
+				<img class="feature-icon mr-3" src="/static/img/computer.svg" align="left">
+				<div class="changelog-heading">Agent Release v0.4.5 - Update Required</div>
+				<div class="changelog-date">January 20, 2016</div>
+			</div>
+			<div class="changelog-item">
+				<img class="bug-icon mr-3" src="/static/img/bug.svg" align="left">
+				<div class="changelog-heading">Broader Detection of Attacks</div>
+				<div class="changelog-date">January 20, 2016</div>
+			</div> -->
+		</div>
+	</div>
+	
+{% endblock %}
+
+{% block script %}
+	<script>
+		class ChangelogUI {
+			static displayChangelog() {
+				const changelog = [
+					{
+						'type': 'feature',
+						'heading': 'Project Start',
+						'date': 'June 9, 2021',
+						'new': [],
+						'improved': [],
+
+					},
+					{
+						'type': 'feature',
+						'heading': 'Implemented Basic Arimetic',
+						'date': 'June 11, 2021',
+						'new': [],
+						'improved': [],
+
+					},
+					{
+						'type': 'feature',
+						'heading': 'Improved Arimetic Functionality',
+						'date': 'June 18, 2021',
+						'new': [],
+						'improved': [],
+
+					},
+					{
+						'type': 'feature',
+						'heading': 'Implemented Live Solve',
+						'date': 'July 20, 2021',
+						'new': ['Expressions can now be solved in real time without viewing steps.'],
+						'improved': [],
+
+					},
+					{
+						'type': 'feature',
+						'heading': 'Implemented Radicals',
+						'date': 'September 24, 2021',
+						'new': ['Radical expressions can now be simplified'],
+						'improved': [],
+
+					},
+					{
+						'type': 'feature',
+						'heading': 'Implemented Subject Tabs',
+						'date': 'September 25, 2021',
+						'new': ['Added UI for selecting different subjects'],
+						'improved': [],
+
+					},
+					{
+						'type': 'feature',
+						'heading': 'Improved Subject Tabs',
+						'date': 'October 4, 2021',
+						'new': ['Subject options can now be selected by hovering over subject tabs', 'Subject tabs are now more dynamic'],
+						'improved': [],
+
+					},
+					{
+						'type': 'feature',
+						'heading': 'Implemented Sidebar',
+						'date': 'October 13, 2021',
+						'new': ['A sidebar has now been added which allows users to navigate the different features of each subject'],
+						'improved': [],
+					},
+					{
+						'type': 'feature',
+						'heading': 'Improved Sidebar',
+						'date': 'October 15, 2021',
+						'new': [],
+						'improved': ['Redesigned sidebar buttons'],
+
+					},
+					{
+						'type': 'feature',
+						'heading': 'Implemented Symbol Buttons',
+						'date': 'October 17, 2021',
+						'new': ['A container of buttons have been added which allow users to add various symbols to the input field.'],
+						'improved': [],
+
+					},
+					{
+						'type': 'fix',
+						'heading': 'Tweaked Sidebar',
+						'date': 'October 20, 2021',
+						'new': ['Added UI for Discrete Math Set Theory.'],
+						'improved': ['Sidebar UI has been tweaked slightly'],
+
+					},
+					{
+						'type': 'feature',
+						'heading': 'Steps UI Have Been Improved',
+						'date': 'October 31, 2021',
+						'new': [],
+						'improved': ['Steps UI have been redesigned', 'Expandable steps have been added', 'Expandable steps can be nested'],
+
+					},
+					{
+						'type': 'feature',
+						'heading': 'Implemented New Algorithm for Simplifying Expressions',
+						'date': 'November 18, 2021',
+						'new': ['Algebraic expressions can now be simplified'],
+						'improved': ['Logic for simplifying expressions'],
+
+					},
+					{
+						'type': 'fix',
+						'heading': 'Improved Simplification Logic',
+						'date': 'December 4, 2021',
+						'new': ['Numerical radical computation', 'Removed e-steps for one step problems', 'Added more logic to further simplify radicals'],
+						'improved': ['Generalized square root functionality to nth roots'],
+
+					},
+					{
+						'type': 'fix',
+						'heading': 'Live Solve Fix',
+						'date': 'December 7, 2021',
+						'new': [],
+						'improved': ['Fixed live solve for Algebra tab'],
+
+					},
+					{
+						'type': 'feature',
+						'heading': 'Improved Exponentials',
+						'date': 'December 28, 2021',
+						'new': ['Simplify nested exponentials', 'Exponentials can now be added'],
+						'improved': ['Simplify exponentials', 'Compute exponentials', 'Large numbers from exponential computation'],
+
+					},
+					{
+						'type': 'feature',
+						'heading': 'Implemented Fractions',
+						'date': 'February 10, 2022',
+						'new': ['Fractions can now be simplified and combined.'],
+						'improved': [],
+
+					},
+					{
+						'type': 'feature',
+						'heading': 'Implemented Multiplication',
+						'date': 'February 15, 2022',
+						'new': ['Basic multiplications can now be computed.'],
+						'improved': [],
+
+					},
+					{
+						'type': 'fix',
+						'heading': 'Fixes To Multiplication',
+						'date': 'March 4, 2022',
+						'new': [],
+						'improved': ['Multiplication logic'],
+
+					},
+					{
+						'type': 'feature',
+						'heading': 'Implemented Login and Sign Up',
+						'date': 'March 14, 2022',
+						'new': ['User can now sign up and login to their account.'],
+						'improved': [],
+
+					},
+					{
+						'type': 'feature',
+						'heading': 'Implemented History',
+						'date': 'March 17, 2022',
+						'new': ['Users can now view a history of all computations made.'],
+						'improved': [],
+
+					},
+					{
+						'type': 'feature',
+						'heading': 'Improved History',
+						'date': 'March 29, 2022',
+						'new': ['History items are now clickable.', 'Copy and delete buttons have been added to history items.'],
+						'improved': ['Prevented user from accessing history while logged out.'],
+
+					},
+				]
+				const changelogContainer = document.querySelector('.changelog-container');
+				reverse(changelog).forEach((item) => {
+					let imgSrc;
+					let className;
+					if (item['type'] === 'feature') {
+						imgSrc = '/static/img/computer.svg';
+						className = 'feature-icon mr-3';
+					}
+					else {
+						imgSrc = '/static/img/bug.svg';
+						className = 'bug-icon mr-3';
+					}
+					changelogContainer.innerHTML += `
+						<div class="changelog-item">
+							<img class="${className}" src="${imgSrc}" align="left">
+							<div class="changelog-heading">${item['heading']}</div>
+							<div class="changelog-date">${item['date']}</div>
+						</div>
+					`
+				})
+
+
+			}
+		}
+
+		document.addEventListener('DOMContentLoaded', () => {
+			ChangelogUI.displayChangelog();
+		})
+
+		function reverse(array) {
+			const newArray = [];
+			let i = array.length-1;
+			while (i >= 0) {
+				newArray.push(array[i]);
+				i --;
+			}
+			return newArray
+		} 
+		
+	</script>
+{% endblock %}	
