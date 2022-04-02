@@ -583,7 +583,8 @@ class Exponential:
             self.coefficient = coefficient
             if self.coefficient[-1] == '*': self.coefficient = self.coefficient[:-1]
             if len(self.base) == len(coefficient)+1:
-                self.base = expression[len(coefficient)]
+                # if Constant(expression[len(coefficient)]).is_digit and '*' in expression: self.base = expression[len(coefficient)]
+                if not Constant(expression[len(coefficient)]).is_digit or '*' in expression: self.base = expression[len(coefficient)]
             else:
                 if self.base[len(coefficient)] == '(' and self.base[-1] == ')':
                     self.base = expression[len(coefficient): len(coefficient)+1]
@@ -1137,6 +1138,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                         Steps.append(productStep)
                         expression = expression.replace(str(term), str(solution))
                     else:
+                        # if Constant(str(Exponential(termsToBeMultiplied[0]).exponent)).is_digit and Constant(str(Exponential(termsToBeMultiplied[1]).exponent)).is_digit:
                         solution = getProduct2(termsToBeMultiplied)
                         productStep = createMainStep(r'\text{Multiply And Divide (left to right)}',
                                                     latexify(f'{term}={solution}'))
@@ -2268,36 +2270,49 @@ def getProduct2(terms: list):
 
     """ GET COEFFICIENTS """
     for term in terms:
-        C = ''
-        for char in term:
-            if not Constant(char).is_digit and char != '.':
-                break
-            else:
-                C += char
-        if C == '': C = '1'
+        # C = Exponential(str(term)).coefficient
+        if Constant(term).is_digit:  C = term
+        else:
+            C = Exponential(term).coefficient
+            # C = ''
+            # for char in term:
+            #     if not Constant(char).is_digit and char != '.':
+            #         break
+            #     else:
+            #         if not Constant(char).is_digit:
+            #             C += char
+            # if C == '': C = '1'
 
         Coefficients.append(C)
 
     seenTerms = {}
-    for term in terms:
+    for i, term in enumerate(terms):
         if term[0] == '+' or term[0] == '-': term = term[1:]
         term = Exponential(term)
 
         if term.base not in seenTerms:
             seenTerms.update({str(term.base): term.exponent})
         else:
+            if Constant(term.base).is_digit:
+                Coefficients[i-1] = '1'
             counter = seenTerms[term.base]
             seenTerms.update({term.base: f'{counter}+{term.exponent}'})
 
 
     finalCoefficient = product(Coefficients)
+    if finalCoefficient == 1: finalCoefficient = ''
 
     finalProduct = f'{finalCoefficient}'
 
 
     for term in seenTerms:
-        if term != finalProduct and not Constant(term).is_digit:
+        if (term != finalProduct and not Constant(term).is_digit) or finalProduct == '':
+        # if term != finalProduct:
             finalProduct += f"{term}^{'{'}{seenTerms[term]}{'}'}"
+        else:
+            pass
+            # if term != finalProduct:
+            #     finalProduct += f"*{term}^{'{'}{seenTerms[term]}{'}'}"
 
     finalProduct = finalProduct.replace('^{1}', '')
 
@@ -2435,7 +2450,7 @@ def reverseList(L):
     return L[::-1]
 
 def main():
-    E = Expression('2*3*4*x+5*3*2*y*y')
+    E = Expression('2*3x')
     # E = Expression('6+x^{2}*y^{3}')
     print(simplifyExpression(E, keyword='simplify'))
 

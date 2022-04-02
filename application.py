@@ -22,7 +22,7 @@ if not os.getenv("DATABASE_URL"):
 
 
 app = Flask(__name__)
-app.config['TESTING'] = False
+app.config['TESTING'] = True
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['SESSION_PERMANENT'] = False
@@ -192,6 +192,7 @@ def solve(requestFromHistory):
                 return "Unable to solve"
         else:
             Solution = simplifyExpression(userInput, keyword=keyword)
+            print(Solution['finalResult'])
             return jsonify(Solution)
 
 
