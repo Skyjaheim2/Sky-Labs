@@ -135,13 +135,18 @@
         /*margin-right: 20%;*/
     }
     .results-container {
+       /* animation-name: showAllSteps;
+        animation-delay: 0.5s;
+        animation-duration: 2s;
+        animation-fill-mode: forwards;*/
+        /*display: none;*/
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
         font-size: 15px;
         background-color: rgba(226, 226, 226, 0.45);
-        /*height: 500px;*/
         border-radius: 15px;
-        /*font-size: 30px;*/
         padding: 20px;
+        /*height: 0;*/
+        overflow-y: hidden;
     }
     #finalSolutionHeading {
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
@@ -189,6 +194,7 @@
         border-radius: 10px;
         margin-top: 0;
         margin-bottom: 0;
+        overflow-x: hidden;
 
     }
     .show-steps-span {
@@ -219,7 +225,7 @@
     }
     .step-info {
         font-size: 17px;
-        margin-top: 10px;
+        margin-top: 11px;
         margin-bottom: 15px;
         /*overflow-y: visible;*/
         overflow-x: auto;
@@ -260,6 +266,15 @@
             box-shadow: none;
             /*padding-top: 40px;*/
         }
+    }
+    @keyframes showAllSteps {
+        0% {
+            max-height: 0;
+          }
+
+          100% {
+            max-height: 2000px;
+          }
     }
 </style>
 
@@ -1266,6 +1281,23 @@
                 // stepContainer.style.overflow = 'hidden'
             })
         }
+        static animateShowAllSteps() {
+            const resultsContainer = document.querySelector('.results-container');
+            resultsContainer.style.animationName = 'showAllSteps';
+            resultsContainer.style.animationDuration = '3s';
+            resultsContainer.style.animationFillMode = 'forwards';
+            resultsContainer.animationDelay = '2s';
+
+            resultsContainer.addEventListener('animationend', () => {
+                this.reset_animation();
+            })
+        }
+        static reset_animation() {
+          var el = document.querySelector('.results-container');
+          el.style.animation = 'none';
+          el.offsetHeight; /* trigger reflow */
+          el.style.animation = null; 
+        }
     }
     class Storage {
         static instantiateStorage() {
@@ -1384,6 +1416,7 @@
 
         checkIfUserIsStillLoggedIn()
         BaseUI.loadSymbolsContainer()
+        Animations.animateShowAllSteps()
         
 
 

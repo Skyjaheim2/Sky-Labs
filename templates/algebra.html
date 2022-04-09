@@ -297,6 +297,8 @@
                         solution['enteredMath'] = enteredMath
                         Storage.addLastSolution(solution)
 
+
+                        Animations.animateShowAllSteps()
                         // window.location.href = `/algebra/${enteredMath}`
 
                         // Make the first main-step scrollable if content is too long
@@ -308,6 +310,7 @@
 
                     }
                 }
+                // document.querySelector('.results-container').style.height = '0'
             }
             const data = new FormData()
             data.set('userInput', enteredMath)
