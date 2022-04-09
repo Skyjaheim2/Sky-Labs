@@ -25,13 +25,13 @@
 		}
 		.changelog-container {
 			border-radius: 15px;
-			padding: 10px;
+			padding: 5px;
 			box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.5);
 			height: 350px;
 			overflow-y: scroll;
 		}
 		.changelog-item {
-			margin-bottom: 15px;
+			/*margin-bottom: 15px;*/
 			cursor: pointer;
 		}
 		.changelog-date {
@@ -41,6 +41,39 @@
 			height: 40px;
 			width: 40px;
 		}
+		.modal-content {
+			/*text-align: center;*/
+			padding: 10px;
+			border: none;
+			border-radius: 10px;
+			/*width: 600px;*/
+		}
+		.changelog-modal-date {
+			font-size: 17px;
+			font-weight: bold;
+		}
+		.changelog-new-heading, .changelog-improved-heading {
+			opacity: 0.7;
+			color: white;
+			text-align: center;
+			font-weight: bold;
+			border-radius: 5px;
+			height: auto;
+		}
+		.changelog-new-heading {
+			background-color: #1d9e11;
+			width: 40px;
+		}
+		.changelog-improved-heading {
+			background-color: #126ec9;
+			width: 72px;
+		}
+		a, a:focus, a:active {
+		      text-decoration: none;
+		      color: inherit;
+		}
+		/* Disable scroll  */
+		html, body {margin: 0; height: 100%; overflow: hidden} 
 
 		
 	</style>
@@ -52,18 +85,46 @@
 		<div id="changelogSubHeading">Release notes for new features and bug fixes</div>
 		<hr>
 		<div class="changelog-container">
-			<!-- <div class="changelog-item">
-				<img class="feature-icon mr-3" src="/static/img/computer.svg" align="left">
-				<div class="changelog-heading">Agent Release v0.4.5 - Update Required</div>
-				<div class="changelog-date">January 20, 2016</div>
-			</div>
-			<div class="changelog-item">
-				<img class="bug-icon mr-3" src="/static/img/bug.svg" align="left">
-				<div class="changelog-heading">Broader Detection of Attacks</div>
-				<div class="changelog-date">January 20, 2016</div>
-			</div> -->
+
+			<!-- <a href="#changelogModal" class="nav-link edit" data-toggle="modal">
+				<div class="changelog-item">
+					<img class="feature-icon mr-3" src="/static/img/computer.svg" align="left">
+					<div class="changelog-heading">Agent Release v0.4.5 - Update Required</div>
+					<div class="changelog-date">January 20, 2016</div>
+				</div>
+			</a>
+
+			<a href="#changelogModal" class="nav-link edit" data-toggle="modal">
+				<div class="changelog-item">
+					<img class="bug-icon mr-3" src="/static/img/bug.svg" align="left">
+					<div class="changelog-heading">Broader Detection of Attacks</div>
+					<div class="changelog-date">January 20, 2016</div>
+				</div>
+			</a> -->
+
 		</div>
 	</div>
+
+	<div id="changelogModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <h2 id="changelogModalHeading" class="mb-3">Agent Release v0.4.5 - Update Required</h2>
+                <div class="changelog-modal-date mb-2">October 27, 2014</div>
+                <div class="changelog-new-heading">New</div>
+                <ul id="newList">
+                	<li>Boards cna now be edited or deleted</li>
+                	<li>Feedback can be deleted by Board owner</li>
+                	<li>Welcome and notification emails</li>
+                </ul>
+                <div class="changelog-improved-heading">Improved</div>
+                	<ul id="improvedList">
+                		<li>Changelog items are grouped by week in which they were added</li>
+                		<li>Search now indexes tags</li>
+                	</ul>
+                </div>
+            </div>
+        </div>
+    </div>
 	
 {% endblock %}
 
@@ -261,13 +322,44 @@
 						className = 'bug-icon mr-3';
 					}
 					changelogContainer.innerHTML += `
-						<div class="changelog-item">
-							<img class="${className}" src="${imgSrc}" align="left">
-							<div class="changelog-heading">${item['heading']}</div>
-							<div class="changelog-date">${item['date']}</div>
-						</div>
+						<a href="#changelogModal" class="nav-link edit" data-toggle="modal">
+							<div class="changelog-item" data-heading="${item.heading}" data-date="${item.date}" data-new="${item.new}" data-improved="${item.improved}">
+								<img class="${className}" src="${imgSrc}" align="left">
+								<div class="changelog-heading">${item['heading']}</div>
+								<div class="changelog-date">${item['date']}</div>
+							</div>
+						</a>
 					`
 				})
+				// Add event listeners
+				document.querySelectorAll('.changelog-item').forEach((item) => {
+					item.addEventListener('click', () => {
+						console.log(item);
+						const changelogModalHeading = document.querySelector('#changelogModalHeading');
+						const changelogModalDate = document.querySelector('.changelog-modal-date');
+						const newList = document.querySelector('#newList');
+						const improvedList = document.querySelector('#improvedList');
+
+						/* Update changelog modal */
+						const newItems = item.dataset.new.split(',');
+						const improvedItems = item.dataset.improved.split(',');
+
+						changelogModalHeading.innerHTML = item.dataset.heading;
+						changelogModalDate.innerHTML = item.dataset.date;
+
+						newList.innerHTML = '';
+						improvedList.innerHTML = '';
+						
+						newItems.forEach((item1) => {
+							if (item1 !== '') newList.innerHTML += `<li>${item1}</li>`;
+						});
+						improvedItems.forEach((item2) => {
+							if (item2 !== '') improvedList.innerHTML += `<li>${item2}</li>`;
+						});
+
+					})
+				})
+
 
 
 			}
@@ -276,6 +368,8 @@
 		document.addEventListener('DOMContentLoaded', () => {
 			ChangelogUI.displayChangelog();
 		})
+
+		
 
 		function reverse(array) {
 			const newArray = [];
