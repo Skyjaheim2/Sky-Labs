@@ -111,7 +111,7 @@
 
             if (liveSolveRadioBtn.checked === true && enteredMath !== '') {
                 const request = new XMLHttpRequest()
-                request.open('POST', '/solve/true')
+                request.open('POST', '/solve/false/true')
                 request.onload = () => {
                     if (request.status === 200) {
                         let solution = request.responseText
@@ -255,23 +255,23 @@
 
         // Solve Button
         document.querySelector('#solveBtn').addEventListener('click', () => {
-            let enteredMath = answerMathField.latex()
-            let resultsContainer = document.querySelector('.results-container')
+            let enteredMath = answerMathField.latex();
+            let resultsContainer = document.querySelector('.results-container');
             // Clear previous work
             resultsContainer.innerHTML = `
                 <div id="finalSolutionHeading"></div>
                 <div class="steps-heading">Steps</div>
                 <div class="steps-container"></div>
-            `
-            let selectedTopic = BaseUI.getSelectedTopic()
-            let subjectAndTopic = {'subject': 'algebra', 'selectedTopic': selectedTopic}
+            `;
+            let selectedTopic = BaseUI.getSelectedTopic();
+            let subjectAndTopic = {'subject': 'algebra', 'selectedTopic': selectedTopic};
 
-            const request = new XMLHttpRequest()
-            request.open('POST', `/solve/false`)
+            const request = new XMLHttpRequest();
+            request.open('POST', `/solve/false/false`);
             request.onload = () => {
                 if (request.status === 200) {
-                    let solution = request.responseText
-                    if (solution !== 'Unable To Solve') {
+                    let solution = request.responseText;
+                    if (solution !== 'Unable to solve') {
                         solution = JSON.parse(solution)
                         let Steps = solution['steps']
                         let finalResult = solution['finalResult']
@@ -307,7 +307,7 @@
                         //     document.querySelector('.step-info').style.overflowX = 'auto'
                     }
                     else {
-
+                        UI.showAlert('Unable To Solve', 'danger');
                     }
                 }
                 // document.querySelector('.results-container').style.height = '0'

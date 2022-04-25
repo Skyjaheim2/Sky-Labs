@@ -99,7 +99,7 @@
             let liveSolveSolutionsContainer = document.querySelector('#liveSolveSolutionContainer')
             if (liveSolveRadioBtn.checked === true && enteredMath !== '') {
                 const request = new XMLHttpRequest()
-                request.open('POST', '/solve/true')
+                request.open('POST', '/solve/false/true')
                 request.onload = () => {
                     if (request.status === 200) {
                         let solution = request.responseText

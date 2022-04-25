@@ -821,7 +821,7 @@ class Fraction:
     def __getitem__(self, index):
         """ [] OPERATOR """
         if isinstance(index, slice):
-            return Expression(self.expression[index])
+            return Fraction(self.expression[index])
         return self.expression[index]
 
 
@@ -1144,11 +1144,12 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                                                     latexify(f'{term}={solution}'))
                         Steps.append(productStep)
                         expression = expression.replace(str(term), solution)
+                    expression = Expression(expression)
                 # Steps.append(createMainStep(r'\text{Combine Results}', latexify(f'{expression}')))
             else:
                 pass
 
-        expression = Expression(expression)
+
         for term in expression.getTerms():
             product_pattern = re.compile(r'}\w')
             matches = product_pattern.findall(str(term))
@@ -1175,17 +1176,15 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                 simplifiedProduct = getProduct2(productTerms)
                 expression = Expression(expression.replace(str(term), simplifiedProduct))
 
-
-
     if groupedTerms is None: groupedTerms = expression.getGroupedTerms()
 
     if keyword == 'combine':
         """ CONVERT ALL TERMS TO FRACTION """
         groupedTerms = createGroupedTermsDict()
         for term in expression.getTerms():
-            term = Fraction(str(term))
+            if type(term) != Fraction:
+                term = Fraction(str(term))
             groupedTerms['Fractions'].append(term)
-
 
     groupedExpressions = expression.getGroupedExpressions()
 
@@ -2450,9 +2449,10 @@ def reverseList(L):
     return L[::-1]
 
 def main():
-    E = Expression('2*3x')
+    E = Expression('frac{5x*x*x+1+2+3}{1+x}+frac{5x*y*x+3y+2y+1+2}{1+y}')
     # E = Expression('6+x^{2}*y^{3}')
-    print(simplifyExpression(E, keyword='simplify'))
+
+    print(simplifyExpression(E, keyword='combine'))
 
 
 

@@ -22,7 +22,7 @@ if not os.getenv("DATABASE_URL"):
 
 
 app = Flask(__name__)
-app.config['TESTING'] = True
+app.config['TESTING'] = False
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['SESSION_PERMANENT'] = False
@@ -153,38 +153,41 @@ def probability():
 def physics():
     return render_template('physics.html')
 
-@app.route("/solve/<string:requestFromHistory>", methods=["POST"])
-def solve(requestFromHistory):
+@app.route("/solve/<string:requestFromHistory>/<string:liveSolve>", methods=["POST"])
+def solve(requestFromHistory, liveSolve):
+    requestFromHistory, liveSolve = json.loads(requestFromHistory), json.loads(liveSolve)
     userInput = request.form.get('userInput')
     subjectAndTopic = json.loads(request.form.get('subjectAndTopic'))
 
+
     keyword = None
-    allKeyWords = ['simplify', 'combine']
-    splitInput = userInput.split(' ')
-   
-    if len(splitInput) > 1:
-        keyword = splitInput[0][:-1]
-        if keyword in allKeyWords:
-            userInput = splitInput[1]
-        else:
-            keyword = None
+    allKeywords = ['simplify', 'combine']
+
+    inputsItems = userInput.split(' ')
+    if inputsItems[0].replace('\\', '') in allKeywords:
+        keyword = inputsItems[0].replace('\\', '')
+        userInput = ''
+        for item in inputsItems[1:]:
+            userInput += item
 
     if app.config['TESTING']:
         print(f"Subject And Topic: {subjectAndTopic}")
         print(f"Keyword: {keyword}")
         print(f'Before parse: {userInput}')
-        print(f'After parse: {parseLatex(userInput)}')
+    print(f'After parse: {parseLatex(userInput)}')
+
 
      # ADD HISTORY
-    if 'user_id' in session and requestFromHistory == 'false':
-        history = History(keyword=keyword, expression=userInput, subject=subjectAndTopic['subject'], user_id=session['user_id'])
+    if 'user_id' in session and requestFromHistory == False:
+        fixedUserInput = latexify(parseLatex(userInput)) # REPLACES /cdotx with /cdot x
+        history = History(keyword=keyword, expression=fixedUserInput, subject=subjectAndTopic['subject'], user_id=session['user_id'])
         history.addHistory()
 
     userInput = parseLatex(userInput)
     if subjectAndTopic['subject'] == 'algebra':
         
         userInput = Expression(userInput)
-        if not app.config['TESTING']:
+        if not app.config['TESTING'] or liveSolve == True:
             try:
                 Solution = simplifyExpression(userInput, keyword=keyword)
                 return jsonify(Solution)
@@ -192,7 +195,6 @@ def solve(requestFromHistory):
                 return "Unable to solve"
         else:
             Solution = simplifyExpression(userInput, keyword=keyword)
-            print(Solution['finalResult'])
             return jsonify(Solution)
 
 

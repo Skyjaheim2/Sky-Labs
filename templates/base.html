@@ -308,6 +308,38 @@
                 throwOnError: false
             });
         }
+        static showAlert(alertText, type) {
+            if (type === undefined || !(['primary', 'warning', 'danger', 'success'].includes(type))) {
+                type = 'primary'
+            }
+            // Create alert div
+            const alertDiv = document.createElement('div')
+            alertDiv.role = 'alert'
+            alertDiv.className = `alert alert-${type}`
+            alertDiv.id = 'alertMessage'
+            alertDiv.style.borderRadius = '10px'
+            alertDiv.style.margin = '0'
+            alertDiv.textContent = alertText
+            if (type === 'danger') {
+                // alertDiv.style.backgroundColor = 'rgb(209,13,13)'
+            }
+            if (type === 'primary') {
+                // alertDiv.style.backgroundColor = 'rgb(80, 113, 213)'
+            }
+            if (type === 'success') {
+                // alertDiv.style.backgroundColor = 'rgb(76, 180, 40)'
+            }
+            if (type === 'warning') {
+                // alertDiv.style.backgroundColor = 'rgb(227, 148, 16)'
+            }
+            // Add alert to page
+            document.querySelector('#alertDiv').appendChild(alertDiv)
+
+            // Remove alert
+            setTimeout(() => {
+                alertDiv.remove()
+            }, 2000)
+        }
     }
 
 
@@ -401,7 +433,7 @@
             if (Response === "Logged In") {
                 cancelBtn.click()
                 UI.userLoggedIn()
-                showAlert('Logged In', 'primary')
+                UI.showAlert('Logged In', 'primary')
             }
             else if (Response === "Invalid Credentials") {
                 loginModalErrorMessage.textContent = 'Invalid Credentials'
@@ -419,7 +451,7 @@
         const request = new XMLHttpRequest()
         request.open('POST', `/signOut`)
         request.onload = () => {
-            showAlert('Signed Out', 'danger')
+            UI.showAlert('Signed Out', 'danger')
         }
         request.send()
     })
@@ -429,47 +461,19 @@
             window.location.href = '/history'
         }
         else {
-            showAlert('Login to View History', 'warning')
+            UI.showAlert('Login to View History', 'warning')
         }
         
         
 
     })
 
+    /* ON-CLICK EVENTS */
+    document.querySelector('#skyRatingsHeaderBtn').addEventListener('click', () => {
+        localStorage.setItem('last-solution', 'empty')
+    })
 
-   
 
-    function showAlert(alertText, type) {
-
-        if (type === undefined || !(['primary', 'warning', 'danger', 'success'].includes(type))) {
-            type = 'primary'
-        }
-        // Create alert div
-        const alertDiv = document.createElement('div')
-        alertDiv.role = 'alert'
-        alertDiv.className = `alert alert-${type}`
-        alertDiv.id = 'alertMessage'
-        alertDiv.style.borderRadius = '10px'
-        alertDiv.style.margin = '0'
-        alertDiv.textContent = alertText
-        if (type === 'danger') {
-            // alertDiv.style.backgroundColor = 'rgb(209,13,13)'
-        }
-        if (type === 'primary') {
-            // alertDiv.style.backgroundColor = 'rgb(80, 113, 213)'
-        }
-        if (type === 'success') {
-            // alertDiv.style.backgroundColor = 'rgb(76, 180, 40)'
-        }
-        if (type === 'warning') {
-            // alertDiv.style.backgroundColor = 'rgb(227, 148, 16)'
-        }
-        // Add alert to page
-        document.querySelector('#alertDiv').appendChild(alertDiv)
-
-        // Remove alert
-        setTimeout(()=>{alertDiv.remove()}, 2000)
-    }
 
     function checkIfUserIsStillLoggedIn() {
         const request = new XMLHttpRequest()

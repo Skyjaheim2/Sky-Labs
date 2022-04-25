@@ -13,7 +13,6 @@
 		}
 		.main-container {
 			height: auto;
-			width: 100px;
 			/*border: 2px solid #e0dddd;*/
 			border-radius: 10px;
 			margin: auto;
@@ -22,7 +21,7 @@
 		}
 		.history-date {
 			font-size: 22px;
-			font-family: ''Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;';
+			/*font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;';*/
 		}
 		.expandable-date-container {
 			background-color: rgba(215, 213, 213, 0.45);
@@ -237,7 +236,6 @@
 							item.innerHTML += `<textarea class="history-textarea">${enteredMath}</textarea>`;
 						}))
 
-
 						/* history-item onclick */
 						historyItems.forEach((item) => {
 							item.addEventListener('click', function(e) {
@@ -286,7 +284,7 @@
 									    document.execCommand('copy');
 									    item.style.transform = 'scale(0.98)';
 									    setTimeout(() => item.style.transform = 'scale(1)', 200);
-									    showAlert('Copied!');
+									    UI.showAlert('Copied!');
 									}
 									/* Delete btn clicked */
 									if (e.target.classList.contains('delete-history-icon')) {
@@ -305,7 +303,7 @@
 										        historyItem.addEventListener('animationend', () => {
 										            historyItem.remove();
 										        })
-												showAlert('History Deleted', 'danger');
+												UI.showAlert('History Deleted', 'danger');
 												setTimeout(() => {
 													/* Check if last history-item was deleted */
 													if (historyContainer.children.length === 0) {
@@ -400,14 +398,10 @@
 		document.addEventListener('DOMContentLoaded', () => {
 			UI.updateHeaderButtons('history')
 			HistoryUI.displayHistory()
-			
 
 		})
 
-		/* ON-CLICK EVENTS */
-	    document.querySelector('#skyRatingsHeaderBtn').addEventListener('click', () => {
-	        localStorage.setItem('last-solution', 'empty')
-	    })
+		
 
 	</script>
 {% endblock %}	

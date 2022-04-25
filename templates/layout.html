@@ -228,8 +228,8 @@
         margin-top: 11px;
         margin-bottom: 15px;
         /*overflow-y: visible;*/
-        overflow-x: auto;
-        overflow-y: hidden;
+        /*overflow-x: auto;*/
+        overflow-y: visible;
         /*height: 50px;*/
         white-space: nowrap;
     }
@@ -397,12 +397,23 @@
             /* Add Latex To Solution Heading */
 
             // Check for keyword
-            let checkInput = enteredMath.split(" ")
-            if (checkInput.length > 1)
-                if (checkInput[0] === 'simplify\\' || checkInput[0] === 'combine\\')
-                    enteredMath = checkInput[1]
+            const allKeywords = ['simplify', 'combine'];
+            let keyword;
+            let userInput;
+            let inputItems = enteredMath.split(' ');
+            if (allKeywords.includes(inputItems[0].replaceAll('\\', ''))) {
+                keyword = inputItems[0].replaceAll('\\', '');
+                userInput = '';
+                inputItems.splice(1).forEach((item) => {
+                    if (item.slice(-4) === 'cdot') item = `${item} ` // replace \cdotx with \cdot x
+                    userInput += item;
+                })
+            }
+            else {
+                userInput = enteredMath;
+            }
 
-            StepsUI.addLatexToElement(document.querySelector('#finalSolutionHeading'), `{\\displaystyle ${enteredMath}=${finalResult}}`)
+            StepsUI.addLatexToElement(document.querySelector('#finalSolutionHeading'), `{\\displaystyle ${userInput}=${finalResult}}`)
 
         }
         static makeStepsExpandable() {
@@ -1319,7 +1330,7 @@
                 let subjectAndTopic = {'subject': 'algebra', 'selectedTopic': selectedTopic}
 
                 const request = new XMLHttpRequest()
-                request.open('POST', `/solve/true`)
+                request.open('POST', `/solve/true/false`)
                 request.onload = () => {
                     if (request.status === 200) {
                         let solution = request.responseText

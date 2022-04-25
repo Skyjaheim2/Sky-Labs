@@ -6,7 +6,7 @@ from Methods import *
 # from test import *
 
 
-# python -m unittest test_Methods.py
+# RUN: python -m unittest test_Methods.py
 
 class TestCalc(unittest.TestCase):
     # maxDiff = None
@@ -866,6 +866,30 @@ class TestCalc(unittest.TestCase):
                     {'type': 'e-step', 'heading': '\\displaystyle 30y^{1+1}=30y^{2}', 'e-steps': [
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+1=2'},
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 30y^{1+1}=30y^{2}'}]}], 'finalResult': '30y^{2}+24x'},
+            },
+            {
+                'expression': 'frac{5x*x*x+1+2+3}{1+x}+frac{5x*y*x+3y+2y+1+2}{1+y}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{5x\\cdot x\\cdot x+1+2+3}{1+x}=\\frac{5x^{3}+6}{x+1}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x\\cdot x\\cdot x=5x^{1+1+1}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+1+1=3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 5x^{1+1+1}=5x^{3}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2+3=6'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{5x\\cdot x\\cdot x+1+2+3}{1+x}=\\frac{5x^{3}+6}{1+x}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+x=x+1'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{5x\\cdot x\\cdot x+1+2+3}{1+x}=\\frac{5x^{3}+6}{x+1}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{5x\\cdot y\\cdot x+3y+2y+1+2}{1+y}=\\frac{5x^{2}+5y+3}{y+1}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x\\cdot y\\cdot x=5x^{1+1}y'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+1=2'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 5x^{1+1}=5x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3y+2y+1+2=5y+1+2'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 5y+1+2=5y+3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{5x\\cdot y\\cdot x+3y+2y+1+2}{1+y}=\\frac{5x^{2}+5y+3}{1+y}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+y=y+1'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{5x\\cdot y\\cdot x+3y+2y+1+2}{1+y}=\\frac{5x^{2}+5y+3}{y+1}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }\\left(x+1\\right)\\left(y+1\\right)', 'info': '\\displaystyle \\frac{5x^{3}+6}{x+1}+\\frac{5x^{2}+5y+3}{y+1}=\\frac{\\left(5x^{3}+6\\right)\\left(y+1\\right)}{\\left(x+1\\right)\\left(y+1\\right)}+\\frac{\\left(5x^{2}+5y+3\\right)\\left(x+1\\right)}{\\left(x+1\\right)\\left(y+1\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{\\left(5x^{3}+6\\right)\\left(y+1\\right)}{\\left(x+1\\right)\\left(y+1\\right)}+\\frac{\\left(5x^{2}+5y+3\\right)\\left(x+1\\right)}{\\left(x+1\\right)\\left(y+1\\right)}=\\frac{\\left(5x^{3}+6\\right)\\left(y+1\\right)+\\left(5x^{2}+5y+3\\right)\\left(x+1\\right)}{\\left(x+1\\right)\\left(y+1\\right)}'}], 'finalResult': '\\frac{\\left(5x^{3}+6\\right)\\left(y+1\\right)+\\left(5x^{2}+5y+3\\right)\\left(x+1\\right)}{\\left(x+1\\right)\\left(y+1\\right)}'}
             },
             {
                 'expression': 'frac{1}{2}',
