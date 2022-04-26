@@ -176,7 +176,6 @@ def solve(requestFromHistory, liveSolve):
         print(f'Before parse: {userInput}')
     print(f'After parse: {parseLatex(userInput)}')
 
-
      # ADD HISTORY
     if 'user_id' in session and requestFromHistory == False:
         fixedUserInput = latexify(parseLatex(userInput)) # REPLACES /cdotx with /cdot x
