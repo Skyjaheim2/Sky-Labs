@@ -249,7 +249,7 @@
 								/* history-item clicked */
 								if (!(e.target.classList.contains('delete-history-icon') || e.target.classList.contains('copy-history-icon'))) {
 									const solutionRequest = new XMLHttpRequest();
-									solutionRequest.open('POST', '/solve/true');
+									solutionRequest.open('POST', '/solve/true/false ');
 									solutionRequest.onload = () => {
 										if (solutionRequest.status === 200) {
 											let solution = solutionRequest.responseText;

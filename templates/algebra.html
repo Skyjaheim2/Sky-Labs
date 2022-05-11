@@ -91,6 +91,7 @@
             }
         });
 
+
         // answerMathField.write('\\wp')
         // answerMathField.latex('\\left\\{ \\right\\}')
         // answerMathField.typedText('cartesian product ')
@@ -255,6 +256,7 @@
 
         // Solve Button
         document.querySelector('#solveBtn').addEventListener('click', () => {
+            const SU = new StepsUI()
             let enteredMath = answerMathField.latex();
             let resultsContainer = document.querySelector('.results-container');
             // Clear previous work
@@ -265,6 +267,7 @@
             `;
             let selectedTopic = BaseUI.getSelectedTopic();
             let subjectAndTopic = {'subject': 'algebra', 'selectedTopic': selectedTopic};
+
 
             const request = new XMLHttpRequest();
             request.open('POST', `/solve/false/false`);
@@ -280,10 +283,11 @@
                         let e_step_id = 1
                         Steps.forEach((step) => {
                             if (step['type'] === 'main-step') {
-                                StepsUI.displayStep(stepsContainer, step, 'main-step')
+                                SU.displayStep(stepsContainer, step, 'main-step')
                             }
                             else if (step['type'] === 'e-step') {
-                                StepsUI.displayStep(stepsContainer, step, 'e-step', e_step_id)
+                                // console.log(e_step_id)
+                                SU.displayStep(stepsContainer, step, 'e-step', e_step_id)
                                 let num_e_steps_added = document.querySelectorAll('.expandable-step-container').length
                                 e_step_id = num_e_steps_added + 1
                             }
@@ -292,6 +296,7 @@
 
                         StepsUI.addLatexToSteps(finalResult, enteredMath)
                         StepsUI.makeStepsExpandable()
+
 
                         // Add to solution to LS
                         solution['enteredMath'] = enteredMath

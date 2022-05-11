@@ -597,7 +597,7 @@ class Exponential:
     def computeExponential(self):
         base = Constant(self.base)
         exponent = Constant(self.exponent)
-        if base.is_digit and exponent.is_digit:
+        if (base.is_digit or Constant(str(base)[1:-1]).is_digit) and exponent.is_digit:
             solution = Constant(str(eval(f'{self.base}**{self.exponent}')))
             if solution.is_integer:
                 if solution.val > maxInt:
@@ -873,6 +873,26 @@ class Expression:
         self.expression = expression
         self.__Terms = []
 
+    def getNumOpenParen(self):
+        counter = 0
+        for i in range(len(self.expression)):
+            if self.expression[i] == '(':
+                counter += 1
+        return counter
+
+    def getIndexOfInnerMostParen(self):
+        paren = '('
+        if paren not in self.expression:
+            raise ValueError(f"{paren} not in expression")
+
+        numOpenParen = self.getNumOpenParen()
+        parenCounter = 0
+        for i in range(len(self.expression)):
+            if self.expression[i] == paren:
+                parenCounter += 1
+            if parenCounter == numOpenParen:
+                return i
+
     def getTerms(self):
         if self.__Terms != []:
             return self.__Terms
@@ -1102,7 +1122,7 @@ class Constant(ArithmeticExpression):
         if self.is_integer:
             self.val = int(self.expression)
 
-def simplifyExpression(expression: Expression, keyword=None, Steps=None, groupedTerms=None, recursiveCall=False):
+def simplifyExpression(expression: Expression, keyword=None, Steps=None, groupedTerms=None, recursiveCall=False, finalResult=None):
     expression = Expression(expression.replace(' ', ''))
     # FORMAT
     pattern = re.compile(r'^\(.+\)$')
@@ -1120,6 +1140,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
 
     if Steps is None: Steps = []
     if keyword is None: keyword = 'simplify'
+
 
 
     """ MULTIPLY TERMS """
@@ -1189,7 +1210,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
     groupedExpressions = expression.getGroupedExpressions()
 
     isSingleGroup = False
-    finalResult = ''
+    if finalResult == None: finalResult = ''
 
 
     """ GROUP TERMS """
@@ -1768,6 +1789,65 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                 """ SIMPLIFY CONSTANTS """
                 Constants = groupedTerms['Constants']
                 constantsExpression = createEStepHeadingFromGroup(Constants, False)
+
+                """ HANDLE PARENTHESES """
+                if '(' in constantsExpression:
+                    expression = Expression(constantsExpression)
+                    for i in range(len(str(expression))):
+                        currentExpressionToEvaluate = ''
+                        if expression[i] == '(' and i == expression.getIndexOfInnerMostParen():
+                            j = i + 1
+                            while j < len(str(expression)):
+                                if expression[j] != ')':
+                                    currentExpressionToEvaluate += expression[j]
+                                else:
+                                    break
+                                j += 1
+
+                            currentExpressionToEvaluate = Expression(currentExpressionToEvaluate)
+                            Simplification = simplifyExpression(currentExpressionToEvaluate)
+                            # ADD STEPS
+                            # steps = []
+                            # for step in Simplification['steps']:
+                            #     if step['type'] == 'main-step':
+                            #         steps.append(step)
+                            #     elif step['type'] == 'e-step':
+                            #         for e_step in step['e-steps']:
+                            #             steps.append(e_step)
+
+                            steps = Simplification['steps']
+                            simplification = parseLatex(Simplification['finalResult'])
+                            if simplification != str(currentExpressionToEvaluate):
+                                # CREATE E-STEP
+                                heading = f'({currentExpressionToEvaluate})={simplification}'
+                                e_step = createExpandableStep(latexify(f"{heading}"), steps)
+                                if steps != []: Steps.append(e_step)
+                                # COMBINE STEP
+                                if j < len(str(expression)) - 1:
+                                    if expression[j + 1] == '^':
+                                        # HANDLE EXPONENTIALS
+                                        if len(simplification) > 1:
+                                            # TODO: CORRECT IF STATEMENT SHOULD BE: if len(Expression(simplification)) > 1 BUT WE HAVE 3(2x+x)^{3-1} AS AN EDGE CASE
+                                            newExpression = expression.replace(f'({currentExpressionToEvaluate})',
+                                                                               f'({simplification})')
+                                        else:
+                                            # RETURN (2)^x as 2^x
+                                            newExpression = expression.replace(f'({currentExpressionToEvaluate})',
+                                                                               simplification)
+
+                                    else:
+                                        newExpression = expression.replace(f'({currentExpressionToEvaluate})',
+                                                                           simplification)
+                                else:
+                                    newExpression = expression.replace(f'({currentExpressionToEvaluate})',
+                                                                       simplification)
+
+                                Steps.append(createMainStep(r'\text{Simplify}',
+                                                            latexify(f"{expression}={newExpression}")))
+
+                                newExpression = Expression(newExpression)
+                                return simplifyExpression(newExpression, keyword, Steps, finalResult=finalResult)
+
                 Solution = simplifyConstants(constantsExpression, Constants)
                 steps = Solution['Steps']
                 simplification = Solution['finalExpression']
@@ -2169,7 +2249,10 @@ def addExponentials(Exponentials: list):
         elif coefficient == -1:
             simplifiedExponential += f'-{exp}'
         else:
-            simplifiedExponential += f'{coefficient}*{exp}'
+            if Constant(Exponential(exp).base).is_digit:
+                simplifiedExponential += f'{coefficient}*{exp}'
+            else:
+                simplifiedExponential += f'{coefficient}{exp}'
 
     """ FORMAT 2*x^2 + 2*2^x as 2x^2 + 2*2^x """
 
@@ -2449,10 +2532,11 @@ def reverseList(L):
     return L[::-1]
 
 def main():
-    E = Expression('frac{5x*x*x+1+2+3}{1+x}+frac{5x*y*x+3y+2y+1+2}{1+y}')
+    # E = Expression('1+x+2x+(5x+2x+(3x+2+1))')
+    E = Expression('1+2+(5+(11*12+12*5))+7+9')
     # E = Expression('6+x^{2}*y^{3}')
 
-    print(simplifyExpression(E, keyword='combine'))
+    print(simplifyExpression(E, keyword='simplify'))
 
 
 

@@ -227,9 +227,9 @@
         font-size: 17px;
         margin-top: 11px;
         margin-bottom: 15px;
+        overflow-y: hidden;
+        overflow-x: auto;
         /*overflow-y: visible;*/
-        /*overflow-x: auto;*/
-        overflow-y: visible;
         /*height: 50px;*/
         white-space: nowrap;
     }
@@ -330,14 +330,23 @@
 {% block script %}
 
 <script>
+    // let e_steps_count = 1
     class StepsUI {
+        constructor() {
+            this.main_steps_count = 1;
+            this.e_steps_count = 1;
+        }
+
         static displayResult(resultText) {
             let resultContainer = document.querySelector('.results-container')
             let resultDiv = document.createElement('div')
             resultDiv.textContent = resultText
             resultContainer.appendChild(resultDiv)
         }
-        static displayStep(container, step, type, e_step_id) {
+        displayStep(container, step, type, e_step_id) {
+            e_step_id = this.e_steps_count
+            // console.log(foo)
+            // console.log(num_e_steps_added)
             if (type === 'main-step') {
                 container.innerHTML += `
                     <div class="step-description">${step['description']}</div>
@@ -345,6 +354,8 @@
                 `
             }
             else if (type === 'e-step') {
+                this.e_steps_count += 1
+
                 container.innerHTML += `<div id="e-step-${e_step_id}" class="expandable-step-container"><span class="expandable-step">${step['heading']}</span><span class="show-steps-span">Show Steps <img class="show-steps-icon" src="{{ url_for('static', filename='img/add.svg') }}"></span></div>`
                 let e_stepSolutionContainer = document.createElement('div')
                 e_stepSolutionContainer.id = `e-step-solution-${e_step_id}`
@@ -360,10 +371,14 @@
                         this.displayStep(e_stepSolutionContainer, e_step, 'main-step', e_step_id)
                     }
                     else if (e_step['type'] === 'e-step') {
+                        // let num_e_steps_added = document.querySelectorAll('.expandable-step-container')
+                        // console.log(num_e_steps_added)
+
                         this.displayStep(e_stepSolutionContainer, e_step, 'e-step', e_step_id+1)
                     }
                 })
                 container.appendChild(e_stepSolutionContainer)
+
             }
 
         }
@@ -418,6 +433,7 @@
         }
         static makeStepsExpandable() {
             let numExpandableSteps = document.querySelectorAll('.expandable-step-container').length
+
             for (let i = 1; i <= numExpandableSteps; i++) {
                 document.querySelector(`#e-step-${i}`).addEventListener('click', (e) => {
                     let stepContainer = document.querySelector(`#e-step-solution-${i}`)
@@ -438,7 +454,6 @@
                     
                 })
             }
-
         }
         static addLatexToElement(element, latexString) {
             katex.render(String.raw`${latexString}`, element, {
@@ -763,49 +778,7 @@
                 return selectedSubjectHeading.textContent
             }
         }
-        static loadSolution(answerMathField) {
-            let solution = document.querySelector('#solutionData').dataset.solution
-            if (solution !== '') {
-                solution = solution.replaceAll("'", '"')
-            
-                if (solution !== 'Unable To Solve') {
-                    solution = JSON.parse(solution)
-                    let enteredMath = solution['enteredMath']
-                    answerMathField.write(enteredMath)
-                    let Steps = solution['steps']
-                    let finalResult = solution['finalResult']
-                    let stepsContainer = document.querySelector('.steps-container')
-                    
 
-                    let e_step_id = 1
-                    Steps.forEach((step) => {
-                        if (step['type'] === 'main-step') {
-                            StepsUI.displayStep(stepsContainer, step, 'main-step')
-                        }
-                        else if (step['type'] === 'e-step') {
-                            StepsUI.displayStep(stepsContainer, step, 'e-step', e_step_id)
-                            let num_e_steps_added = document.querySelectorAll('.expandable-step-container').length
-                            e_step_id = num_e_steps_added + 1
-                        }
-                    })
-                    stepsContainer.innerHTML += `<div class="final-step"></div>`
-
-                    StepsUI.addLatexToSteps(finalResult, enteredMath)
-                    StepsUI.makeStepsExpandable()
-
-                    // window.location.href = `/algebra/${enteredMath}`
-
-                    // Make the first main-step scrollable if content is too long
-
-                    // if (Steps.length !== 0)
-                    //     document.querySelector('.step-info').style.overflowX = 'auto'
-                }
-                else {
-
-                }
-
-            }
-        }
         
     }
     class subjectTabsUI {
@@ -1318,6 +1291,7 @@
 
         }
         static reloadSolution(answerMathField) {
+            const SU = new StepsUI()
             this.instantiateStorage()
             let lastSolution = localStorage.getItem('last-solution')
 
@@ -1343,10 +1317,10 @@
                             let e_step_id = 1
                             Steps.forEach((step) => {
                                 if (step['type'] === 'main-step') {
-                                    StepsUI.displayStep(stepsContainer, step, 'main-step')
+                                    SU.displayStep(stepsContainer, step, 'main-step')
                                 }
                                 else if (step['type'] === 'e-step') {
-                                    StepsUI.displayStep(stepsContainer, step, 'e-step', e_step_id)
+                                    SU.displayStep(stepsContainer, step, 'e-step', e_step_id)
                                     let num_e_steps_added = document.querySelectorAll('.expandable-step-container').length
                                     e_step_id = num_e_steps_added + 1
                                 }
