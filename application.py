@@ -2,6 +2,7 @@ import os
 import json
 import hashlib
 import datetime
+import re
 
 from flask import Flask, session, render_template, request, redirect, jsonify
 from flask_session import Session
@@ -159,9 +160,8 @@ def solve(requestFromHistory, liveSolve):
     userInput = request.form.get('userInput')
     subjectAndTopic = json.loads(request.form.get('subjectAndTopic'))
 
-
     keyword = None
-    allKeywords = ['simplify', 'combine']
+    allKeywords = ['simplify', 'combine', 'graph']
 
     inputsItems = userInput.split(' ')
     if inputsItems[0].replace('\\', '') in allKeywords:
@@ -170,31 +170,57 @@ def solve(requestFromHistory, liveSolve):
         for item in inputsItems[1:]:
             userInput += item
 
+    # ADD HISTORY
+    if 'user_id' in session and requestFromHistory == False:
+        fixedUserInput = latexify(parseLatex(userInput))  # REPLACES /cdotx with /cdot x
+        history = History(keyword=keyword, expression=fixedUserInput, subject=subjectAndTopic['subject'],
+                          user_id=session['user_id'])
+        history.addHistory()
+
+    # GRAPH A FUNCTION
+    functionPattern = re.compile("^\w{1}\(\w{1}\)=")
+    functionMatches = functionPattern.findall(parseLatex(userInput))
+
+    if len(functionMatches) > 0 or keyword == 'graph':
+        # TODO : functionProperties = getFunctionProperties(parseLatex(userInput))
+        if keyword == 'graph':
+            if '=' in userInput:
+                functionName = userInput.split('=')[0]
+                functionBody = userInput.split('=')[1]
+                functionToGraph = f"{functionName}={functionBody}"
+            else:
+                functionToGraph = f"y={userInput}"
+        else:
+            functionToGraph = userInput
+
+        functionToGraph = latexify(parseLatex(functionToGraph)) # FIX LATEX ERROR: \pix NOW GETS RETURNED AS \pi x
+        print(functionToGraph)
+        return jsonify({'message': 'graph', 'content': {
+            'functionToGraph': functionToGraph,
+            'functionProperties': None
+        }})
+
     if app.config['TESTING']:
         print(f"Subject And Topic: {subjectAndTopic}")
         print(f"Keyword: {keyword}")
         print(f'Before parse: {userInput}')
     print(f'After parse: {parseLatex(userInput)}')
 
-     # ADD HISTORY
-    if 'user_id' in session and requestFromHistory == False:
-        fixedUserInput = latexify(parseLatex(userInput)) # REPLACES /cdotx with /cdot x
-        history = History(keyword=keyword, expression=fixedUserInput, subject=subjectAndTopic['subject'], user_id=session['user_id'])
-        history.addHistory()
+
 
     userInput = parseLatex(userInput)
     if subjectAndTopic['subject'] == 'algebra':
-        
+
         userInput = Expression(userInput)
         if not app.config['TESTING'] or liveSolve == True:
             try:
                 Solution = simplifyExpression(userInput, keyword=keyword)
-                return jsonify(Solution)
+                return jsonify({'message': 'solved', 'content': Solution})
             except:
-                return "Unable to solve"
+                return jsonify({'message': 'unable to solve', 'content': None})
         else:
             Solution = simplifyExpression(userInput, keyword=keyword)
-            return jsonify(Solution)
+            return jsonify({'message': 'solved', 'content': Solution})
 
 
     if subjectAndTopic['subject'] == 'discreteMath':
@@ -204,6 +230,9 @@ def solve(requestFromHistory, liveSolve):
         Solution = simplifyExpression(userInput)
         return jsonify(Solution)
 
+@app.route("/test")
+def test():
+    return render_template("test.html")
 
 def hash_password(password):
     return hashlib.sha256(str.encode(password)).hexdigest()

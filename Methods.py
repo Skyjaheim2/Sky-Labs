@@ -853,14 +853,17 @@ def latexify(expression):
         if not charToSpace.isdigit():
             expression = expression.replace(match, f'{match[:-1]} {charToSpace}')
 
-    pi_multiplication_pattern = re.compile(r'\\pi\w{1}')
-    pi_multiplication_matches = pi_multiplication_pattern.findall(expression)
+    symbolsToCatch = ['pi', 'phi', 'omega', 'rho', 'alpha', 'beta']
 
-    for match in pi_multiplication_matches:
-        charToSpace = match[-1]
-        if not charToSpace.isdigit():
-            expression = expression.replace(match, f'{match[:-1]} {charToSpace}')
+    for symbol in symbolsToCatch:
+        reExpression = fr'\\{symbol}'+ '\w{1}'
+        symbol_multiplication_pattern = re.compile(reExpression)
+        symbol_multiplication_matches = symbol_multiplication_pattern.findall(expression)
 
+        for match in symbol_multiplication_matches:
+            charToSpace = match[-1]
+            if not charToSpace.isdigit():
+                expression = expression.replace(match, f'{match[:-1]} {charToSpace}')
 
     return expression
 

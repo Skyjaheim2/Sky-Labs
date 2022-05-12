@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block head %}
-<meta id="solutionData" data-solution="{{ solution }}"></meta>
+<!--    <meta id="solutionData" data-solution="{{ solution }}"></meta>-->
 {% endblock %}
 
 {% block style1 %}
@@ -71,6 +71,7 @@
             maxDepth: 10,
         }
 
+
         var userInput = document.getElementById('userInput');
 
         var answerMathField = MQ.MathField(userInput, config, {
@@ -115,14 +116,15 @@
                 request.open('POST', '/solve/false/true')
                 request.onload = () => {
                     if (request.status === 200) {
-                        let solution = request.responseText
-                        if (solution !== 'Unable to solve') {
-                            solution = JSON.parse(solution)
-                            StepsUI.addLatexToElement(liveSolveSolutionsContainer, `\\displaystyle =${solution['finalResult']}`)
-                            this.style.borderColor = ''
+                        let response = request.responseText;
+                        response = JSON.parse(response);
+                        if (response.message === 'solved') {
+                            solution = response.content;
+                            StepsUI.addLatexToElement(liveSolveSolutionsContainer, `\\displaystyle =${solution['finalResult']}`);
+                            this.style.borderColor = '';
                         }
                         else {
-                            this.style.borderColor = 'red'
+                            this.style.borderColor = 'red';
                         }
                         
                     }
@@ -256,71 +258,10 @@
 
         // Solve Button
         document.querySelector('#solveBtn').addEventListener('click', () => {
-            const SU = new StepsUI()
+            const SU = new StepsUI();
             let enteredMath = answerMathField.latex();
-            let resultsContainer = document.querySelector('.results-container');
-            // Clear previous work
-            resultsContainer.innerHTML = `
-                <div id="finalSolutionHeading"></div>
-                <div class="steps-heading">Steps</div>
-                <div class="steps-container"></div>
-            `;
-            let selectedTopic = BaseUI.getSelectedTopic();
-            let subjectAndTopic = {'subject': 'algebra', 'selectedTopic': selectedTopic};
 
-
-            const request = new XMLHttpRequest();
-            request.open('POST', `/solve/false/false`);
-            request.onload = () => {
-                if (request.status === 200) {
-                    let solution = request.responseText;
-                    if (solution !== 'Unable to solve') {
-                        solution = JSON.parse(solution)
-                        let Steps = solution['steps']
-                        let finalResult = solution['finalResult']
-                        let stepsContainer = document.querySelector('.steps-container')
-
-                        let e_step_id = 1
-                        Steps.forEach((step) => {
-                            if (step['type'] === 'main-step') {
-                                SU.displayStep(stepsContainer, step, 'main-step')
-                            }
-                            else if (step['type'] === 'e-step') {
-                                // console.log(e_step_id)
-                                SU.displayStep(stepsContainer, step, 'e-step', e_step_id)
-                                let num_e_steps_added = document.querySelectorAll('.expandable-step-container').length
-                                e_step_id = num_e_steps_added + 1
-                            }
-                        })
-                        stepsContainer.innerHTML += `<div class="final-step"></div>`
-
-                        StepsUI.addLatexToSteps(finalResult, enteredMath)
-                        StepsUI.makeStepsExpandable()
-
-
-                        // Add to solution to LS
-                        solution['enteredMath'] = enteredMath
-                        Storage.addLastSolution(solution)
-
-
-                        Animations.animateShowAllSteps()
-                        // window.location.href = `/algebra/${enteredMath}`
-
-                        // Make the first main-step scrollable if content is too long
-
-                        // if (Steps.length !== 0)
-                        //     document.querySelector('.step-info').style.overflowX = 'auto'
-                    }
-                    else {
-                        UI.showAlert('Unable To Solve', 'danger');
-                    }
-                }
-                // document.querySelector('.results-container').style.height = '0'
-            }
-            const data = new FormData()
-            data.set('userInput', enteredMath)
-            data.set('subjectAndTopic', JSON.stringify(subjectAndTopic))
-            request.send(data)
+            SU.addStepsToDOM(enteredMath, false, false, true);
         })
 
         // Live Solve Button

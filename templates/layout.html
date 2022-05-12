@@ -20,6 +20,9 @@
         margin-bottom: 30px;
         margin-top: 20px;
     }
+    #desmosGraph {
+        margin: auto;
+    }
     .inputLabel {
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
         font-size: 18px;
@@ -316,6 +319,9 @@
             {% endblock %}
 
             <div class="results-container">
+
+                <div id="desmosGraph" style="display: none; width: 750px; height: 400px;"></div>
+
                 <div id="finalSolutionHeading"></div>
                 <div class="steps-heading">Steps</div>
                 <div class="steps-container"></div>
@@ -521,6 +527,102 @@
         static getUserInput() {
             return document.querySelector('#userInput').value
         }
+        static addGraphElementToDOM() {
+            const resultsContainer = document.querySelector('.results-container');
+            const desmosGraph = document.createElement('div');
+            desmosGraph.id = 'desmosGraph';
+            desmosGraph.style.display = 'none';
+            desmosGraph.style.width = '750px';
+            desmosGraph.style.height = '400px';
+            resultsContainer.appendChild(desmosGraph);
+        }
+        addStepsToDOM(enteredMath, requestFromHistory, liveSolve, addSolutionToLS) {
+            let resultsContainer = document.querySelector('.results-container');
+            // Clear previous work
+            resultsContainer.innerHTML = `
+                <div id="finalSolutionHeading"></div>
+                <div class="steps-heading">Steps</div>
+                <div class="steps-container"></div>
+            `;
+
+            StepsUI.addGraphElementToDOM();
+            var graphElement = document.getElementById('desmosGraph');
+            var desmosGraph = Desmos.GraphingCalculator(graphElement, {
+                'lockViewport': false,
+                'expressions': true, // Show list of expressions on the side
+                'expressionsCollapsed': true,
+                'settingsMenu': true,
+                'keypad': false
+            });
+
+            let selectedTopic = BaseUI.getSelectedTopic();
+            let subjectAndTopic = {'subject': 'algebra', 'selectedTopic': selectedTopic};
+
+
+            const request = new XMLHttpRequest();
+            request.open('POST', `/solve/${requestFromHistory}/${liveSolve}`);
+            request.onload = () => {
+                if (request.status === 200) {
+                    let response = request.responseText;
+                    response = JSON.parse(response);
+                    if (response.message === 'graph') {
+
+                        graphElement.style.display = 'block';
+                        const functionToGraph = response.content.functionToGraph;
+
+                        desmosGraph.setExpression({id: 'graph1', latex: `${functionToGraph}`});
+
+                        if (addSolutionToLS) {
+                            let solution = {'finalResult': `${enteredMath}`, 'steps': [], 'enteredMath': `${enteredMath}`};
+                            solution['enteredMath'] = enteredMath;
+                            Storage.addLastSolution(solution);
+                        }
+                        document.querySelector('.steps-container').style.display = 'none';
+                        StepsUI.addLatexToElement(document.querySelector('#finalSolutionHeading'), `{\\displaystyle \\text{Graphing} \\ ${functionToGraph}}`)
+
+
+                    }
+                    else if (response.message === 'solved') {
+                        let solution = response.content;
+                        let Steps = solution['steps']
+                        let finalResult = solution['finalResult']
+                        let stepsContainer = document.querySelector('.steps-container')
+
+                        let e_step_id = 1
+                        Steps.forEach((step) => {
+                            if (step['type'] === 'main-step') {
+                                this.displayStep(stepsContainer, step, 'main-step')
+                            } else if (step['type'] === 'e-step') {
+                                // console.log(e_step_id)
+                                this.displayStep(stepsContainer, step, 'e-step', e_step_id)
+                                let num_e_steps_added = document.querySelectorAll('.expandable-step-container').length
+                                e_step_id = num_e_steps_added + 1
+                            }
+                        })
+                        stepsContainer.innerHTML += `<div class="final-step"></div>`
+
+                        StepsUI.addLatexToSteps(finalResult, enteredMath)
+                        StepsUI.makeStepsExpandable()
+
+                        if (addSolutionToLS) {
+                            solution['enteredMath'] = enteredMath
+                            Storage.addLastSolution(solution)
+                        }
+
+                        Animations.animateShowAllSteps()
+                    }
+
+                    else {
+                        UI.showAlert('Unable To Solve', 'danger');
+                    }
+                }
+                // document.querySelector('.results-container').style.height = '0'
+            }
+            const data = new FormData()
+            data.set('userInput', enteredMath)
+            data.set('subjectAndTopic', JSON.stringify(subjectAndTopic))
+            request.send(data)
+        }
     }
     class Step {
         constructor(stepDict) {
@@ -552,17 +654,17 @@
                 signOutBtn.style.display = 'block'
             }
 
-            static userSignedOut() {
-                let loginBtn = document.querySelector('#loginBtn')
-                let signUpBtn = document.querySelector('#signUpBtn')
-                let signOutBtn = document.querySelector('#signOutBtn')
+        static userSignedOut() {
+            let loginBtn = document.querySelector('#loginBtn')
+            let signUpBtn = document.querySelector('#signUpBtn')
+            let signOutBtn = document.querySelector('#signOutBtn')
 
-                // Show login and sign-up btn
-                loginBtn.style.display = 'block'
-                signUpBtn.style.display = 'block'
-                // Hide signOutBtn
-                signOutBtn.style.display = 'none'
-            }
+            // Show login and sign-up btn
+            loginBtn.style.display = 'block'
+            signUpBtn.style.display = 'block'
+            // Hide signOutBtn
+            signOutBtn.style.display = 'none'
+        }
         static loadDefaultOptions(defaultSubject) {
             // Load Default Subject Tab
             let defaultSubjectTabBtn = document.querySelector(`#${defaultSubject}SubjectTabBtn`)
@@ -1291,65 +1393,23 @@
 
         }
         static reloadSolution(answerMathField) {
-            const SU = new StepsUI()
-            this.instantiateStorage()
-            let lastSolution = localStorage.getItem('last-solution')
+            const SU = new StepsUI();
+            this.instantiateStorage();
+            let lastSolution = localStorage.getItem('last-solution');
 
             if (lastSolution !== 'empty') {
-                lastSolution = JSON.parse(lastSolution)
-                let enteredMath = lastSolution['enteredMath']
-                answerMathField.write(enteredMath)
-                let resultsContainer = document.querySelector('.results-container')
-                let selectedTopic = BaseUI.getSelectedTopic()
-                let subjectAndTopic = {'subject': 'algebra', 'selectedTopic': selectedTopic}
-
-                const request = new XMLHttpRequest()
-                request.open('POST', `/solve/true/false`)
-                request.onload = () => {
-                    if (request.status === 200) {
-                        let solution = request.responseText
-                        if (solution !== 'Unable To Solve') {
-                            solution = JSON.parse(solution)
-                            let Steps = solution['steps']
-                            let finalResult = solution['finalResult']
-                            let stepsContainer = document.querySelector('.steps-container')
-
-                            let e_step_id = 1
-                            Steps.forEach((step) => {
-                                if (step['type'] === 'main-step') {
-                                    SU.displayStep(stepsContainer, step, 'main-step')
-                                }
-                                else if (step['type'] === 'e-step') {
-                                    SU.displayStep(stepsContainer, step, 'e-step', e_step_id)
-                                    let num_e_steps_added = document.querySelectorAll('.expandable-step-container').length
-                                    e_step_id = num_e_steps_added + 1
-                                }
-                            })
-                            stepsContainer.innerHTML += `<div class="final-step"></div>`
-
-                            StepsUI.addLatexToSteps(finalResult, enteredMath)
-                            StepsUI.makeStepsExpandable()
-
-                        }
-                        else {
-
-                        }
-                    }
-                }
-                const data = new FormData()
-                data.set('userInput', enteredMath)
-                data.set('subjectAndTopic', JSON.stringify(subjectAndTopic))
-                request.send(data)
+                lastSolution = JSON.parse(lastSolution);
+                let enteredMath = lastSolution['enteredMath'];
+                answerMathField.write(enteredMath);
+                SU.addStepsToDOM(enteredMath, true, false, false);
             }
-            
-            
         }
         static addLastSolution(solution) {
-            this.instantiateStorage()
-            localStorage.setItem('last-solution', JSON.stringify(solution))
+            this.instantiateStorage();
+            localStorage.setItem('last-solution', JSON.stringify(solution));
         }
         static clear() {
-            localStorage.setItem('last-solution', 'empty')
+            localStorage.setItem('last-solution', 'empty');
         }
     }
 
@@ -1364,7 +1424,7 @@
             supSubsRequireOperand: true,
             charsThatBreakOutOfSupSub: '=',
             autoSubscriptNumerals: true,
-            autoCommands: 'pi theta sqrt sum int',
+            autoCommands: 'pi theta sqrt sum int phi omega rho alpha beta',
             autoOperatorNames: 'sin cos tan sinh cosh tanh arcsin arccos arctan ln log csc sec cot',
             maxDepth: 10,
         }
