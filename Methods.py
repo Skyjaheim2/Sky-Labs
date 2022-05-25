@@ -853,7 +853,7 @@ def latexify(expression):
         if not charToSpace.isdigit():
             expression = expression.replace(match, f'{match[:-1]} {charToSpace}')
 
-    symbolsToCatch = ['pi', 'phi', 'omega', 'rho', 'alpha', 'beta']
+    symbolsToCatch = ['pi', 'phi', 'omega', 'rho', 'alpha', 'beta', 'partial']
 
     for symbol in symbolsToCatch:
         reExpression = fr'\\{symbol}'+ '\w{1}'
@@ -1507,6 +1507,15 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                 for fraction in groupedTerms['Fractions']:
                     numerator = Expression(fraction.numerator)
                     denominator = Expression(fraction.denominator)
+
+                    # if numerator[0] == '-' and len(numerator) == 1:
+                    #     # PARSE frac{-5}{10} as -frac{5}{10}
+                    #     fraction = Fraction(f"-frac{'{'}{numerator[1:]}{'}'}{'{'}{denominator}{'}'}")
+                    #     numerator = Expression(fraction.numerator)
+                    # elif (denominator[0] == '-' and len(denominator) == 1):
+                    #     fraction = Fraction(f"-frac{'{'}{numerator}{'}'}{'{'}{denominator[1:]}{'}'}")
+                    #     denominator = Expression(fraction.denominator)
+
                     """ SIMPLIFY NUMERATOR """
                     simplifiedNumerator = simplifyExpression(numerator)
                     # CREATE E-STEPS
@@ -2031,7 +2040,7 @@ def get_coefficient(term: str, start_of_var: int):
 
 def getFactors(num: int) -> list:
     factors = []
-    for i in range(1, num + 1):
+    for i in range(1, abs(num) + 1):
         if num % i == 0:
             factors.append(i)
     return factors
@@ -2106,7 +2115,7 @@ def getLCM(terms: list, listOfNumbers=False, termsType=None):
     else:
         multiples = []
         for num in terms:
-            multiplesOfNum = {num * i for i in range(1, 500)}
+            multiplesOfNum = {abs(num) * i for i in range(1, 500)}
             multiples.append(multiplesOfNum)
         commonMultiples = multiples[0].intersection(*multiples)
         return min(commonMultiples)
@@ -2536,10 +2545,10 @@ def reverseList(L):
 
 def main():
     # E = Expression('1+x+2x+(5x+2x+(3x+2+1))')
-    E = Expression('1+2+(5+(11*12+12*5))+7+9')
+    E = Expression('frac{12+24+57}{23-56}+frac{23+15}{16}')
     # E = Expression('6+x^{2}*y^{3}')
 
-    print(simplifyExpression(E, keyword='simplify'))
+    print(simplifyExpression(E, keyword='combine'))
 
 
 

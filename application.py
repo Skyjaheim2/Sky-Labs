@@ -194,7 +194,7 @@ def solve(requestFromHistory, liveSolve):
             functionToGraph = userInput
 
         functionToGraph = latexify(parseLatex(functionToGraph)) # FIX LATEX ERROR: \pix NOW GETS RETURNED AS \pi x
-        print(functionToGraph)
+        # print(functionToGraph)
         return jsonify({'message': 'graph', 'content': {
             'functionToGraph': functionToGraph,
             'functionProperties': None
@@ -205,8 +205,6 @@ def solve(requestFromHistory, liveSolve):
         print(f"Keyword: {keyword}")
         print(f'Before parse: {userInput}')
     print(f'After parse: {parseLatex(userInput)}')
-
-
 
     userInput = parseLatex(userInput)
     if subjectAndTopic['subject'] == 'algebra':

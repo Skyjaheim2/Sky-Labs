@@ -93,7 +93,7 @@
         // answerMathField.latex('\\left\\{ \\right\\}')
         // answerMathField.typedText('cartesian product ')
 
-        BaseUI.loadDefaultOptions('discreteMath')
+        LayoutUI.loadDefaultOptions('discreteMath')
 
         /* ON-KEY UP EVENTS */
 
@@ -224,7 +224,7 @@
                 <div class="steps-container"></div>
             `
 
-            let selectedTopic = BaseUI.getSelectedTopic()
+            let selectedTopic = LayoutUI.getSelectedTopic()
             let subjectAndTopic = {'subject': 'discreteMath', 'selectedTopic': selectedTopic}
 
             const request = new XMLHttpRequest()

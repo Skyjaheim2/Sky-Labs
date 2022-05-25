@@ -97,7 +97,7 @@
         // answerMathField.latex('\\left\\{ \\right\\}')
         // answerMathField.typedText('cartesian product ')
 
-        BaseUI.loadDefaultOptions('algebra')
+        LayoutUI.loadDefaultOptions('algebra');
 
         /* ON-KEY UP EVENTS */
 
@@ -107,7 +107,7 @@
             let liveSolveRadioBtn = document.querySelector('#liveSolveRadioBtn')
             let liveSolveSolutionsContainer = document.querySelector('#liveSolveSolutionContainer')
 
-            let selectedTopic = BaseUI.getSelectedTopic()
+            let selectedTopic = LayoutUI.getSelectedTopic()
             let subjectAndTopic = {'subject': 'algebra', 'selectedTopic': selectedTopic}
 
 

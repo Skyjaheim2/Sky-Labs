@@ -4,8 +4,8 @@ sys.path.append(
     r"C:\Users\jahei\OneDrive\Documents\Flask-Projects\Flask\Personal-Projects\Computer Algebra")  # Add path where project is located to allow for import of application
 import os
 import unittest
+# from .. import Methods
 from Methods import *
-
 
 # from test import *
 
@@ -1030,6 +1030,26 @@ class TestCalc(unittest.TestCase):
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{25x^{2}+\\left(36x^{2}-12x^{2}\\right)+3+3}{\\left(15\\sqrt{x}-4\\sqrt{x}+\\left(9\\sqrt{x}+3\\sqrt{5x-4x}\\right)+3\\right)+1}=\\frac{49x^{2}+6}{23\\sqrt{x}+4}'}]},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)', 'info': '\\displaystyle \\frac{6x+1}{e^{9x}+\\sqrt{6e^{2x}}+3x}+\\frac{49x^{2}+6}{23\\sqrt{x}+4}=\\frac{\\left(6x+1\\right)\\left(23\\sqrt{x}+4\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}+\\frac{\\left(49x^{2}+6\\right)\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{\\left(6x+1\\right)\\left(23\\sqrt{x}+4\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}+\\frac{\\left(49x^{2}+6\\right)\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}=\\frac{\\left(6x+1\\right)\\left(23\\sqrt{x}+4\\right)+\\left(49x^{2}+6\\right)\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}'}], 'finalResult': '\\frac{\\left(6x+1\\right)\\left(23\\sqrt{x}+4\\right)+\\left(49x^{2}+6\\right)\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}'},
+            },
+            {
+                'expression': 'frac{12+24+57}{23-56}+frac{23+15}{16}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{12+24+57}{23-56}=\\frac{31}{-11}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 12+24+57=93'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{12+24+57}{23-56}=\\frac{93}{23-56}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 23-56=-33'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{12+24+57}{23-56}=\\frac{93}{-33}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Reduce Fraction}', 'info': '\\displaystyle \\frac{93}{-33}=\\frac{31}{-11}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{23+15}{16}=\\frac{19}{8}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 23+15=38'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{23+15}{16}=\\frac{38}{16}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Reduce Fraction}', 'info': '\\displaystyle \\frac{38}{16}=\\frac{19}{8}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }88', 'info': '\\displaystyle \\frac{31}{-11}+\\frac{19}{8}=\\frac{-248}{88}+\\frac{209}{88}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{-248}{88}+\\frac{209}{88}=\\frac{-248+209}{88}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\frac{-248+209}{88}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle -248+209=-39'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{-248+209}{88}=\\frac{-39}{88}'}], 'finalResult': '\\frac{-39}{88}'}
             },
             {
                 'expression': '1',

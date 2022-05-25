@@ -85,7 +85,7 @@
         });
 
         // answerMathField.write("\\frac{d}{dx}\\left(5x^3 + x^2\\right)")
-        BaseUI.loadDefaultOptions('calculus')
+        LayoutUI.loadDefaultOptions('calculus')
 
         /* ON-KEY UP EVENTS */
 
@@ -283,7 +283,7 @@
             `
 
 
-            let selectedTopic = BaseUI.getSelectedTopic()
+            let selectedTopic = LayoutUI.getSelectedTopic()
             let subjectAndTopic = {'subject': 'calculus', 'selectedTopic': selectedTopic}
 
             const request = new XMLHttpRequest()
