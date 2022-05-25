@@ -971,15 +971,21 @@
         }
         static clickLastTopic() {
             const lastTopic = Storage.getLastTopicClicked();
-            const allTopicBtn = document.querySelectorAll('.topics-btn')
+            const allTopicBtn = document.querySelectorAll('.topics-btn');
+            let btnClicked = false;
             if (lastTopic !== null) {
                 allTopicBtn.forEach((btn) => {
                     let mainTopic = btn.textContent;
                     mainTopic = replaceAll(replaceAll(mainTopic.trim(), '\\n', ''), `+ `, '');
                     if (mainTopic === lastTopic) {
                         btn.click();
+                        btnClicked = true;
                     }
                 })
+                if (!(btnClicked)) {
+                    document.querySelector('.topics-btn').click() // Expand the first topic
+                }
+
             }
             else {
                 document.querySelector('.topics-btn').click() // Expand the first topic
