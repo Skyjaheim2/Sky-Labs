@@ -89,6 +89,10 @@ def signOut():
 def checkIfUserIsStillLoggedIn():
     return json.dumps(True) if 'logged_in' in session else json.dumps(False)
 
+@app.route("/isTesting", methods=['GET'])
+def isTesting():
+    return json.dumps(app.config['TESTING'])
+
 
 @app.route("/getUserHistory", methods=['GET'])
 def getUserHistory():
@@ -227,6 +231,7 @@ def solve(requestFromHistory, liveSolve):
         userInput = Expression(userInput)
         Solution = simplifyExpression(userInput)
         return jsonify(Solution)
+
 
 @app.route("/test")
 def test():

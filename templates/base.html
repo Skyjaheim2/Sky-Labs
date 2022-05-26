@@ -84,6 +84,9 @@
         font-size: 18px;
         font-weight: 500;
     }
+    .container {
+        border-radius: 10px;
+    }
     .nav-item {
         cursor: pointer;
     }
@@ -342,12 +345,17 @@
                 alertDiv.remove()
             }, 2000)
         }
+        static isTesting() {
+            const container = document.querySelector('.container');
+            container.style.backgroundColor = 'rgba(189,40,40,0.5)';
+
+        }
     }
 
 
     document.addEventListener('DOMContentLoaded', () => {
-        checkIfUserIsStillLoggedIn()
-
+        checkIfUserIsStillLoggedIn();
+        checkIfTesting();
     })
 
     /* Validate Login Form */
@@ -475,14 +483,25 @@
         localStorage.setItem('last-solution', 'empty')
     })
 
+    function checkIfTesting() {
+        const request = new XMLHttpRequest();
+        request.open('GET', '/isTesting')
+        request.onload = () => {
+            const Testing = JSON.parse(request.responseText);
+            if (Testing) {
+                UI.isTesting()
+            }
 
+        }
+        request.send()
+    }
 
     function checkIfUserIsStillLoggedIn() {
-        const request = new XMLHttpRequest()
+        const request = new XMLHttpRequest();
 
-        request.open('GET', `/checkIfUserIsStillLoggedIn`)
+        request.open('GET', `/checkIfUserIsStillLoggedIn`);
         request.onload = () =>{
-            const Response = JSON.parse(request.responseText)
+            const Response = JSON.parse(request.responseText);
             if (Response === true) {
                 UI.userLoggedIn()
             }
