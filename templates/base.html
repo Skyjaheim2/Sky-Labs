@@ -352,6 +352,72 @@
         }
     }
 
+    class Storage {
+        static instantiateStorage() {
+            if (!(localStorage.getItem('appData'))) {
+                localStorage.setItem('appData', JSON.stringify({
+                    'last-solution': null,
+                    'last-topic-clicked': null,
+                }))
+            }
+            // if (!(localStorage.getItem('last-solution'))) {
+            //     localStorage.setItem('last-solution', 'empty');
+            // }
+            // if (!(localStorage.getItem('last-topic-clicked'))) {
+            //     localStorage.setItem('last-topic-clicked', 'empty');
+            // }
+
+        }
+
+        static reloadSolution(answerMathField) {
+            const SU = new StepsUI();
+            this.instantiateStorage();
+            let lastSolution = this.getLastSolution();
+
+            if (lastSolution !== null) {
+                let enteredMath = lastSolution['enteredMath'];
+                answerMathField.write(enteredMath);
+                SU.addStepsToDOM(enteredMath, true, false, false);
+            }
+        }
+
+        static addLastSolution(solution) {
+            const appData = this.getAppData();
+            appData['last-solution'] = JSON.stringify(solution);
+            this.setAppData(appData);
+        }
+
+        static addLastTopicClicked(topic) {
+            const appData = this.getAppData();
+            appData['last-topic-clicked'] = topic;
+            this.setAppData(appData);
+        }
+
+        static getLastTopicClicked() {
+            const appData = this.getAppData();
+            return appData['last-topic-clicked'];
+        }
+
+        static getLastSolution() {
+            const appData = this.getAppData();
+            return JSON.parse(appData['last-solution']);
+        }
+
+        static setAppData(appData) {
+            localStorage.setItem('appData', JSON.stringify(appData))
+        }
+
+        static getAppData() {
+            return JSON.parse(localStorage.getItem('appData'));
+        }
+
+        static clearLastSolution() {
+            const appData = this.getAppData();
+            appData['last-solution'] = null;
+            this.setAppData(appData);
+        }
+    }
+
 
     document.addEventListener('DOMContentLoaded', () => {
         checkIfUserIsStillLoggedIn();
@@ -480,7 +546,7 @@
 
     /* ON-CLICK EVENTS */
     document.querySelector('#skyRatingsHeaderBtn').addEventListener('click', () => {
-        localStorage.setItem('last-solution', 'empty')
+        Storage.clearLastSolution()
     })
 
     function checkIfTesting() {

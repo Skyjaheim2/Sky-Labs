@@ -257,11 +257,10 @@
 											if (solution !== 'Unable to Solve') {
 												solution = JSON.parse(solution);
 												solution['enteredMath'] = enteredMath;
-												localStorage.setItem('last-solution', JSON.stringify(solution));
-					
+												Storage.addLastSolution(solution);
 											}
 											else {
-												localStorage.setItem('last-solution', 'empty');
+												// localStorage.setItem('last-solution', 'empty');
 											}
 											switch (item.dataset.subject) {
 												case 'algebra':

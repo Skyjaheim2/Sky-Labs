@@ -513,6 +513,17 @@ class TestCalc(unittest.TestCase):
                 'expected_val': {'steps': [], 'finalResult': '2^{x}+3^{x}+4^{x}'},
             },
             {
+                'expression': '3*2^{x}',
+                'keyword': None,
+                'expected_val': {'steps': [], 'finalResult': '3\\cdot2^{x}'},
+            },
+            {
+                'expression': '123^{2}',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Exponent}', 'info': '\\displaystyle 123^{2}=15129'}], 'finalResult': '15129'},
+            },
+            {
                 'expression': 'sqrt{(5x+3x+1)^{2}}',
                 'keyword': None,
                 'expected_val': {'steps': [
@@ -1051,6 +1062,306 @@ class TestCalc(unittest.TestCase):
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle -248+209=-39'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{-248+209}{88}=\\frac{-39}{88}'}], 'finalResult': '\\frac{-39}{88}'}
             },
+            {
+                'expression': '5*(4x^{2}+3x+9)',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 5\\cdot\\left(4x^{2}+3x+9\\right)=5\\cdot4x^{2}+5\\cdot3x+5\\cdot9'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5\\cdot4x^{2}=20x^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5\\cdot3x=15x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5\\cdot9=45'}], 'finalResult': '20x^{2}+15x+45'},
+            },
+            {
+                'expression': '12*(9x^{3}+3x^{2}-5x-9)',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 12\\cdot\\left(9x^{3}+3x^{2}-5x-9\\right)=12\\cdot9x^{3}+12\\cdot3x^{2}-12\\cdot5x-12\\cdot9'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 12\\cdot9x^{3}=108x^{3}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 12\\cdot3x^{2}=36x^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 12\\cdot5x=60x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 12\\cdot9=108'}], 'finalResult': '108x^{3}+36x^{2}-60x-108'},
+            },
+            {
+                'expression': 'x*(10x^{3}+5x^{2}-3x-13)',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle x\\cdot\\left(10x^{3}+5x^{2}-3x-13\\right)=x\\cdot10x^{3}+x\\cdot5x^{2}-x\\cdot3x-x\\cdot13'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle x\\cdot10x^{3}=10x^{1+3}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle x\\cdot5x^{2}=5x^{1+2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle x\\cdot3x=3x^{1+1}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle x\\cdot13=13x'},
+                    {'type': 'e-step', 'heading': '\\displaystyle 10x^{1+3}=10x^{4}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+3=4'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 10x^{1+3}=10x^{4}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle 5x^{1+2}=5x^{3}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2=3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 5x^{1+2}=5x^{3}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle -3x^{1+1}=-3x^{2}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+1=2'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle -3x^{1+1}=-3x^{2}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 10x^{1+3}+5x^{1+2}-3x^{1+1}=10x^{4}+5x^{3}-3x^{2}'}], 'finalResult': '10x^{4}+5x^{3}-3x^{2}-13x'},
+            },
+            {
+                'expression': '4x^{2}*(10x^{n}+5x^{2}+3x+13)',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 4x^{2}\\cdot\\left(10x^{n}+5x^{2}+3x+13\\right)=4x^{2}\\cdot10x^{n}+4x^{2}\\cdot5x^{2}+4x^{2}\\cdot3x+4x^{2}\\cdot13'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 4x^{2}\\cdot10x^{n}=40x^{2+n}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 4x^{2}\\cdot5x^{2}=20x^{2+2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 4x^{2}\\cdot3x=12x^{2+1}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 4x^{2}\\cdot13=52x^{2}'},
+                    {'type': 'e-step', 'heading': '\\displaystyle 40x^{2+n}=40x^{n+2}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 2+n=n+2'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 40x^{2+n}=40x^{n+2}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle 20x^{2+2}=20x^{4}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+2=4'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 20x^{2+2}=20x^{4}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle 12x^{2+1}=12x^{3}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+1=3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 12x^{2+1}=12x^{3}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 40x^{2+n}+20x^{2+2}+12x^{2+1}+52x^{2}=40x^{n+2}+20x^{4}+12x^{3}+52x^{2}'}], 'finalResult': '40x^{n+2}+20x^{4}+12x^{3}+52x^{2}'},
+            },
+            {
+                'expression': '5x^{n}*(12x^{a}+3x^{2}+9x+4)+9x^{1+2}*(x^{2}+3x+10)+2+5x^{n}+10x^{3}+11',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle 5x^{n}\\cdot\\left(12x^{a}+3x^{2}+9x+4\\right)=60x^{n+a}+15x^{n+2}+45x^{n+1}+20x^{n}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 5x^{n}\\cdot\\left(12x^{a}+3x^{2}+9x+4\\right)=5x^{n}\\cdot12x^{a}+5x^{n}\\cdot3x^{2}+5x^{n}\\cdot9x+5x^{n}\\cdot4'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x^{n}\\cdot12x^{a}=60x^{n+a}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x^{n}\\cdot3x^{2}=15x^{n+2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x^{n}\\cdot9x=45x^{n+1}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x^{n}\\cdot4=20x^{n}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle 9x^{1+2}\\cdot\\left(x^{2}+3x+10\\right)=9x^{5}+27x^{4}+90x^{3}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 9x^{1+2}\\cdot\\left(x^{2}+3x+10\\right)=9x^{1+2}\\cdot x^{2}+9x^{1+2}\\cdot3x+9x^{1+2}\\cdot10'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 9x^{1+2}\\cdot x^{2}=9x^{1+2+2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 9x^{1+2}\\cdot3x=27x^{1+2+1}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 9x^{1+2}\\cdot10=90x^{1+2}'},
+                        {'type': 'e-step', 'heading': '\\displaystyle 9x^{1+2+2}=9x^{5}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2+2=5'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 9x^{1+2+2}=9x^{5}'}]},
+                        {'type': 'e-step', 'heading': '\\displaystyle 27x^{1+2+1}=27x^{4}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2+1=4'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 27x^{1+2+1}=27x^{4}'}]},
+                        {'type': 'e-step', 'heading': '\\displaystyle 90x^{1+2}=90x^{3}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2=3'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 90x^{1+2}=90x^{3}'}]},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 9x^{1+2+2}+27x^{1+2+1}+90x^{1+2}=9x^{5}+27x^{4}+90x^{3}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 60x^{n+a}+15x^{n+2}+45x^{n+1}+20x^{n}+9x^{5}+27x^{4}+90x^{3}+2+5x^{n}+10x^{3}+11=60x^{n+a}+15x^{n+2}+45x^{n+1}+20x^{n}+9x^{5}+27x^{4}+90x^{3}+5x^{n}+10x^{3}+2+11'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Exponentials}', 'info': '\\displaystyle 60x^{n+a}+15x^{n+2}+45x^{n+1}+20x^{n}+9x^{5}+27x^{4}+90x^{3}+5x^{n}+10x^{3}=60x^{n+a}+15x^{n+2}+45x^{n+1}+20x^{n}+5x^{n}+9x^{5}+27x^{4}+90x^{3}+10x^{3}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 60x^{n+a}+15x^{n+2}+45x^{n+1}+20x^{n}+5x^{n}+9x^{5}+27x^{4}+90x^{3}+10x^{3}=60x^{n+a}+15x^{n+2}+45x^{n+1}+25x^{n}+9x^{5}+27x^{4}+100x^{3}'},
+                    {'type': 'e-step', 'heading': '\\displaystyle 2+11=13', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+11=13'}]}], 'finalResult': '60x^{n+a}+15x^{n+2}+45x^{n+1}+25x^{n}+9x^{5}+27x^{4}+100x^{3}+13'},
+            },
+            {
+                'expression': '5x^{2}*(3x^{3}+2x^{2}+(9x^{4}+3x^{2}+11))+x*(3x+1)',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle 5x^{2}\\cdot\\left(3x^{3}+2x^{2}+\\left(9x^{4}+3x^{2}+11\\right)\\right)=15x^{5}+25x^{4}+45x^{6}+55x^{2}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 5x^{2}\\cdot\\left(3x^{3}+2x^{2}+\\left(9x^{4}+3x^{2}+11\\right)\\right)=5x^{2}\\cdot3x^{3}+5x^{2}\\cdot2x^{2}+5x^{2}\\cdot\\left(9x^{4}+3x^{2}+11\\right)'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x^{2}\\cdot3x^{3}=15x^{2+3}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x^{2}\\cdot2x^{2}=10x^{2+2}'},
+                        {'type': 'e-step', 'heading': '\\displaystyle 5x^{2}\\cdot\\left(9x^{4}+3x^{2}+11\\right)=45x^{6}+15x^{4}+55x^{2}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 5x^{2}\\cdot\\left(9x^{4}+3x^{2}+11\\right)=5x^{2}\\cdot9x^{4}+5x^{2}\\cdot3x^{2}+5x^{2}\\cdot11'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x^{2}\\cdot9x^{4}=45x^{2+4}'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x^{2}\\cdot3x^{2}=15x^{2+2}'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x^{2}\\cdot11=55x^{2}'},
+                            {'type': 'e-step', 'heading': '\\displaystyle 45x^{2+4}=45x^{6}', 'e-steps': [
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+4=6'},
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 45x^{2+4}=45x^{6}'}]},
+                            {'type': 'e-step', 'heading': '\\displaystyle 15x^{2+2}=15x^{4}', 'e-steps': [
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+2=4'},
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 15x^{2+2}=15x^{4}'}]},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 45x^{2+4}+15x^{2+2}+55x^{2}=45x^{6}+15x^{4}+55x^{2}'}]},
+                        {'type': 'e-step', 'heading': '\\displaystyle 15x^{2+3}=15x^{5}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+3=5'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 15x^{2+3}=15x^{5}'}]},
+                        {'type': 'e-step', 'heading': '\\displaystyle 10x^{2+2}=10x^{4}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+2=4'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 10x^{2+2}=10x^{4}'}]},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 15x^{2+3}+10x^{2+2}+45x^{6}+15x^{4}+55x^{2}=15x^{5}+10x^{4}+45x^{6}+15x^{4}+55x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Exponentials}', 'info': '\\displaystyle 15x^{5}+10x^{4}+45x^{6}+15x^{4}+55x^{2}=15x^{5}+10x^{4}+15x^{4}+45x^{6}+55x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 15x^{5}+10x^{4}+15x^{4}+45x^{6}+55x^{2}=15x^{5}+25x^{4}+45x^{6}+55x^{2}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle x\\cdot\\left(3x+1\\right)=3x^{2}+x', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle x\\cdot\\left(3x+1\\right)=x\\cdot3x+x\\cdot1'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle x\\cdot3x=3x^{1+1}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle x\\cdot1=x'},
+                        {'type': 'e-step', 'heading': '\\displaystyle 3x^{1+1}=3x^{2}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+1=2'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 3x^{1+1}=3x^{2}'}]}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 15x^{5}+25x^{4}+45x^{6}+55x^{2}+3x^{2}=15x^{5}+25x^{4}+45x^{6}+58x^{2}'}], 'finalResult': '15x^{5}+25x^{4}+45x^{6}+58x^{2}+x'},
+            },
+            {
+                'expression': '5x^{2}*(3x^{3}+2x^{2}+(9x^{4}+3x^{2}+11))+5x*(3x^{p}+9x^{2}+(3x^{2}+2x+5))',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle 5x^{2}\\cdot\\left(3x^{3}+2x^{2}+\\left(9x^{4}+3x^{2}+11\\right)\\right)=15x^{5}+25x^{4}+45x^{6}+55x^{2}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 5x^{2}\\cdot\\left(3x^{3}+2x^{2}+\\left(9x^{4}+3x^{2}+11\\right)\\right)=5x^{2}\\cdot3x^{3}+5x^{2}\\cdot2x^{2}+5x^{2}\\cdot\\left(9x^{4}+3x^{2}+11\\right)'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x^{2}\\cdot3x^{3}=15x^{2+3}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x^{2}\\cdot2x^{2}=10x^{2+2}'},
+                        {'type': 'e-step', 'heading': '\\displaystyle 5x^{2}\\cdot\\left(9x^{4}+3x^{2}+11\\right)=45x^{6}+15x^{4}+55x^{2}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 5x^{2}\\cdot\\left(9x^{4}+3x^{2}+11\\right)=5x^{2}\\cdot9x^{4}+5x^{2}\\cdot3x^{2}+5x^{2}\\cdot11'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x^{2}\\cdot9x^{4}=45x^{2+4}'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x^{2}\\cdot3x^{2}=15x^{2+2}'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x^{2}\\cdot11=55x^{2}'},
+                            {'type': 'e-step', 'heading': '\\displaystyle 45x^{2+4}=45x^{6}', 'e-steps': [
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+4=6'},
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 45x^{2+4}=45x^{6}'}]},
+                            {'type': 'e-step', 'heading': '\\displaystyle 15x^{2+2}=15x^{4}', 'e-steps': [
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+2=4'},
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 15x^{2+2}=15x^{4}'}]},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 45x^{2+4}+15x^{2+2}+55x^{2}=45x^{6}+15x^{4}+55x^{2}'}]},
+                        {'type': 'e-step', 'heading': '\\displaystyle 15x^{2+3}=15x^{5}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+3=5'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 15x^{2+3}=15x^{5}'}]},
+                        {'type': 'e-step', 'heading': '\\displaystyle 10x^{2+2}=10x^{4}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+2=4'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 10x^{2+2}=10x^{4}'}]},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 15x^{2+3}+10x^{2+2}+45x^{6}+15x^{4}+55x^{2}=15x^{5}+10x^{4}+45x^{6}+15x^{4}+55x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Exponentials}', 'info': '\\displaystyle 15x^{5}+10x^{4}+45x^{6}+15x^{4}+55x^{2}=15x^{5}+10x^{4}+15x^{4}+45x^{6}+55x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 15x^{5}+10x^{4}+15x^{4}+45x^{6}+55x^{2}=15x^{5}+25x^{4}+45x^{6}+55x^{2}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle 5x\\cdot\\left(3x^{p}+9x^{2}+\\left(3x^{2}+2x+5\\right)\\right)=15x^{p+1}+60x^{3}+10x^{2}+25x', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 5x\\cdot\\left(3x^{p}+9x^{2}+\\left(3x^{2}+2x+5\\right)\\right)=5x\\cdot3x^{p}+5x\\cdot9x^{2}+5x\\cdot\\left(3x^{2}+2x+5\\right)'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x\\cdot3x^{p}=15x^{1+p}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x\\cdot9x^{2}=45x^{1+2}'},
+                        {'type': 'e-step', 'heading': '\\displaystyle 5x\\cdot\\left(3x^{2}+2x+5\\right)=15x^{3}+10x^{2}+25x', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 5x\\cdot\\left(3x^{2}+2x+5\\right)=5x\\cdot3x^{2}+5x\\cdot2x+5x\\cdot5'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x\\cdot3x^{2}=15x^{1+2}'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x\\cdot2x=10x^{1+1}'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5x\\cdot5=25x'},
+                            {'type': 'e-step', 'heading': '\\displaystyle 15x^{1+2}=15x^{3}', 'e-steps': [
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2=3'},
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 15x^{1+2}=15x^{3}'}]},
+                            {'type': 'e-step', 'heading': '\\displaystyle 10x^{1+1}=10x^{2}', 'e-steps': [
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+1=2'},
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 10x^{1+1}=10x^{2}'}]},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 15x^{1+2}+10x^{1+1}=15x^{3}+10x^{2}'}]},
+                        {'type': 'e-step', 'heading': '\\displaystyle 15x^{1+p}=15x^{p+1}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+p=p+1'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 15x^{1+p}=15x^{p+1}'}]},
+                        {'type': 'e-step', 'heading': '\\displaystyle 45x^{1+2}=45x^{3}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2=3'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 45x^{1+2}=45x^{3}'}]},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 15x^{1+p}+45x^{1+2}+15x^{3}+10x^{2}=15x^{p+1}+45x^{3}+15x^{3}+10x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 15x^{p+1}+45x^{3}+15x^{3}+10x^{2}=15x^{p+1}+60x^{3}+10x^{2}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Exponentials}', 'info': '\\displaystyle 15x^{5}+25x^{4}+45x^{6}+55x^{2}+15x^{p+1}+60x^{3}+10x^{2}=15x^{5}+25x^{4}+45x^{6}+55x^{2}+10x^{2}+15x^{p+1}+60x^{3}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 15x^{5}+25x^{4}+45x^{6}+55x^{2}+10x^{2}+15x^{p+1}+60x^{3}=15x^{5}+25x^{4}+45x^{6}+65x^{2}+15x^{p+1}+60x^{3}'}], 'finalResult': '15x^{5}+25x^{4}+45x^{6}+65x^{2}+15x^{p+1}+60x^{3}+25x'},
+            },
+            {
+                'expression': '3x^{2}*(5x^{4}+2x^{3}+(x^{2}+3x+(9x^{3}+5x^{2}+3x+(7x^{2}+x+9))))',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 3x^{2}\\cdot\\left(5x^{4}+2x^{3}+\\left(x^{2}+3x+\\left(9x^{3}+5x^{2}+3x+\\left(7x^{2}+x+9\\right)\\right)\\right)\\right)=3x^{2}\\cdot5x^{4}+3x^{2}\\cdot2x^{3}+3x^{2}\\cdot\\left(x^{2}+3x+\\left(9x^{3}+5x^{2}+3x+\\left(7x^{2}+x+9\\right)\\right)\\right)'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 3x^{2}\\cdot5x^{4}=15x^{2+4}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 3x^{2}\\cdot2x^{3}=6x^{2+3}'},
+                    {'type': 'e-step', 'heading': '\\displaystyle 3x^{2}\\cdot\\left(x^{2}+3x+\\left(9x^{3}+5x^{2}+3x+\\left(7x^{2}+x+9\\right)\\right)\\right)=39x^{4}+21x^{3}+27x^{5}+27x^{2}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 3x^{2}\\cdot\\left(x^{2}+3x+\\left(9x^{3}+5x^{2}+3x+\\left(7x^{2}+x+9\\right)\\right)\\right)=3x^{2}\\cdot x^{2}+3x^{2}\\cdot3x+3x^{2}\\cdot\\left(9x^{3}+5x^{2}+3x+\\left(7x^{2}+x+9\\right)\\right)'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 3x^{2}\\cdot x^{2}=3x^{2+2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 3x^{2}\\cdot3x=9x^{2+1}'},
+                        {'type': 'e-step', 'heading': '\\displaystyle 3x^{2}\\cdot\\left(9x^{3}+5x^{2}+3x+\\left(7x^{2}+x+9\\right)\\right)=27x^{5}+36x^{4}+12x^{3}+27x^{2}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 3x^{2}\\cdot\\left(9x^{3}+5x^{2}+3x+\\left(7x^{2}+x+9\\right)\\right)=3x^{2}\\cdot9x^{3}+3x^{2}\\cdot5x^{2}+3x^{2}\\cdot3x+3x^{2}\\cdot\\left(7x^{2}+x+9\\right)'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 3x^{2}\\cdot9x^{3}=27x^{2+3}'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 3x^{2}\\cdot5x^{2}=15x^{2+2}'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 3x^{2}\\cdot3x=9x^{2+1}'},
+                            {'type': 'e-step', 'heading': '\\displaystyle 3x^{2}\\cdot\\left(7x^{2}+x+9\\right)=21x^{4}+3x^{3}+27x^{2}', 'e-steps': [
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 3x^{2}\\cdot\\left(7x^{2}+x+9\\right)=3x^{2}\\cdot7x^{2}+3x^{2}\\cdot x+3x^{2}\\cdot9'},
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 3x^{2}\\cdot7x^{2}=21x^{2+2}'},
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 3x^{2}\\cdot x=3x^{2+1}'},
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 3x^{2}\\cdot9=27x^{2}'},
+                                {'type': 'e-step', 'heading': '\\displaystyle 21x^{2+2}=21x^{4}', 'e-steps': [
+                                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+2=4'},
+                                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 21x^{2+2}=21x^{4}'}]},
+                                {'type': 'e-step', 'heading': '\\displaystyle 3x^{2+1}=3x^{3}', 'e-steps': [
+                                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+1=3'},
+                                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 3x^{2+1}=3x^{3}'}]},
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 21x^{2+2}+3x^{2+1}+27x^{2}=21x^{4}+3x^{3}+27x^{2}'}]},
+                            {'type': 'e-step', 'heading': '\\displaystyle 27x^{2+3}=27x^{5}', 'e-steps': [
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+3=5'},
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 27x^{2+3}=27x^{5}'}]},
+                            {'type': 'e-step', 'heading': '\\displaystyle 15x^{2+2}=15x^{4}', 'e-steps': [
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+2=4'},
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 15x^{2+2}=15x^{4}'}]},
+                            {'type': 'e-step', 'heading': '\\displaystyle 9x^{2+1}=9x^{3}', 'e-steps': [
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+1=3'},
+                                {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 9x^{2+1}=9x^{3}'}]},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 27x^{2+3}+15x^{2+2}+9x^{2+1}+21x^{4}+3x^{3}+27x^{2}=27x^{5}+15x^{4}+9x^{3}+21x^{4}+3x^{3}+27x^{2}'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Exponentials}', 'info': '\\displaystyle 27x^{5}+15x^{4}+9x^{3}+21x^{4}+3x^{3}+27x^{2}=27x^{5}+15x^{4}+21x^{4}+9x^{3}+3x^{3}+27x^{2}'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 27x^{5}+15x^{4}+21x^{4}+9x^{3}+3x^{3}+27x^{2}=27x^{5}+36x^{4}+12x^{3}+27x^{2}'}]},
+                        {'type': 'e-step', 'heading': '\\displaystyle 3x^{2+2}=3x^{4}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+2=4'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 3x^{2+2}=3x^{4}'}]},
+                        {'type': 'e-step', 'heading': '\\displaystyle 9x^{2+1}=9x^{3}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+1=3'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 9x^{2+1}=9x^{3}'}]},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 3x^{2+2}+9x^{2+1}+27x^{5}+36x^{4}+12x^{3}+27x^{2}=3x^{4}+9x^{3}+27x^{5}+36x^{4}+12x^{3}+27x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Exponentials}', 'info': '\\displaystyle 3x^{4}+9x^{3}+27x^{5}+36x^{4}+12x^{3}+27x^{2}=3x^{4}+36x^{4}+9x^{3}+12x^{3}+27x^{5}+27x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 3x^{4}+36x^{4}+9x^{3}+12x^{3}+27x^{5}+27x^{2}=39x^{4}+21x^{3}+27x^{5}+27x^{2}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle 15x^{2+4}=15x^{6}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+4=6'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 15x^{2+4}=15x^{6}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle 6x^{2+3}=6x^{5}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+3=5'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 6x^{2+3}=6x^{5}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 15x^{2+4}+6x^{2+3}+39x^{4}+21x^{3}+27x^{5}+27x^{2}=15x^{6}+6x^{5}+39x^{4}+21x^{3}+27x^{5}+27x^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Exponentials}', 'info': '\\displaystyle 15x^{6}+6x^{5}+39x^{4}+21x^{3}+27x^{5}+27x^{2}=15x^{6}+6x^{5}+27x^{5}+39x^{4}+21x^{3}+27x^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 15x^{6}+6x^{5}+27x^{5}+39x^{4}+21x^{3}+27x^{2}=15x^{6}+33x^{5}+39x^{4}+21x^{3}+27x^{2}'}], 'finalResult': '15x^{6}+33x^{5}+39x^{4}+21x^{3}+27x^{2}'},
+            },
+            {
+                'expression': '5*x*(x^{2}+3x+2)',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 5\\cdot x\\cdot\\left(x^{2}+3x+2\\right)=5\\cdot x\\cdot x^{2}+5\\cdot x\\cdot3x+5\\cdot x\\cdot2'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5\\cdot x\\cdot x^{2}=5x^{1+2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5\\cdot x\\cdot3x=15x^{1+1}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5\\cdot x\\cdot2=10x'},
+                    {'type': 'e-step', 'heading': '\\displaystyle 5x^{1+2}=5x^{3}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2=3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 5x^{1+2}=5x^{3}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle 15x^{1+1}=15x^{2}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+1=2'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 15x^{1+1}=15x^{2}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 5x^{1+2}+15x^{1+1}=5x^{3}+15x^{2}'}], 'finalResult': '5x^{3}+15x^{2}+10x'},
+            },
+            {
+                'expression': 'x^{2}*(4x^{3}+2x^{2}+5x*(13x^{3}+3x^{2}+2x+1))',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle x^{2}\\cdot\\left(4x^{3}+2x^{2}+5x\\cdot\\left(13x^{3}+3x^{2}+2x+1\\right)\\right)=x^{2}\\cdot4x^{3}+x^{2}\\cdot2x^{2}+x^{2}\\cdot5x\\cdot\\left(13x^{3}+3x^{2}+2x+1\\right)'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle x^{2}\\cdot4x^{3}=4x^{2+3}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle x^{2}\\cdot2x^{2}=2x^{2+2}'},
+                    {'type': 'e-step', 'heading': '\\displaystyle x^{2}\\cdot5x\\cdot\\left(13x^{3}+3x^{2}+2x+1\\right)=65x^{6}+15x^{5}+10x^{4}+5x^{3}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle x^{2}\\cdot5x\\cdot\\left(13x^{3}+3x^{2}+2x+1\\right)=x^{2}\\cdot5x\\cdot13x^{3}+x^{2}\\cdot5x\\cdot3x^{2}+x^{2}\\cdot5x\\cdot2x+x^{2}\\cdot5x\\cdot1'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle x^{2}\\cdot5x\\cdot13x^{3}=65x^{2+1+3}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle x^{2}\\cdot5x\\cdot3x^{2}=15x^{2+1+2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle x^{2}\\cdot5x\\cdot2x=10x^{2+1+1}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle x^{2}\\cdot5x\\cdot1=5x^{2+1}'},
+                        {'type': 'e-step', 'heading': '\\displaystyle 65x^{2+1+3}=65x^{6}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+1+3=6'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 65x^{2+1+3}=65x^{6}'}]},
+                        {'type': 'e-step', 'heading': '\\displaystyle 15x^{2+1+2}=15x^{5}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+1+2=5'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 15x^{2+1+2}=15x^{5}'}]},
+                        {'type': 'e-step', 'heading': '\\displaystyle 10x^{2+1+1}=10x^{4}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+1+1=4'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 10x^{2+1+1}=10x^{4}'}]},
+                        {'type': 'e-step', 'heading': '\\displaystyle 5x^{2+1}=5x^{3}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+1=3'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 5x^{2+1}=5x^{3}'}]},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 65x^{2+1+3}+15x^{2+1+2}+10x^{2+1+1}+5x^{2+1}=65x^{6}+15x^{5}+10x^{4}+5x^{3}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle 4x^{2+3}=4x^{5}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+3=5'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 4x^{2+3}=4x^{5}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle 2x^{2+2}=2x^{4}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+2=4'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 2x^{2+2}=2x^{4}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 4x^{2+3}+2x^{2+2}+65x^{6}+15x^{5}+10x^{4}+5x^{3}=4x^{5}+2x^{4}+65x^{6}+15x^{5}+10x^{4}+5x^{3}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Exponentials}', 'info': '\\displaystyle 4x^{5}+2x^{4}+65x^{6}+15x^{5}+10x^{4}+5x^{3}=4x^{5}+15x^{5}+2x^{4}+10x^{4}+65x^{6}+5x^{3}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 4x^{5}+15x^{5}+2x^{4}+10x^{4}+65x^{6}+5x^{3}=19x^{5}+12x^{4}+65x^{6}+5x^{3}'}], 'finalResult': '19x^{5}+12x^{4}+65x^{6}+5x^{3}'},
+            },
+            # {
+            #     'expression': '',
+            #     'keyword': None,
+            #     'expected_val': {},
+            # },
             {
                 'expression': '1',
                 'keyword': None,
