@@ -493,7 +493,8 @@ class ArithmeticExpression:
         return float(self.expression) <= float(other.expression)
 
 class Exponential:
-    def __init__(self, expression, cast_as_non_exponential=False, cast_entire_term_as_exp=False):
+    def __init__(self, expression, cast_as_non_exponential=False, cast_entire_term_as_exp=False, CETAEIOCF=False):
+        # CETAEIOCF: is short for cast_entire_term_as_exp_if_original_cast_failed
         self.expression = expression
         self.exponential = self.expression
         sign = self.exponential[0]
@@ -506,13 +507,14 @@ class Exponential:
 
         if expression[0] == '(' and expression[-1] == ')':
             tmp_expression = expression[1:-1]
-            if len(Expression(tmp_expression)) > 1:
-                self.coefficient = '1'
-                self.base = expression
-                self.exponent = '1'
-                return
-            else:
-                expression = tmp_expression
+            if parenIsBalanced(tmp_expression):
+                if len(Expression(tmp_expression)) > 1:
+                    self.coefficient = '1'
+                    self.base = expression
+                    self.exponent = '1'
+                    return
+                else:
+                    expression = tmp_expression
 
         if cast_entire_term_as_exp:
             self.base = expression
@@ -541,24 +543,41 @@ class Exponential:
 
         else:
             if '{' in expression:
-                base_pattern = re.compile(r".+\^{")
-                base_matches = base_pattern.findall(expression)
-                self.base = base_matches[0][:-2]
+                self.base = None
+                self.exponent = None
+                for i in range(len(expression)):
+                    if expression[i] == '^':
+                        left = expression[:i]
+                        right = expression[i + 1:]
+                        if parenIsBalanced(left, 'both') and parenIsBalanced(right, 'both'):
+                            self.base = left
+                            self.exponent = right[1:-1]
+                if self.base == None or self.exponent == None:
+                    if CETAEIOCF:
+                        newExp = Exponential(self.expression, cast_as_non_exponential=True)
+                        self.coefficient, self.base, self.exponent = newExp.coefficient, newExp.base, newExp.exponent
+                        return
+                    else:
+                        raise TypeError(f'{expression} cannot be casted as an exponential')
 
-                if '^' in self.base and not parenIsBalanced(self.base, 'both'):  # NESTED EXPONENTS
-                    self.base = Exponential(self.base).base
-
-                exponent_pattern = re.compile(r"(\^{.+}$|[0-9a-zA-Z]$)")
-                exponent_matches = exponent_pattern.findall(expression)
-                if '{' in exponent_matches[0] and '}' in exponent_matches[0]:
-                    self.exponent = exponent_matches[0][2:-1]
-                else:
-                    self.exponent = exponent_matches[0]
-
-                if not parenIsBalanced(self.base, 'both') or not parenIsBalanced(self.exponent, 'both'):
-                    newExp = Exponential(self.expression, cast_as_non_exponential=True)
-                    self.coefficient, self.base, self.exponent = newExp.coefficient, newExp.base, newExp.exponent
-                    return
+                # base_pattern = re.compile(r".+\^{")
+                # base_matches = base_pattern.findall(expression)
+                # self.base = base_matches[0][:-2]
+                #
+                # if '^' in self.base and not parenIsBalanced(self.base, 'both'):  # NESTED EXPONENTS
+                #     self.base = Exponential(self.base).base
+                #
+                # exponent_pattern = re.compile(r"(\^{.+}$|[0-9a-zA-Z]$)")
+                # exponent_matches = exponent_pattern.findall(expression)
+                # if '{' in exponent_matches[0] and '}' in exponent_matches[0]:
+                #     self.exponent = exponent_matches[0][2:-1]
+                # else:
+                #     self.exponent = exponent_matches[0]
+                #
+                # if not parenIsBalanced(self.base, 'both') or not parenIsBalanced(self.exponent, 'both'):
+                #     newExp = Exponential(self.expression, cast_as_non_exponential=True)
+                #     self.coefficient, self.base, self.exponent = newExp.coefficient, newExp.base, newExp.exponent
+                #     return
 
             else:
                 i_lc = getIndexOfLastOccurrence(expression, '^')
@@ -566,33 +585,35 @@ class Exponential:
                 self.base = exponentData[0]
                 self.exponent = exponentData[1]
 
-        if self.base[0] == '+' or self.base[0] == '-': self.base = self.base[1:]
+        if self.base != None:
+            if self.base[0] == '+' or self.base[0] == '-': self.base = self.base[1:]
 
-        coefficient = ''
-        if len(self.base) > 1:
-            for i, char in enumerate(self.base):
-                char = Constant(char)
-                if char == '(' and self.base[-1] == ')':
-                    break
-                if self.exponential[i + 1] != '^':
-                    coefficient += str(char)
+            coefficient = ''
+            if len(self.base) > 1:
+                for i, char in enumerate(self.base):
+                    char = Constant(char)
+                    if char == '(' and self.base[-1] == ')':
+                        break
+                    if self.exponential[i + 1] != '^':
+                        coefficient += str(char)
 
-        if coefficient == '':
-            self.coefficient = '1'
-        else:
-            self.coefficient = coefficient
-            if self.coefficient[-1] == '*': self.coefficient = self.coefficient[:-1]
-            if len(self.base) == len(coefficient)+1:
-                # if Constant(expression[len(coefficient)]).is_digit and '*' in expression: self.base = expression[len(coefficient)]
-                if not Constant(expression[len(coefficient)]).is_digit or '*' in expression: self.base = expression[len(coefficient)]
+            if coefficient == '':
+                self.coefficient = '1'
+                if sign == '-': self.coefficient = '-1'
             else:
-                if self.base[len(coefficient)] == '(' and self.base[-1] == ')':
-                    self.base = expression[len(coefficient): len(coefficient)+1]
-                    i = 1
-                    while not parenIsBalanced(self.base, 'both') or self.base == '':
-                        self.base = expression[len(coefficient): len(self.coefficient) + i]
-                        i += 1
-            self.coefficient = f"{sign}{self.coefficient}"
+                self.coefficient = coefficient
+                if self.coefficient[-1] == '*': self.coefficient = self.coefficient[:-1]
+                if len(self.base) == len(coefficient)+1:
+                    # if Constant(expression[len(coefficient)]).is_digit and '*' in expression: self.base = expression[len(coefficient)]
+                    if not Constant(expression[len(coefficient)]).is_digit or '*' in expression: self.base = expression[len(coefficient)]
+                else:
+                    if self.base[len(coefficient)] == '(' and self.base[-1] == ')':
+                        self.base = expression[len(coefficient): len(coefficient)+1]
+                        i = 1
+                        while not parenIsBalanced(self.base, 'both') or self.base == '':
+                            self.base = expression[len(coefficient): len(self.coefficient) + i]
+                            i += 1
+                self.coefficient = f"{sign}{self.coefficient}"
 
     def computeExponential(self):
         base = Constant(self.base)
@@ -717,7 +738,6 @@ class Radical(ArithmeticExpression):
     def __str__(self):
         return str(self.expression)
 
-
 class Fraction:
     def __init__(self, expression):
         self.expression = expression
@@ -824,11 +844,41 @@ class Fraction:
             return Fraction(self.expression[index])
         return self.expression[index]
 
+class Stack():
+    def __init__(self):
+        self.items = []
+
+    # ADDS ITEM TO THE TOP OF THE STACK
+    def push(self, item):
+        self.items.append(item)
+
+    # REMOVES AND RETURNS THE TOP ELEMENT OF THE STACK
+    def pop(self):
+        if not self.is_empty():
+            return self.items.pop()
+
+    # RETURNS TRUE IF THE STACK IS EMPTY ELSE RETURN FALSE
+    def is_empty(self):
+        return self.items == []
+
+    # RETURNS THE TOP ELEMENT OF THE STACK
+    def peak(self):
+        if not self.is_empty():
+            return self.items[-1]
+        else:
+            return None
+
+    def get_stack(self):
+        return self.items
+
 
 def parseLatex(latexString: str):
     latexString = latexString.replace('\left(', '(').replace('\\right)', ')').replace('\left\{', '{').replace('\\right\}', '}')\
                              .replace('\cdot', '*').replace(r'\pi', 'pi').replace('\sqrt', 'sqrt').replace('\sqrt[2]','sqrt')\
                              .replace(r'\frac', 'frac').replace('^1','').replace('^{1}', '')
+    specialFunctions = getSpecialFunctions()
+    for func in specialFunctions:
+        latexString = latexString.replace(rf'\{func}', func)
 
     """ PARSE b^x as b^{x} """
     exponent_pattern = re.compile(r'\^[a-zA-Z0-9]')
@@ -843,6 +893,12 @@ def parseLatex(latexString: str):
 def latexify(expression):
     expression = expression.replace('(', '\left(').replace(')', '\\right)').replace('*', '\cdot').replace('pi', r'\pi')\
                            .replace('sqrt', '\\sqrt').replace('sqrt[2]','sqrt').replace('frac',r'\frac').replace('^{1}', '')
+
+    """ REPLACE \sin with sin  """
+    specialFunctions = getSpecialFunctions()
+    for func in specialFunctions:
+        expression = expression.replace(func, rf'\{func}')
+    expression = expression.replace(r'\\', '\\')
 
     """ REPLACE \cdotx with \cdot x """
     multiplication_pattern = re.compile(r'\\cdot\w{1}')
@@ -1045,7 +1101,7 @@ class Expression:
             fraction_pattern = re.compile(r".*[)0-9]frac")
             fraction_matches = fraction_pattern.findall(Terms[i])
 
-            exponent_pattern = re.compile(r"^[0-9a-zA-Z()+-]+\^{*.+")
+            exponent_pattern = re.compile(r"^[0-9a-zA-Z()^{}+-]+\^{*.+")
             exponent_matches = exponent_pattern.findall(Terms[i])
 
             exponent_product = re.compile(r'[a-z]\^{.+}[a-z]\^{.+}')
@@ -1058,19 +1114,27 @@ class Expression:
             elif ('sqrt' in Terms[i][0:5] and parenIsBalanced(Terms[i][0:5])) or radical_matches != []:
                 Terms[i] = Radical(Terms[i])
             elif '^' in Terms[i] or exponent_matches != []:
-                base = Terms[i].split('^')[0]
-                if base[0] == '+': base = base[1:]
-                if base[0] == '-': base = base[1:]
-                exponent = Terms[i].split('^')[1]
-                if exponent[-1] == ')':
+                try:
+                    exp = Exponential(Terms[i])
+                    if parenIsBalanced(exp.base) and parenIsBalanced(exp.exponent):
+                        Terms[i] = Exponential(Terms[i])
+                    else:
+                        Terms[i] = Constant(Terms[i])
+                except TypeError:
                     Terms[i] = Constant(Terms[i])
-                elif parenIsBalanced(base) and parenIsBalanced(exponent):
-                    Terms[i] = Exponential(Terms[i])
-                    # exponent = Constant(Terms[i].exponent)
-                    # if exponent.is_integer:
-                    #     Terms[i] = Constant(str(Terms[i]))
-                else:
-                    Terms[i] = Constant(Terms[i])
+
+
+                # base = Terms[i].split('^')[0]
+                # if base[0] == '+': base = base[1:]
+                # if base[0] == '-': base = base[1:]
+                # exponent = Terms[i].split('^')[1]
+                # if exponent[-1] == ')':
+                #     Terms[i] = Constant(Terms[i])
+                # elif parenIsBalanced(base) and parenIsBalanced(exponent):
+                #     Terms[i] = Exponential(Terms[i])
+                #
+                # else:
+                #     Terms[i] = Constant(Terms[i])
             else:
                 Terms[i] = Constant(Terms[i])
         return Terms
@@ -1148,13 +1212,13 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
     if Steps is None: Steps = []
     if keyword is None: keyword = 'simplify'
 
-
+    specialFunctions = getSpecialFunctions()
 
     """ MULTIPLY TERMS """
 
     if '*' in expression or len(matches)>0:
         for term in expression.getTerms():
-            if term[0] == '+' or term[0] == '-': term = term[1:]
+            if term[0] == '+': term = term[1:]
             if '*' in term and type(term) != Fraction:
                 if '(' in term:
                     # CONSTANT MULTIPLE
@@ -1164,14 +1228,24 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                         termToMultiply = matches[0][0:getIndexOfLastOccurrence(matches[0], '*')]
                         expressionInParen = Expression(str(term)[len(termToMultiply) + 2:-1])
                         newExpression = ''
-                        for term2 in expressionInParen.getTerms():
-                            if term2[0] == '+':
-                                newExpression += f'+{termToMultiply}*{term2[1:]}'
-                            elif term2[0] == '-':
-                                newExpression += f'-{termToMultiply}*{term2[1:]}'
-                            else:
-                                newExpression += f'{termToMultiply}*{term2}'
+                        if termToMultiply != '-1':
+                            for term2 in expressionInParen.getTerms():
+                                if term2[0] == '+':
+                                    newExpression += f'+{termToMultiply}*{term2[1:]}'
+                                elif term2[0] == '-':
+                                    newExpression += f'-{termToMultiply}*{term2[1:]}'
+                                else:
+                                    newExpression += f'{termToMultiply}*{term2}'
+                        else:
+                            for term2 in expressionInParen.getTerms():
+                                if term2[0] == '+':
+                                    newExpression += f'-{term2[1:]}'
+                                elif term2[0] == '-':
+                                    newExpression += f'+{term2[1:]}'
+                                else:
+                                    newExpression += f'-{term2}'
 
+                        if newExpression[0] == '+': newExpression = newExpression[1:]
                         distributeStep = createMainStep(r'\text{Distribute Parentheses}',f'{latexify(term)}={latexify(newExpression)}')
 
                         newExpression = Expression(newExpression)
@@ -1186,8 +1260,8 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                         if steps != []: Steps.append(e_step)
 
                         expression = Expression(expression.replace(str(term), simplification))
-
                 else:
+                    if term[0] == '-': term = term[1:]
                     termsToBeMultiplied = term.split('*')
                     if listIsInt(termsToBeMultiplied):
                         solution = product(termsToBeMultiplied)
@@ -1271,6 +1345,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                     coefficient = exponential.coefficient
                     if coefficient == '1': coefficient = ''
 
+
                     if base.isSingleExpression():
                         tmp_base = str(base)
                         pattern = re.compile(r'^\(.+\)$')
@@ -1279,13 +1354,13 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                         if len(matches) != 0:
                             tmp_base = tmp_base[1:-1]
                         tmp_base = Expression(tmp_base)
-                        if len(tmp_base.getGroupedTerms()['Radicals']) == 1:
+                        if len(tmp_base.getGroupedTerms()['Radicals']) == 1 and len(tmp_base) == 1:
                             radical = tmp_base.getGroupedTerms()['Radicals'][0]
                             if str(radical.index) == str(exponent):
                                 steps = []
                                 exponentialRuleStepInfo = latexify(f'{exponential}={radical.getRadicand()}')
-                                exponentialRuleStep = createMainStep(
-                                    r'\text{Apply exponential rule:}\ (\sqrt[n]{a})^n=a', exponentialRuleStepInfo)
+                                if exponentialRuleStepInfo[0] == '+': exponentialRuleStepInfo = exponentialRuleStepInfo[1:]
+                                exponentialRuleStep = createMainStep(r'\text{Apply exponential rule:}\ (\sqrt[n]{a})^n=a', exponentialRuleStepInfo)
                                 steps.append(exponentialRuleStep)
                                 base = Expression(str(radical.getRadicand()))
                                 simplifiedBase = simplifyExpression(base)
@@ -1428,7 +1503,10 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                     # UPDATE FINAL RESULT
                     sign = finalSimplification[0]
                     if (sign != '+' and sign != '-'): sign = '+'
-                    finalResult += f'{sign}{finalSimplification}'
+                    if finalSimplification[0] != '-':
+                        finalResult += f'{sign}{finalSimplification}'
+                    else:
+                        finalResult += f'{sign}{finalSimplification[1:]}'
 
             elif group == 'Radicals':
                 """ SIMPLIFY RADICALS """
@@ -1444,6 +1522,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                             if radical.index == radicand.exponent:
                                 steps = []
                                 radicalRuleStepInfo = latexify(f'{radical}={radicand.base}')
+                                if radicalRuleStepInfo[0] == '+': radicalRuleStepInfo = radicalRuleStepInfo[1:]
                                 radicalRuleStep = createMainStep(r'\text{Apply radical rule:}\ \sqrt[n]{a^n}=a',radicalRuleStepInfo)
                                 steps.append(radicalRuleStep)
                                 radicand = Expression(str(radicand.base))
@@ -1751,8 +1830,9 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                                     exp_denominator = Exponential(frac.denominator, cast_entire_term_as_exp=True)
                                     exp_lcm = Exponential(lcm, cast_entire_term_as_exp=True)
                                 else:
-                                    exp_denominator = Exponential(frac.denominator)
-                                    exp_lcm = Exponential(lcm)
+                                    exp_denominator = Exponential(frac.denominator, CETAEIOCF=True)
+                                    exp_lcm = Exponential(lcm, CETAEIOCF=True)
+
                                 if exp_denominator.base == exp_lcm.base:
                                     lcmFactorExponentExpression = Expression(f'{Exponential(lcm).exponent}-{Exponential(frac.denominator).exponent}')
                                     lcmFactorExponentExpression = simplifyExpression(lcmFactorExponentExpression)['finalResult']
@@ -1837,10 +1917,12 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                 """ SIMPLIFY CONSTANTS """
                 Constants = groupedTerms['Constants']
                 constantsExpression = createEStepHeadingFromGroup(Constants, False)
+                simplifiedExpression = constantsExpression
 
                 """ HANDLE PARENTHESES """
-                if '(' in constantsExpression:
+                if 'sdf' in constantsExpression:
                     expression = Expression(constantsExpression)
+                    specialFunction = str(expression[:indexOf(expression, '(')])
                     for i in range(len(str(expression))):
                         currentExpressionToEvaluate = ''
                         if expression[i] == '(' and i == expression.getIndexOfInnerMostParen():
@@ -1867,7 +1949,11 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                             simplification = parseLatex(Simplification['finalResult'])
                             if simplification != str(currentExpressionToEvaluate):
                                 # CREATE E-STEP
-                                heading = f'({currentExpressionToEvaluate})={simplification}'
+                                if specialFunction not in specialFunctions:
+                                    heading = f'({currentExpressionToEvaluate})={simplification}'
+                                else:
+                                    heading = f'{currentExpressionToEvaluate}={simplification}'
+
                                 e_step = createExpandableStep(latexify(f"{heading}"), steps)
                                 if steps != []: Steps.append(e_step)
                                 # COMBINE STEP
@@ -1882,19 +1968,148 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                                             # RETURN (2)^x as 2^x
                                             newExpression = expression.replace(f'({currentExpressionToEvaluate})',
                                                                                simplification)
-
                                     else:
+                                        if specialFunction not in specialFunctions:
+                                            newExpression = expression.replace(f'({currentExpressionToEvaluate})',
+                                                                               simplification)
+                                        else:
+                                            newExpression = expression.replace(f'{currentExpressionToEvaluate}',
+                                                                               simplification)
+
+                                else:
+                                    if specialFunction not in specialFunctions:
                                         newExpression = expression.replace(f'({currentExpressionToEvaluate})',
                                                                            simplification)
-                                else:
-                                    newExpression = expression.replace(f'({currentExpressionToEvaluate})',
-                                                                       simplification)
+                                    else:
+                                        newExpression = expression.replace(f'{currentExpressionToEvaluate}',
+                                                                           simplification)
 
                                 Steps.append(createMainStep(r'\text{Simplify}',
                                                             latexify(f"{expression}={newExpression}")))
 
                                 newExpression = Expression(newExpression)
                                 return simplifyExpression(newExpression, keyword, Steps, finalResult=finalResult)
+
+                if '(' in constantsExpression:
+                    for const in Constants:
+                        if const[0] == '+': const = const[1:]
+                        if '(' in const:
+                            expression = Expression(str(const))
+                            specialFunction = str(expression[:indexOf(expression, '(')])
+                            indexesOfOpenParen = []
+                            indexesOfClosedParen = []
+                            for i in range(len(str(expression))):
+                                if expression[i] == '(': indexesOfOpenParen.append(i)
+                                if expression[i] == ')': indexesOfClosedParen.append(i)
+
+                            indexesOfClosedParen = reverseList(indexesOfClosedParen)
+                            expressionsInsideParen = []
+                            for i in range(len(indexesOfOpenParen)):
+                                start = indexesOfOpenParen[i]+1
+                                end = indexesOfClosedParen[i]
+                                expressionsInsideParen.append(expression[start: end])
+
+                            expressionsInsideParen = reverseList(expressionsInsideParen)
+
+                            for expr in expressionsInsideParen:
+                                # TODO: tanh(frac{3x^{2}+x^{2}+3+4}{3x+x+ln(x+2x+1)+1+2})
+                                break
+                                currentExpressionToEvaluate = expr
+
+                                Simplification = simplifyExpression(currentExpressionToEvaluate)
+                                # ADD STEPS
+
+                                steps = Simplification['steps']
+                                simplification = parseLatex(Simplification['finalResult'])
+                                if simplification != str(currentExpressionToEvaluate):
+                                    # CREATE E-STEP
+                                    if specialFunction not in specialFunctions:
+                                        heading = f'({currentExpressionToEvaluate})={simplification}'
+                                    else:
+                                        heading = f'{currentExpressionToEvaluate}={simplification}'
+
+                                    e_step = createExpandableStep(latexify(f"{heading}"), steps)
+                                    if steps != []: Steps.append(e_step)
+
+
+                                    if specialFunction not in specialFunctions:
+                                        newExpression = expression.replace(f'({currentExpressionToEvaluate})',
+                                                                           simplification)
+                                    else:
+                                        newExpression = expression.replace(f'{currentExpressionToEvaluate}',
+                                                                           simplification)
+
+                                    Steps.append(createMainStep(r'\text{Simplify}',
+                                                                latexify(f"{expression}={newExpression}")))
+                                    simplifiedExpression = simplifiedExpression.replace(str(const), newExpression)
+
+                            for i in range(len(str(expression))):
+                                currentExpressionToEvaluate = ''
+
+                                if expression[i] == '(' and i == expression.getIndexOfInnerMostParen():
+                                    if specialFunction in specialFunctions:
+                                        if i - len(specialFunction) != 0:
+                                            specialFunction = ''
+                                    j = i + 1
+                                    while j < len(str(expression)):
+                                        if expression[j] != ')':
+                                            currentExpressionToEvaluate += expression[j]
+                                        else:
+                                            break
+                                        j += 1
+
+                                    currentExpressionToEvaluate = Expression(currentExpressionToEvaluate)
+                                    Simplification = simplifyExpression(currentExpressionToEvaluate)
+                                    # ADD STEPS
+
+                                    steps = Simplification['steps']
+                                    simplification = parseLatex(Simplification['finalResult'])
+                                    if simplification != str(currentExpressionToEvaluate):
+                                        # CREATE E-STEP
+                                        if specialFunction not in specialFunctions:
+                                            heading = f'({currentExpressionToEvaluate})={simplification}'
+                                        else:
+                                            heading = f'{currentExpressionToEvaluate}={simplification}'
+
+                                        e_step = createExpandableStep(latexify(f"{heading}"), steps)
+                                        if steps != []: Steps.append(e_step)
+                                        # COMBINE STEP
+                                        if j < len(str(expression)) - 1:
+                                            if expression[j + 1] == '^':
+                                                # HANDLE EXPONENTIALS
+                                                if len(simplification) > 1:
+                                                    # TODO: CORRECT IF STATEMENT SHOULD BE: if len(Expression(simplification)) > 1 BUT WE HAVE 3(2x+x)^{3-1} AS AN EDGE CASE
+                                                    newExpression = expression.replace(f'({currentExpressionToEvaluate})',
+                                                                                       f'({simplification})')
+                                                else:
+                                                    # RETURN (2)^x as 2^x
+                                                    newExpression = expression.replace(f'({currentExpressionToEvaluate})',
+                                                                                       simplification)
+                                            else:
+                                                if specialFunction not in specialFunctions:
+                                                    newExpression = expression.replace(f'({currentExpressionToEvaluate})',
+                                                                                       simplification)
+                                                else:
+                                                    newExpression = expression.replace(f'{currentExpressionToEvaluate}',
+                                                                                       simplification)
+
+                                        else:
+                                            if specialFunction not in specialFunctions:
+                                                newExpression = expression.replace(f'({currentExpressionToEvaluate})',
+                                                                                   simplification)
+                                            else:
+                                                newExpression = expression.replace(f'{currentExpressionToEvaluate}',
+                                                                                   simplification)
+
+                                        Steps.append(createMainStep(r'\text{Simplify}',
+                                                                    latexify(f"{expression}={newExpression}")))
+                                        simplifiedExpression = simplifiedExpression.replace(str(const), newExpression)
+
+                    if simplifiedExpression != constantsExpression:
+                        simplifiedExpression = Expression(simplifiedExpression)
+                        return simplifyExpression(simplifiedExpression, keyword, Steps, finalResult=finalResult)
+
+
 
                 """ HANDLE MULTIPLICATION """
                 # TODO
@@ -2192,14 +2407,15 @@ def getLCM(terms: list, listOfNumbers=False, termsType=None):
 
         return lcm
 
-
     elif termsType == 'Variables':
         lcm = ''
         maxPowersOfTerms = {}
         lcmTerms = []
         for term in terms:
             if len(Expression(term)) > 1 and (term[0] != '(' and term[-1] != ')'): term = f'({term})'
-            term = Exponential(term)
+
+            term = Exponential(term, CETAEIOCF=True)
+
 
             if term.coefficient != '1':
                 lcmTerms.append(f'*{term.coefficient}')
@@ -2225,12 +2441,14 @@ def getLCM(terms: list, listOfNumbers=False, termsType=None):
         for term in lcmTerms:
             if term[0] == '*' or Constant(term).is_digit:
                 digitTerms += term
-            elif '^{' in term and '(' not in Exponential(term).base:
+            elif '^{' in term and '(' not in Exponential(term, CETAEIOCF=True).base:
                 termsWithExponentsAndNoParen += term
-            elif '^{' not in term and '(' not in term and Exponential(term).exponent == '1':
+            elif '^{' not in term and '(' not in term and Exponential(term, CETAEIOCF=True).exponent == '1':
                 termsWithoutExponent += term
             else:
                 termsWithParen += term
+
+
 
         for term in digitTerms:
             lcm += term
@@ -2285,6 +2503,9 @@ def getLCMFactor(fracDenominator: str, denominators: list):
         lcmFactor += term
 
     return lcmFactor
+
+def getSpecialFunctions():
+    return ['ln', 'sin', 'cos', 'tan', 'csc', 'sec', 'cot', 'sinh', 'cosh', 'tanh']
 
 def addNumbers(numbers: list, sum=0):
     if len(numbers) == 0:
@@ -2450,6 +2671,7 @@ def parseAsExponential(expression):
         return expression
 
 def parenIsBalanced(string, parenToCheckFor='normal'):
+
     numOpenParen = 0
     numClosedParen = 0
     if parenToCheckFor == 'normal':
@@ -2468,12 +2690,15 @@ def parenIsBalanced(string, parenToCheckFor='normal'):
         return numOpenParen == numClosedParen
 
     for char in string:
+        if char == closedParen and numOpenParen == 0:
+            return False
         if char == openParen:
             numOpenParen += 1
         elif char == closedParen:
             numClosedParen += 1
 
     return numOpenParen == numClosedParen
+
 
 def isDigit2(item: str):
     if item.isdigit():
@@ -2624,6 +2849,7 @@ def getIndexOfLastOccurrence(expression: str, charToFind: str):
             indexes.append(i)
 
     return indexes[-1]
+
 def getExponentialStr(exponentials: list):
     expStr = ''
     for exp in exponentials:
@@ -2677,8 +2903,10 @@ def reverseList(L):
 def main():
     # E = Expression('1+x+2x+(5x+2x+(3x+2+1))')
     # E = Expression('5x^{2}*x^{3}')
-    E = Expression('123^{2}')
+    # E = Expression('tanh(frac{3x^{2}+x^{2}+3+4}{3x+x+ln(x)+1+2})')
+    # E = Expression('x^{2}+(5x-2x-x-x)^{2}+(1+sqrt{3x^{2}+9x^{2}+3+2})^{1+1}')
 
+    E = Expression('frac{x^{2}+(5x-2x-x-x)^{2}+(1+sqrt{3x^{2}+9x^{2}+3+2})^{1+1}}{x^{2}+sqrt{(x^{2}+3x^{2}+1)^{2}}}')
     print(simplifyExpression(E, keyword='simplify'))
 
 
