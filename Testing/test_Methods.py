@@ -910,142 +910,141 @@ class TestCalc(unittest.TestCase):
                 'keyword': None,
                 'expected_val': {'steps': [], 'finalResult': '\\frac{1}{2}'},
             },
-            # {
-            #     'expression': '1+2+(5+2+(25-3)-7+(23+8))+(3+2+(82+(52+5-11)))',
-            #     'keyword': None,
-            #     'expected_val': {'steps': [
-            #         {'type': 'e-step', 'heading': '\\displaystyle \\left(52+5-11\\right)=46', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 52+5-11=46'}]},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 1+2+\\left(5+2+\\left(25-3\\right)-7+\\left(23+8\\right)\\right)+\\left(3+2+\\left(82+\\left(52+5-11\\right)\\right)\\right)=1+2+\\left(5+2+\\left(25-3\\right)-7+\\left(23+8\\right)\\right)+\\left(3+2+\\left(82+46\\right)\\right)'},
-            #         {'type': 'e-step', 'heading': '\\displaystyle \\left(82+46\\right)=128', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 82+46=128'}]},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 1+2+\\left(5+2+\\left(25-3\\right)-7+\\left(23+8\\right)\\right)+\\left(3+2+\\left(82+46\\right)\\right)=1+2+\\left(5+2+\\left(25-3\\right)-7+\\left(23+8\\right)\\right)+\\left(3+2+128\\right)'},
-            #         {'type': 'e-step', 'heading': '\\displaystyle \\left(3+2+128\\right)=133', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 3+2+128=133'}]},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 1+2+\\left(5+2+\\left(25-3\\right)-7+\\left(23+8\\right)\\right)+\\left(3+2+128\\right)=1+2+\\left(5+2+\\left(25-3\\right)-7+\\left(23+8\\right)\\right)+133'},
-            #         {'type': 'e-step', 'heading': '\\displaystyle \\left(23+8\\right)=31', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 23+8=31'}]},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 1+2+\\left(5+2+\\left(25-3\\right)-7+\\left(23+8\\right)\\right)+133=1+2+\\left(5+2+\\left(25-3\\right)-7+31\\right)+133'},
-            #         {'type': 'e-step', 'heading': '\\displaystyle \\left(25-3\\right)=22', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 25-3=22'}]},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 1+2+\\left(5+2+\\left(25-3\\right)-7+31\\right)+133=1+2+\\left(5+2+22-7+31\\right)+133'},
-            #         {'type': 'e-step', 'heading': '\\displaystyle \\left(5+2+22-7+31\\right)=53', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 5+2+22-7+31=53'}]},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 1+2+\\left(5+2+22-7+31\\right)+133=1+2+53+133'},
-            #         {'type': 'e-step', 'heading': '\\displaystyle 1+2+53+133=189', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2+53+133=189'}]}], 'finalResult': '189'},
-            # },
+            {
+                'expression': '1+2+(5+2+(25-3)-7+(23+8))+(3+2+(82+(52+5-11)))',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(23+8\\right)=31', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 23+8=31'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(5+2+\\left(25-3\\right)-7+\\left(23+8\\right)\\right)=\\left(5+2+\\left(25-3\\right)-7+31\\right)'},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(52+5-11\\right)=46', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 52+5-11=46'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(3+2+\\left(82+\\left(52+5-11\\right)\\right)\\right)=\\left(3+2+\\left(82+46\\right)\\right)'},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(25-3\\right)=22', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 25-3=22'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(5+2+\\left(25-3\\right)-7+31\\right)=\\left(5+2+22-7+31\\right)'},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(82+46\\right)=128', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 82+46=128'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(3+2+\\left(82+46\\right)\\right)=\\left(3+2+128\\right)'},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(5+2+22-7+31\\right)=53', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 5+2+22-7+31=53'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(5+2+22-7+31\\right)=53'},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(3+2+128\\right)=133', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 3+2+128=133'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(3+2+128\\right)=133'},
+                    {'type': 'e-step', 'heading': '\\displaystyle 1+2+53+133=189', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2+53+133=189'}]}], 'finalResult': '189'},
+            },
 
-            # {
-            #     'expression': '1+2+(5+(11*12+12*5))+7+9',
-            #     'keyword': None,
-            #     'expected_val': {'steps': [
-            #         {'type': 'e-step', 'heading': '\\displaystyle \\left(11\\cdot12+12\\cdot5\\right)=192', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 11\\cdot12=132'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 12\\cdot5=60'},
-            #             {'type': 'e-step', 'heading': '\\displaystyle 132+60=192', 'e-steps': [
-            #                 {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 132+60=192'}]}]},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 1+2+\\left(5+\\left(11\\cdot12+12\\cdot5\\right)\\right)+7+9=1+2+\\left(5+192\\right)+7+9'},
-            #         {'type': 'e-step', 'heading': '\\displaystyle \\left(5+192\\right)=197', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 5+192=197'}]},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 1+2+\\left(5+192\\right)+7+9=1+2+197+7+9'},
-            #         {'type': 'e-step', 'heading': '\\displaystyle 1+2+197+7+9=216', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2+197+7+9=216'}]}], 'finalResult': '216'},
-            # },
-            # {
-            #     'expression': '1+3+(5x+(e^{2x}+3e^{2x}+(25x-15x+4x)+3+2)+sqrt{25x^{2}+(15x^{2}+25x+(15x+3+2))+1+3})',
-            #     'keyword': None,
-            #     'expected_val': {'steps': [
-            #         {'type': 'e-step', 'heading': '\\displaystyle \\left(15x+3+2\\right)=15x+5', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 15x+3+2=15x+5'}]},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 1+3+\\left(5x+\\left(e^{2x}+3e^{2x}+\\left(25x-15x+4x\\right)+3+2\\right)+\\sqrt{25x^{2}+\\left(15x^{2}+25x+\\left(15x+3+2\\right)\\right)+1+3}\\right)=1+3+\\left(5x+\\left(e^{2x}+3e^{2x}+\\left(25x-15x+4x\\right)+3+2\\right)+\\sqrt{25x^{2}+\\left(15x^{2}+25x+15x+5\\right)+1+3}\\right)'},
-            #         {'type': 'e-step', 'heading': '\\displaystyle \\left(15x^{2}+25x+15x+5\\right)=15x^{2}+40x+5', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 25x+15x+5=40x+5'}]},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 1+3+\\left(5x+\\left(e^{2x}+3e^{2x}+\\left(25x-15x+4x\\right)+3+2\\right)+\\sqrt{25x^{2}+\\left(15x^{2}+25x+15x+5\\right)+1+3}\\right)=1+3+\\left(5x+\\left(e^{2x}+3e^{2x}+\\left(25x-15x+4x\\right)+3+2\\right)+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}\\right)'},
-            #         {'type': 'e-step', 'heading': '\\displaystyle \\left(25x-15x+4x\\right)=14x', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 25x-15x+4x=14x'}]},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 1+3+\\left(5x+\\left(e^{2x}+3e^{2x}+\\left(25x-15x+4x\\right)+3+2\\right)+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}\\right)=1+3+\\left(5x+\\left(e^{2x}+3e^{2x}+14x+3+2\\right)+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}\\right)'},
-            #         {'type': 'e-step', 'heading': '\\displaystyle \\left(e^{2x}+3e^{2x}+14x+3+2\\right)=4e^{2x}+14x+5', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle e^{2x}+3e^{2x}=4e^{2x}'},
-            #             {'type': 'e-step', 'heading': '\\displaystyle 14x+3+2=14x+5', 'e-steps': [
-            #                 {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 14x+3+2=14x+5'}]}]},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 1+3+\\left(5x+\\left(e^{2x}+3e^{2x}+14x+3+2\\right)+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}\\right)=1+3+\\left(5x+4e^{2x}+14x+5+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}\\right)'},
-            #         {'type': 'e-step', 'heading': '\\displaystyle \\left(5x+4e^{2x}+14x+5+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}\\right)=4e^{2x}+\\sqrt{40x^{2}+40x+9}+19x+5', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 5x+4e^{2x}+14x+5+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}=4e^{2x}+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}+5x+14x+5'},
-            #             {'type': 'e-step', 'heading': '\\displaystyle \\sqrt{25x^{2}+15x^{2}+40x+5+1+3}=\\sqrt{40x^{2}+40x+9}', 'e-steps': [
-            #                 {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 25x^{2}+15x^{2}=40x^{2}'},
-            #                 {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 40x+5+1+3=40x+9'},
-            #                 {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{25x^{2}+15x^{2}+40x+5+1+3}=\\sqrt{40x^{2}+40x+9}'}]},
-            #             {'type': 'e-step', 'heading': '\\displaystyle 5x+14x+5=19x+5', 'e-steps': [
-            #                 {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+14x+5=19x+5'}]}]},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 1+3+\\left(5x+4e^{2x}+14x+5+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}\\right)=1+3+4e^{2x}+\\sqrt{40x^{2}+40x+9}+19x+5'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 1+3+4e^{2x}+\\sqrt{40x^{2}+40x+9}+19x+5=4e^{2x}+\\sqrt{40x^{2}+40x+9}+1+3+19x+5'},
-            #         {'type': 'e-step', 'heading': '\\displaystyle 1+3+19x+5=19x+9', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+3+19x+5=19x+1+3+5'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 19x+1+3+5=19x+9'}]}], 'finalResult': '4e^{2x}+\\sqrt{40x^{2}+40x+9}+19x+9'},
-            # },
+            {
+                'expression': '1+2+(5+(11*12+12*5))+7+9',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(11\\cdot12+12\\cdot5\\right)=192', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 11\\cdot12=132'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 12\\cdot5=60'},
+                        {'type': 'e-step', 'heading': '\\displaystyle 132+60=192', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 132+60=192'}]}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(5+\\left(11\\cdot12+12\\cdot5\\right)\\right)=\\left(5+192\\right)'},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(5+192\\right)=197', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 5+192=197'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(5+192\\right)=197'},
+                    {'type': 'e-step', 'heading': '\\displaystyle 1+2+197+7+9=216', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+2+197+7+9=216'}]}], 'finalResult': '216'},
+            },
+            {
+                'expression': '1+3+(5x+(e^{2x}+3e^{2x}+(25x-15x+4x)+3+2)+sqrt{25x^{2}+(15x^{2}+25x+(15x+3+2))+1+3})',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(15x+3+2\\right)=15x+5', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 15x+3+2=15x+5'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(5x+\\left(e^{2x}+3e^{2x}+\\left(25x-15x+4x\\right)+3+2\\right)+\\sqrt{25x^{2}+\\left(15x^{2}+25x+\\left(15x+3+2\\right)\\right)+1+3}\\right)=\\left(5x+\\left(e^{2x}+3e^{2x}+\\left(25x-15x+4x\\right)+3+2\\right)+\\sqrt{25x^{2}+\\left(15x^{2}+25x+15x+5\\right)+1+3}\\right)'},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(15x^{2}+25x+15x+5\\right)=15x^{2}+40x+5', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 25x+15x+5=40x+5'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(5x+\\left(e^{2x}+3e^{2x}+\\left(25x-15x+4x\\right)+3+2\\right)+\\sqrt{25x^{2}+\\left(15x^{2}+25x+15x+5\\right)+1+3}\\right)=\\left(5x+\\left(e^{2x}+3e^{2x}+\\left(25x-15x+4x\\right)+3+2\\right)+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}\\right)'},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(25x-15x+4x\\right)=14x', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 25x-15x+4x=14x'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(5x+\\left(e^{2x}+3e^{2x}+\\left(25x-15x+4x\\right)+3+2\\right)+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}\\right)=\\left(5x+\\left(e^{2x}+3e^{2x}+14x+3+2\\right)+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}\\right)'},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(e^{2x}+3e^{2x}+14x+3+2\\right)=4e^{2x}+14x+5', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle e^{2x}+3e^{2x}=4e^{2x}'},
+                        {'type': 'e-step', 'heading': '\\displaystyle 14x+3+2=14x+5', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 14x+3+2=14x+5'}]}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(5x+\\left(e^{2x}+3e^{2x}+14x+3+2\\right)+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}\\right)=\\left(5x+4e^{2x}+14x+5+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}\\right)'},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\left(5x+4e^{2x}+14x+5+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}\\right)=4e^{2x}+\\sqrt{40x^{2}+40x+9}+19x+5', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 5x+4e^{2x}+14x+5+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}=4e^{2x}+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}+5x+14x+5'},
+                        {'type': 'e-step', 'heading': '\\displaystyle \\sqrt{25x^{2}+15x^{2}+40x+5+1+3}=\\sqrt{40x^{2}+40x+9}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 25x^{2}+15x^{2}=40x^{2}'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 40x+5+1+3=40x+9'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{25x^{2}+15x^{2}+40x+5+1+3}=\\sqrt{40x^{2}+40x+9}'}]},
+                        {'type': 'e-step', 'heading': '\\displaystyle 5x+14x+5=19x+5', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+14x+5=19x+5'}]}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(5x+4e^{2x}+14x+5+\\sqrt{25x^{2}+15x^{2}+40x+5+1+3}\\right)=4e^{2x}+\\sqrt{40x^{2}+40x+9}+19x+5'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 1+3+4e^{2x}+\\sqrt{40x^{2}+40x+9}+19x+5=4e^{2x}+\\sqrt{40x^{2}+40x+9}+1+3+19x+5'},
+                    {'type': 'e-step', 'heading': '\\displaystyle 1+3+19x+5=19x+9', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 1+3+19x+5=19x+1+3+5'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 19x+1+3+5=19x+9'}]}], 'finalResult': '4e^{2x}+\\sqrt{40x^{2}+40x+9}+19x+9'},
+            },
+            {
+                'expression': 'frac{3x+(2x+x+1)}{sqrt{e^{2x}+5e^{2x}}+(3x+(e^{4x+(3x+2x)}))}',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 2x+x+1=3x+1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(2x+x+1\\right)=3x+1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+3x+1=6x+1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{3x+\\left(2x+x+1\\right)}{\\sqrt{e^{2x}+5e^{2x}}+\\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)}=\\frac{6x+1}{\\sqrt{e^{2x}+5e^{2x}}+\\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle e^{2x}+5e^{2x}=6e^{2x}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{e^{2x}+5e^{2x}}=\\sqrt{6e^{2x}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+2x=5x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)=\\left(3x+\\left(e^{4x+5x}\\right)\\right)'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 4x+5x=9x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle e^{4x+5x}=e^{9x}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(3x+\\left(e^{4x+5x}\\right)\\right)=\\left(3x+e^{9x}\\right)'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 3x+e^{9x}=e^{9x}+3x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\sqrt{6e^{2x}}+e^{9x}+3x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle \\sqrt{6e^{2x}}+e^{9x}+3x=e^{9x}+\\sqrt{6e^{2x}}+3x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{3x+\\left(2x+x+1\\right)}{\\sqrt{e^{2x}+5e^{2x}}+\\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)}=\\frac{6x+1}{e^{9x}+\\sqrt{6e^{2x}}+3x}'}], 'finalResult': '\\frac{6x+1}{e^{9x}+\\sqrt{6e^{2x}}+3x}'},
+            },
 
-            # {
-            #     'expression': 'frac{3x+(2x+x+1)}{sqrt{e^{2x}+5e^{2x}}+(3x+(e^{4x+(3x+2x)}))}',
-            #     'keyword': None,
-            #     'expected_val': {'steps': [
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 2x+x+1=3x+1'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 3x+\\left(2x+x+1\\right)=3x+3x+1'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+3x+1=6x+1'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{3x+\\left(2x+x+1\\right)}{\\sqrt{e^{2x}+5e^{2x}}+\\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)}=\\frac{6x+1}{\\sqrt{e^{2x}+5e^{2x}}+\\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)}'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle e^{2x}+5e^{2x}=6e^{2x}'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{e^{2x}+5e^{2x}}=\\sqrt{6e^{2x}}'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+2x=5x'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)=\\left(3x+\\left(e^{4x+5x}\\right)\\right)'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 4x+5x=9x'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle e^{4x+5x}=e^{9x}'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(3x+\\left(e^{4x+5x}\\right)\\right)=\\left(3x+e^{9x}\\right)'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 3x+e^{9x}=e^{9x}+3x'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\sqrt{6e^{2x}}+e^{9x}+3x'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle \\sqrt{6e^{2x}}+e^{9x}+3x=e^{9x}+\\sqrt{6e^{2x}}+3x'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{3x+\\left(2x+x+1\\right)}{\\sqrt{e^{2x}+5e^{2x}}+\\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)}=\\frac{6x+1}{e^{9x}+\\sqrt{6e^{2x}}+3x}'}], 'finalResult': '\\frac{6x+1}{e^{9x}+\\sqrt{6e^{2x}}+3x}'},
-            # },
-
-            # {
-            #     'expression': 'frac{3x+(2x+x+1)}{sqrt{e^{2x}+5e^{2x}}+(3x+(e^{4x+(3x+2x)}))}+frac{25x^{2}+(36x^{2}-12x^{2})+3+3}{(15sqrt{x}-4sqrt{x}+(9sqrt{x}+3sqrt{5x-4x})+3)+1}',
-            #     'keyword': 'combine',
-            #     'expected_val': {'steps': [
-            #         {'type': 'e-step', 'heading': '\\displaystyle \\frac{3x+\\left(2x+x+1\\right)}{\\sqrt{e^{2x}+5e^{2x}}+\\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)}=\\frac{6x+1}{e^{9x}+\\sqrt{6e^{2x}}+3x}', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 2x+x+1=3x+1'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 3x+\\left(2x+x+1\\right)=3x+3x+1'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+3x+1=6x+1'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{3x+\\left(2x+x+1\\right)}{\\sqrt{e^{2x}+5e^{2x}}+\\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)}=\\frac{6x+1}{\\sqrt{e^{2x}+5e^{2x}}+\\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)}'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle e^{2x}+5e^{2x}=6e^{2x}'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{e^{2x}+5e^{2x}}=\\sqrt{6e^{2x}}'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+2x=5x'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)=\\left(3x+\\left(e^{4x+5x}\\right)\\right)'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 4x+5x=9x'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle e^{4x+5x}=e^{9x}'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(3x+\\left(e^{4x+5x}\\right)\\right)=\\left(3x+e^{9x}\\right)'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 3x+e^{9x}=e^{9x}+3x'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\sqrt{6e^{2x}}+e^{9x}+3x'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle \\sqrt{6e^{2x}}+e^{9x}+3x=e^{9x}+\\sqrt{6e^{2x}}+3x'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{3x+\\left(2x+x+1\\right)}{\\sqrt{e^{2x}+5e^{2x}}+\\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)}=\\frac{6x+1}{e^{9x}+\\sqrt{6e^{2x}}+3x}'}]},
-            #         {'type': 'e-step', 'heading': '\\displaystyle \\frac{25x^{2}+\\left(36x^{2}-12x^{2}\\right)+3+3}{\\left(15\\sqrt{x}-4\\sqrt{x}+\\left(9\\sqrt{x}+3\\sqrt{5x-4x}\\right)+3\\right)+1}=\\frac{49x^{2}+6}{23\\sqrt{x}+4}', 'e-steps': [
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 36x^{2}-12x^{2}=24x^{2}'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(36x^{2}-12x^{2}\\right)+3+3=24x^{2}+3+3'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 3+3=6'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle 25x^{2}+24x^{2}+6'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 25x^{2}+24x^{2}=49x^{2}'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{25x^{2}+\\left(36x^{2}-12x^{2}\\right)+3+3}{\\left(15\\sqrt{x}-4\\sqrt{x}+\\left(9\\sqrt{x}+3\\sqrt{5x-4x}\\right)+3\\right)+1}=\\frac{49x^{2}+6}{\\left(15\\sqrt{x}-4\\sqrt{x}+\\left(9\\sqrt{x}+3\\sqrt{5x-4x}\\right)+3\\right)+1}'},
-            #             {'type': 'e-step', 'heading': '\\displaystyle 3\\sqrt{5x-4x}=3\\sqrt{x}', 'e-steps': [
-            #                 {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x-4x=x'},
-            #                 {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 3\\sqrt{5x-4x}=3\\sqrt{x}'}]},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle 9\\sqrt{x}+3\\sqrt{x}'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 9\\sqrt{x}+3\\sqrt{x}=12\\sqrt{x}'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(15\\sqrt{x}-4\\sqrt{x}+\\left(9\\sqrt{x}+3\\sqrt{5x-4x}\\right)+3\\right)+1=\\left(15\\sqrt{x}-4\\sqrt{x}+12\\sqrt{x}+3\\right)+1'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 15\\sqrt{x}-4\\sqrt{x}+12\\sqrt{x}+3=23\\sqrt{x}+3'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(15\\sqrt{x}-4\\sqrt{x}+12\\sqrt{x}+3\\right)+1=23\\sqrt{x}+3+1'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 3+1=4'},
-            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{25x^{2}+\\left(36x^{2}-12x^{2}\\right)+3+3}{\\left(15\\sqrt{x}-4\\sqrt{x}+\\left(9\\sqrt{x}+3\\sqrt{5x-4x}\\right)+3\\right)+1}=\\frac{49x^{2}+6}{23\\sqrt{x}+4}'}]},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)', 'info': '\\displaystyle \\frac{6x+1}{e^{9x}+\\sqrt{6e^{2x}}+3x}+\\frac{49x^{2}+6}{23\\sqrt{x}+4}=\\frac{\\left(6x+1\\right)\\left(23\\sqrt{x}+4\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}+\\frac{\\left(49x^{2}+6\\right)\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{\\left(6x+1\\right)\\left(23\\sqrt{x}+4\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}+\\frac{\\left(49x^{2}+6\\right)\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}=\\frac{\\left(6x+1\\right)\\left(23\\sqrt{x}+4\\right)+\\left(49x^{2}+6\\right)\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}'}], 'finalResult': '\\frac{\\left(6x+1\\right)\\left(23\\sqrt{x}+4\\right)+\\left(49x^{2}+6\\right)\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}'},
-            # },
+            {
+                'expression': 'frac{3x+(2x+x+1)}{sqrt{e^{2x}+5e^{2x}}+(3x+(e^{4x+(3x+2x)}))}+frac{25x^{2}+(36x^{2}-12x^{2})+3+3}{(15sqrt{x}-4sqrt{x}+(9sqrt{x}+3sqrt{5x-4x})+3)+1}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{3x+\\left(2x+x+1\\right)}{\\sqrt{e^{2x}+5e^{2x}}+\\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)}=\\frac{6x+1}{e^{9x}+\\sqrt{6e^{2x}}+3x}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 2x+x+1=3x+1'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(2x+x+1\\right)=3x+1'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+3x+1=6x+1'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{3x+\\left(2x+x+1\\right)}{\\sqrt{e^{2x}+5e^{2x}}+\\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)}=\\frac{6x+1}{\\sqrt{e^{2x}+5e^{2x}}+\\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle e^{2x}+5e^{2x}=6e^{2x}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{e^{2x}+5e^{2x}}=\\sqrt{6e^{2x}}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+2x=5x'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)=\\left(3x+\\left(e^{4x+5x}\\right)\\right)'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 4x+5x=9x'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle e^{4x+5x}=e^{9x}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(3x+\\left(e^{4x+5x}\\right)\\right)=\\left(3x+e^{9x}\\right)'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 3x+e^{9x}=e^{9x}+3x'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\sqrt{6e^{2x}}+e^{9x}+3x'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle \\sqrt{6e^{2x}}+e^{9x}+3x=e^{9x}+\\sqrt{6e^{2x}}+3x'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{3x+\\left(2x+x+1\\right)}{\\sqrt{e^{2x}+5e^{2x}}+\\left(3x+\\left(e^{4x+\\left(3x+2x\\right)}\\right)\\right)}=\\frac{6x+1}{e^{9x}+\\sqrt{6e^{2x}}+3x}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{25x^{2}+\\left(36x^{2}-12x^{2}\\right)+3+3}{\\left(15\\sqrt{x}-4\\sqrt{x}+\\left(9\\sqrt{x}+3\\sqrt{5x-4x}\\right)+3\\right)+1}=\\frac{49x^{2}+6}{23\\sqrt{x}+4}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 36x^{2}-12x^{2}=24x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(36x^{2}-12x^{2}\\right)=24x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 3+3=6'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle 25x^{2}+24x^{2}+6'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 25x^{2}+24x^{2}=49x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{25x^{2}+\\left(36x^{2}-12x^{2}\\right)+3+3}{\\left(15\\sqrt{x}-4\\sqrt{x}+\\left(9\\sqrt{x}+3\\sqrt{5x-4x}\\right)+3\\right)+1}=\\frac{49x^{2}+6}{\\left(15\\sqrt{x}-4\\sqrt{x}+\\left(9\\sqrt{x}+3\\sqrt{5x-4x}\\right)+3\\right)+1}'},
+                        {'type': 'e-step', 'heading': '\\displaystyle 3\\sqrt{5x-4x}=3\\sqrt{x}', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x-4x=x'},
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 3\\sqrt{5x-4x}=3\\sqrt{x}'}]},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle 9\\sqrt{x}+3\\sqrt{x}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 9\\sqrt{x}+3\\sqrt{x}=12\\sqrt{x}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(15\\sqrt{x}-4\\sqrt{x}+\\left(9\\sqrt{x}+3\\sqrt{5x-4x}\\right)+3\\right)=\\left(15\\sqrt{x}-4\\sqrt{x}+12\\sqrt{x}+3\\right)'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 15\\sqrt{x}-4\\sqrt{x}+12\\sqrt{x}+3=23\\sqrt{x}+3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\left(15\\sqrt{x}-4\\sqrt{x}+12\\sqrt{x}+3\\right)=23\\sqrt{x}+3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 3+1=4'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{25x^{2}+\\left(36x^{2}-12x^{2}\\right)+3+3}{\\left(15\\sqrt{x}-4\\sqrt{x}+\\left(9\\sqrt{x}+3\\sqrt{5x-4x}\\right)+3\\right)+1}=\\frac{49x^{2}+6}{23\\sqrt{x}+4}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)', 'info': '\\displaystyle \\frac{6x+1}{e^{9x}+\\sqrt{6e^{2x}}+3x}+\\frac{49x^{2}+6}{23\\sqrt{x}+4}=\\frac{\\left(6x+1\\right)\\left(23\\sqrt{x}+4\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}+\\frac{\\left(49x^{2}+6\\right)\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{\\left(6x+1\\right)\\left(23\\sqrt{x}+4\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}+\\frac{\\left(49x^{2}+6\\right)\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}=\\frac{\\left(6x+1\\right)\\left(23\\sqrt{x}+4\\right)+\\left(49x^{2}+6\\right)\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}'}], 'finalResult': '\\frac{\\left(6x+1\\right)\\left(23\\sqrt{x}+4\\right)+\\left(49x^{2}+6\\right)\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)}{\\left(e^{9x}+\\sqrt{6e^{2x}}+3x\\right)\\left(23\\sqrt{x}+4\\right)}'},
+            },
 
             {
                 'expression': 'frac{12+24+57}{23-56}+frac{23+15}{16}',
@@ -1374,19 +1373,19 @@ class TestCalc(unittest.TestCase):
                 'expected_val': {'steps': [
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle -1\\cdot\\left(-x^{2}+3x-5\\right)=x^{2}-3x+5'}], 'finalResult': 'x^{2}-3x+5'},
             },
-            # {
-            #     'expression': 'frac{ln(3x+2x+5+3)+x+3x}{x^{2}+3x^{2}+2+3}',
-            #     'keyword': None,
-            #     'expected_val': {'steps': [
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+2x+5+3=5x+5+3'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 5x+5+3=5x+8'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\ln\\left(3x+2x+5+3\\right)+x+3x=\\ln\\left(5x+8\\right)+x+3x'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle \\ln\\left(5x+8\\right)+x+3x=\\ln\\left(5x+8\\right)+4x'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{\\ln\\left(3x+2x+5+3\\right)+x+3x}{x^{2}+3x^{2}+2+3}=\\frac{\\ln\\left(5x+8\\right)+4x}{x^{2}+3x^{2}+2+3}'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle x^{2}+3x^{2}=4x^{2}'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+3=5'},
-            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{\\ln\\left(3x+2x+5+3\\right)+x+3x}{x^{2}+3x^{2}+2+3}=\\frac{\\ln\\left(5x+8\\right)+4x}{4x^{2}+5}'}], 'finalResult': '\\frac{\\ln\\left(5x+8\\right)+4x}{4x^{2}+5}'},
-            # },
+            {
+                'expression': 'frac{ln(3x+2x+5+3)+x+3x}{x^{2}+3x^{2}+2+3}',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+2x+5+3=5x+5+3'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 5x+5+3=5x+8'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\ln\\left(3x+2x+5+3\\right)=\\ln\\left(5x+8\\right)'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle \\ln\\left(5x+8\\right)+x+3x=\\ln\\left(5x+8\\right)+4x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{\\ln\\left(3x+2x+5+3\\right)+x+3x}{x^{2}+3x^{2}+2+3}=\\frac{\\ln\\left(5x+8\\right)+4x}{x^{2}+3x^{2}+2+3}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle x^{2}+3x^{2}=4x^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+3=5'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{\\ln\\left(3x+2x+5+3\\right)+x+3x}{x^{2}+3x^{2}+2+3}=\\frac{\\ln\\left(5x+8\\right)+4x}{4x^{2}+5}'}], 'finalResult': '\\frac{\\ln\\left(5x+8\\right)+4x}{4x^{2}+5}'},
+            },
             {
                 'expression': 'cos(5x^{2}+sqrt{9x^{2}+x^{2}+2+3}+3x^{2})',
                 'keyword': None,
@@ -1430,6 +1429,132 @@ class TestCalc(unittest.TestCase):
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle x^{2}+4x^{2}=5x^{2}'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{x^{2}+\\left(5x-2x-x-x\\right)^{2}+\\left(1+\\sqrt{3x^{2}+9x^{2}+3+2}\\right)^{1+1}}{x^{2}+\\sqrt{\\left(x^{2}+3x^{2}+1\\right)^{2}}}=\\frac{2x^{2}+\\left(\\sqrt{12x^{2}+5}+1\\right)^{2}}{5x^{2}+1}'}], 'finalResult': '\\frac{2x^{2}+\\left(\\sqrt{12x^{2}+5}+1\\right)^{2}}{5x^{2}+1}'},
             },
+            {
+                'expression': 'frac{x^{2}+(5x-2x-x-x)^{2}+(1+sqrt{3x^{2}+9x^{2}+3+2})^{sqrt{5x+2x+e^{x^{2}+3x^{2}+1}}}}{(t^{4}+3t^{3}+5*(1+t^{2}+(3t^{2}+t^{2}+2)))^{2}+sqrt{(x^{2}+3x^{2}+1)^{2}}}',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x-2x-x-x=x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(5x-2x-x-x\\right)^{2}=x^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 1+\\sqrt{3x^{2}+9x^{2}+3+2}=\\sqrt{3x^{2}+9x^{2}+3+2}+1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 3x^{2}+9x^{2}=12x^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 3+2=5'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{3x^{2}+9x^{2}+3+2}=\\sqrt{12x^{2}+5}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(1+\\sqrt{3x^{2}+9x^{2}+3+2}\\right)^{\\sqrt{5x+2x+e^{x^{2}+3x^{2}+1}}}=\\left(\\sqrt{12x^{2}+5}+1\\right)^{\\sqrt{5x+2x+e^{x^{2}+3x^{2}+1}}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 5x+2x+e^{x^{2}+3x^{2}+1}=e^{x^{2}+3x^{2}+1}+5x+2x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle x^{2}+3x^{2}=4x^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle e^{x^{2}+3x^{2}+1}=e^{4x^{2}+1}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+2x=7x'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{5x+2x+e^{x^{2}+3x^{2}+1}}=\\sqrt{e^{4x^{2}+1}+7x}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle \\left(\\sqrt{12x^{2}+5}+1\\right)^{\\sqrt{5x+2x+e^{x^{2}+3x^{2}+1}}}=\\left(\\sqrt{12x^{2}+5}+1\\right)^{\\sqrt{e^{4x^{2}+1}+7x}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle x^{2}+\\left(5x-2x-x-x\\right)^{2}+\\left(1+\\sqrt{3x^{2}+9x^{2}+3+2}\\right)^{\\sqrt{5x+2x+e^{x^{2}+3x^{2}+1}}}=x^{2}+x^{2}+\\left(\\sqrt{12x^{2}+5}+1\\right)^{\\sqrt{e^{4x^{2}+1}+7x}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle x^{2}+x^{2}+\\left(\\sqrt{12x^{2}+5}+1\\right)^{\\sqrt{e^{4x^{2}+1}+7x}}=2x^{2}+\\left(\\sqrt{12x^{2}+5}+1\\right)^{\\sqrt{e^{4x^{2}+1}+7x}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{x^{2}+\\left(5x-2x-x-x\\right)^{2}+\\left(1+\\sqrt{3x^{2}+9x^{2}+3+2}\\right)^{\\sqrt{5x+2x+e^{x^{2}+3x^{2}+1}}}}{\\left(t^{4}+3t^{3}+5\\cdot\\left(1+t^{2}+\\left(3t^{2}+t^{2}+2\\right)\\right)\\right)^{2}+\\sqrt{\\left(x^{2}+3x^{2}+1\\right)^{2}}}=\\frac{2x^{2}+\\left(\\sqrt{12x^{2}+5}+1\\right)^{\\sqrt{e^{4x^{2}+1}+7x}}}{\\left(t^{4}+3t^{3}+5\\cdot\\left(1+t^{2}+\\left(3t^{2}+t^{2}+2\\right)\\right)\\right)^{2}+\\sqrt{\\left(x^{2}+3x^{2}+1\\right)^{2}}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle \\left(t^{4}+3t^{3}+5\\cdot\\left(1+t^{2}+\\left(3t^{2}+t^{2}+2\\right)\\right)\\right)=t^{4}+3t^{3}+5\\cdot\\left(1+t^{2}+\\left(3t^{2}+t^{2}+2\\right)\\right)'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 5\\cdot\\left(1+t^{2}+\\left(3t^{2}+t^{2}+2\\right)\\right)=5\\cdot1+5\\cdot t^{2}+5\\cdot\\left(3t^{2}+t^{2}+2\\right)'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5\\cdot1=5'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5\\cdot t^{2}=5t^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 5\\cdot\\left(3t^{2}+t^{2}+2\\right)=5\\cdot3t^{2}+5\\cdot t^{2}+5\\cdot2'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5\\cdot3t^{2}=15t^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5\\cdot t^{2}=5t^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5\\cdot2=10'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 15t^{2}+5t^{2}=20t^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 5+5t^{2}+20t^{2}+10=5t^{2}+20t^{2}+5+10'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 5t^{2}+20t^{2}=25t^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 5+10=15'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(t^{4}+3t^{3}+5\\cdot\\left(1+t^{2}+\\left(3t^{2}+t^{2}+2\\right)\\right)\\right)^{2}=\\left(t^{4}+3t^{3}+25t^{2}+15\\right)^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply radical rule:}\\ \\sqrt[n]{a^n}=a', 'info': '\\displaystyle \\sqrt{\\left(x^{2}+3x^{2}+1\\right)^{2}}=\\left(x^{2}+3x^{2}+1\\right)'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle x^{2}+3x^{2}=4x^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{x^{2}+\\left(5x-2x-x-x\\right)^{2}+\\left(1+\\sqrt{3x^{2}+9x^{2}+3+2}\\right)^{\\sqrt{5x+2x+e^{x^{2}+3x^{2}+1}}}}{\\left(t^{4}+3t^{3}+5\\cdot\\left(1+t^{2}+\\left(3t^{2}+t^{2}+2\\right)\\right)\\right)^{2}+\\sqrt{\\left(x^{2}+3x^{2}+1\\right)^{2}}}=\\frac{2x^{2}+\\left(\\sqrt{12x^{2}+5}+1\\right)^{\\sqrt{e^{4x^{2}+1}+7x}}}{\\left(t^{4}+3t^{3}+25t^{2}+15\\right)^{2}+4x^{2}+1}'}], 'finalResult': '\\frac{2x^{2}+\\left(\\sqrt{12x^{2}+5}+1\\right)^{\\sqrt{e^{4x^{2}+1}+7x}}}{\\left(t^{4}+3t^{3}+25t^{2}+15\\right)^{2}+4x^{2}+1}'},
+            },
+            {
+                'expression': '5*(t^{2}+sqrt{3t^{2}+t^{2}+1})',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Distribute Parentheses}', 'info': '\\displaystyle 5\\cdot\\left(t^{2}+\\sqrt{3t^{2}+t^{2}+1}\\right)=5\\cdot t^{2}+5\\cdot\\sqrt{3t^{2}+t^{2}+1}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5\\cdot t^{2}=5t^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 5\\cdot\\sqrt{3t^{2}+t^{2}+1}=5\\sqrt{3t^{2}+t^{2}+1}'},
+                    {'type': 'e-step', 'heading': '\\displaystyle 5\\sqrt{3t^{2}+t^{2}+1}=5\\sqrt{4t^{2}+1}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 3t^{2}+t^{2}=4t^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 5\\sqrt{3t^{2}+t^{2}+1}=5\\sqrt{4t^{2}+1}'}]}], 'finalResult': '5t^{2}+5\\sqrt{4t^{2}+1}'},
+            },
+            {
+                'expression': '(frac{3x^{2}+x^{2}+3+4}{3x+x+1+2})^{1+1}',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 3x^{2}+x^{2}=4x^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 3+4=7'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{3x^{2}+x^{2}+3+4}{3x+x+1+2}=\\frac{4x^{2}+7}{3x+x+1+2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+x+1+2=4x+1+2'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 4x+1+2=4x+3'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{3x^{2}+x^{2}+3+4}{3x+x+1+2}=\\frac{4x^{2}+7}{4x+3}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(\\frac{3x^{2}+x^{2}+3+4}{3x+x+1+2}\\right)^{1+1}=\\left(\\frac{4x^{2}+7}{4x+3}\\right)^{1+1}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+1=2'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle \\left(\\frac{4x^{2}+7}{4x+3}\\right)^{1+1}=\\left(\\frac{4x^{2}+7}{4x+3}\\right)^{2}'}], 'finalResult': '\\left(\\frac{4x^{2}+7}{4x+3}\\right)^{2}'},
+            },
+            {
+                'expression': 'sqrt{(frac{3x^{2}+x^{2}+3+4}{3x+x+1+2})^{1+1}}',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\sqrt{\\left(\\frac{3x^{2}+x^{2}+3+4}{3x+x+1+2}\\right)^{1+1}}=\\sqrt{\\left(\\frac{4x^{2}+7}{4x+3}\\right)^{2}}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 3x^{2}+x^{2}=4x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 3+4=7'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{3x^{2}+x^{2}+3+4}{3x+x+1+2}=\\frac{4x^{2}+7}{3x+x+1+2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+x+1+2=4x+1+2'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 4x+1+2=4x+3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{3x^{2}+x^{2}+3+4}{3x+x+1+2}=\\frac{4x^{2}+7}{4x+3}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(\\frac{3x^{2}+x^{2}+3+4}{3x+x+1+2}\\right)^{1+1}=\\left(\\frac{4x^{2}+7}{4x+3}\\right)^{1+1}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+1=2'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle \\left(\\frac{4x^{2}+7}{4x+3}\\right)^{1+1}=\\left(\\frac{4x^{2}+7}{4x+3}\\right)^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{\\left(\\frac{3x^{2}+x^{2}+3+4}{3x+x+1+2}\\right)^{1+1}}=\\sqrt{\\left(\\frac{4x^{2}+7}{4x+3}\\right)^{2}}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\sqrt{\\left(\\frac{4x^{2}+7}{4x+3}\\right)^{2}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply radical rule:}\\ \\sqrt[n]{a^n}=a', 'info': '\\displaystyle \\sqrt{\\left(\\frac{4x^{2}+7}{4x+3}\\right)^{2}}=\\left(\\frac{4x^{2}+7}{4x+3}\\right)'}], 'finalResult': '\\frac{4x^{2}+7}{4x+3}'},
+            },
+            {
+                'expression': 'sqrt{(frac{3x^{2}+x^{2}+3+4}{5x+x+1+2})^{1+1}}+sqrt[3]{(frac{15x+3x+2+1}{2x^{2}+3x^{2}+3+5})^{5-2}}+sqrt{(frac{4x+2x+1}{9x-x+5x+2+3})^{2+3}}+sqrt{frac{3x+x+1}{5x-x+3}}',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\sqrt{\\left(\\frac{3x^{2}+x^{2}+3+4}{5x+x+1+2}\\right)^{1+1}}=\\sqrt{\\left(\\frac{4x^{2}+7}{6x+3}\\right)^{2}}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 3x^{2}+x^{2}=4x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 3+4=7'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{3x^{2}+x^{2}+3+4}{5x+x+1+2}=\\frac{4x^{2}+7}{5x+x+1+2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x+x+1+2=6x+1+2'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 6x+1+2=6x+3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{3x^{2}+x^{2}+3+4}{5x+x+1+2}=\\frac{4x^{2}+7}{6x+3}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(\\frac{3x^{2}+x^{2}+3+4}{5x+x+1+2}\\right)^{1+1}=\\left(\\frac{4x^{2}+7}{6x+3}\\right)^{1+1}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+1=2'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle \\left(\\frac{4x^{2}+7}{6x+3}\\right)^{1+1}=\\left(\\frac{4x^{2}+7}{6x+3}\\right)^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{\\left(\\frac{3x^{2}+x^{2}+3+4}{5x+x+1+2}\\right)^{1+1}}=\\sqrt{\\left(\\frac{4x^{2}+7}{6x+3}\\right)^{2}}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\sqrt[3]{\\left(\\frac{15x+3x+2+1}{2x^{2}+3x^{2}+3+5}\\right)^{5-2}}=\\sqrt[3]{\\left(\\frac{18x+3}{5x^{2}+8}\\right)^{3}}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 15x+3x+2+1=18x+2+1'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 18x+2+1=18x+3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{15x+3x+2+1}{2x^{2}+3x^{2}+3+5}=\\frac{18x+3}{2x^{2}+3x^{2}+3+5}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 2x^{2}+3x^{2}=5x^{2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 3+5=8'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{15x+3x+2+1}{2x^{2}+3x^{2}+3+5}=\\frac{18x+3}{5x^{2}+8}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(\\frac{15x+3x+2+1}{2x^{2}+3x^{2}+3+5}\\right)^{5-2}=\\left(\\frac{18x+3}{5x^{2}+8}\\right)^{5-2}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 5-2=3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle \\left(\\frac{18x+3}{5x^{2}+8}\\right)^{5-2}=\\left(\\frac{18x+3}{5x^{2}+8}\\right)^{3}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt[3]{\\left(\\frac{15x+3x+2+1}{2x^{2}+3x^{2}+3+5}\\right)^{5-2}}=\\sqrt[3]{\\left(\\frac{18x+3}{5x^{2}+8}\\right)^{3}}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\sqrt{\\left(\\frac{4x+2x+1}{9x-x+5x+2+3}\\right)^{2+3}}=\\sqrt{\\left(\\frac{6x+1}{13x+5}\\right)^{5}}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 4x+2x+1=6x+1'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{4x+2x+1}{9x-x+5x+2+3}=\\frac{6x+1}{9x-x+5x+2+3}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 9x-x+5x+2+3=13x+2+3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 13x+2+3=13x+5'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{4x+2x+1}{9x-x+5x+2+3}=\\frac{6x+1}{13x+5}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Base}', 'info': '\\displaystyle \\left(\\frac{4x+2x+1}{9x-x+5x+2+3}\\right)^{2+3}=\\left(\\frac{6x+1}{13x+5}\\right)^{2+3}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+3=5'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle \\left(\\frac{6x+1}{13x+5}\\right)^{2+3}=\\left(\\frac{6x+1}{13x+5}\\right)^{5}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{\\left(\\frac{4x+2x+1}{9x-x+5x+2+3}\\right)^{2+3}}=\\sqrt{\\left(\\frac{6x+1}{13x+5}\\right)^{5}}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\sqrt{\\frac{3x+x+1}{5x-x+3}}=\\sqrt{\\frac{4x+1}{4x+3}}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 3x+x+1=4x+1'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{3x+x+1}{5x-x+3}=\\frac{4x+1}{5x-x+3}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 5x-x+3=4x+3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{3x+x+1}{5x-x+3}=\\frac{4x+1}{4x+3}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{\\frac{3x+x+1}{5x-x+3}}=\\sqrt{\\frac{4x+1}{4x+3}}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\sqrt{\\left(\\frac{4x^{2}+7}{6x+3}\\right)^{2}}+\\sqrt[3]{\\left(\\frac{18x+3}{5x^{2}+8}\\right)^{3}}+\\sqrt{\\left(\\frac{6x+1}{13x+5}\\right)^{5}}+\\sqrt{\\frac{4x+1}{4x+3}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply radical rule:}\\ \\sqrt[n]{a^n}=a', 'info': '\\displaystyle \\sqrt{\\left(\\frac{4x^{2}+7}{6x+3}\\right)^{2}}=\\left(\\frac{4x^{2}+7}{6x+3}\\right)'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply radical rule:}\\ \\sqrt[n]{a^n}=a', 'info': '\\displaystyle \\sqrt[3]{\\left(\\frac{18x+3}{5x^{2}+8}\\right)^{3}}=\\left(\\frac{18x+3}{5x^{2}+8}\\right)'}], 'finalResult': '\\frac{4x^{2}+7}{6x+3}+\\frac{18x+3}{5x^{2}+8}+\\sqrt{\\left(\\frac{6x+1}{13x+5}\\right)^{5}}+\\sqrt{\\frac{4x+1}{4x+3}}'},
+            },
             # {
             #     'expression': '',
             #     'keyword': None,
@@ -1455,9 +1580,10 @@ class TestCalc(unittest.TestCase):
             keyword = item['keyword']
             returnedVal = simplifyExpression(expression, keyword=keyword)
             self.assertEqual(expectedVal, returnedVal, f"Failed: {expression}\nLatex: {latexify(expression)}\nKeyword: {keyword}")
+
             # except Exception as error:
             #     print(f"Error: {error}\nOn: {item['expression']}\nLatex: {latexify(item['expression'])}\nKeyword: {item['keyword']}\n")
-
+            #
 
 def test():
     pass
