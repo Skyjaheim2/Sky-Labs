@@ -165,7 +165,7 @@ def solve(requestFromHistory, liveSolve):
     subjectAndTopic = json.loads(request.form.get('subjectAndTopic'))
 
     keyword = None
-    allKeywords = ['simplify', 'combine', 'graph']
+    allKeywords = ['simplify', 'combine', 'graph', 'expand']
 
     inputsItems = userInput.split(' ')
     if inputsItems[0].replace('\\', '') in allKeywords:
