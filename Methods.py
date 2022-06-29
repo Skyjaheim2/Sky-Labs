@@ -549,7 +549,7 @@ class Expression:
                         numOpenSquareParen == numClosedSquareParen):
                     isCompleteTerm = True
                     numOpenCurlyParen, numClosedCurlyParen, numOpenSquareParen, numClosedSquareParen, numOpenParen, numClosedParen = 0, 0, 0, 0, 0, 0
-            if ((self.expression[i] == '+' or self.expression[i] == '-') and isCompleteTerm):
+            if (self.expression[i] == '+' or self.expression[i] == '-') and isCompleteTerm and self.expression[i-1] != '*':
                 if currentTerm != '':
                     self.addTerm(currentTerm)
                     currentTerm = ''
@@ -679,7 +679,7 @@ class Expression:
             leftExponentialProductPattern = re.compile(r'[a-zA-Z]\w\^{')
             leftExponentialProductMatches = leftExponentialProductPattern.findall(Terms[i])
 
-            rightExponentialProductPattern = re.compile(r'}\w')
+            rightExponentialProductPattern = re.compile(r'}[\w]')
             rightExponentialProductMatches = rightExponentialProductPattern.findall(Terms[i])
 
             if len(leftExponentialProductMatches) > 0 or len(rightExponentialProductMatches) > 0:
@@ -694,6 +694,7 @@ class Expression:
                             allParenBalanced = False
                     if allParenBalanced:
                         # CASE: frac{x+1}{y+1}*frac{u+1}{v+1} -> Constant
+                        # print('yes')
                         Terms[i] = Constant(Terms[i])
                     else:
                         Terms[i] = Fraction(Terms[i])
@@ -1252,7 +1253,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
         for term in expression.getTerms():
             if term[0] == '+': term = term[1:]
             if '*' in term and type(term) != Fraction:
-                if '(' in term and 'frac' not in term:
+                if '(' in term:
                     numberOfTermsInParen = 0
                     termsInParen = []
                     termsNotInParen = ''
@@ -1354,34 +1355,49 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                             if steps != []: Steps.append(e_step)
 
                             expression = Expression(expression.replace(str(term), simplification))
-                    if numberOfTermsInParen > 1 and termsNotInParen != '':
-                        cpyTerm = term
-                        termToMultiply = termsNotInParen
-                        if '*' in termToMultiply:
-                            multipliedTerm = getProduct2(termToMultiply.split('*'))
-                            if termToMultiply != multipliedTerm:
-                                mainStep = createMainStep(r'\text{Multiply Terms (left to right)}',
-                                                          latexify(f'{termToMultiply}={multipliedTerm}'))
-                                Steps.append(mainStep)
-                                term = f"{multipliedTerm}{joinList(termsInParen, '')}"
-                                expression = Expression(expression.replace(str(cpyTerm), term))
-                                """ SIMPLIFY multipliedTerm """
-                                steps = []
-                                simplifiedTermToMultiply = str(simplifyImplicitProduct(Expression(multipliedTerm), steps))
-
-                                if simplifiedTermToMultiply != multipliedTerm:
-                                    # CREATE E-STEP
-                                    heading = f'{multipliedTerm}={simplifiedTermToMultiply}'
-                                    e_step = createExpandableStep(latexify(f"{heading}"), steps)
-                                    if steps != []: Steps.append(e_step)
-                                    if simplifiedTermToMultiply == '1': simplifiedTermToMultiply = ''
-                                    # if simplifiedTermToMultiply[0] == '1': simpl
-                                    term = term.replace(multipliedTerm, simplifiedTermToMultiply)
-                                    expression = Expression(expression.replace(multipliedTerm, simplifiedTermToMultiply))
-                                    # COMBINE RESULTS STEP
-                                    mainStep = createMainStep(r'\text{Combine Result}', latexify(f"{cpyTerm}={term}"))
+                    if numberOfTermsInParen > 1:
+                        if termsNotInParen != '':
+                            cpyTerm = term
+                            termToMultiply = termsNotInParen
+                            if '*' in termToMultiply:
+                                multipliedTerm = getProduct2(termToMultiply.split('*'))
+                                if termToMultiply != multipliedTerm:
+                                    mainStep = createMainStep(r'\text{Multiply Terms (left to right)}',
+                                                              latexify(f'{termToMultiply}={multipliedTerm}'))
                                     Steps.append(mainStep)
+                                    if keyword == 'expand':
+                                        delimiter = ''
+                                    else:
+                                        delimiter = ''
+                                    term = f"{multipliedTerm}{joinList(termsInParen, delimiter)}"
+                                    expression = Expression(expression.replace(str(cpyTerm), term))
+                                    """ SIMPLIFY multipliedTerm """
+                                    steps = []
+                                    simplifiedTermToMultiply = str(simplifyImplicitProduct(Expression(multipliedTerm), steps))
 
+                                    if simplifiedTermToMultiply != multipliedTerm:
+                                        # CREATE E-STEP
+                                        heading = f'{multipliedTerm}={simplifiedTermToMultiply}'
+                                        e_step = createExpandableStep(latexify(f"{heading}"), steps)
+                                        if steps != []: Steps.append(e_step)
+                                        if simplifiedTermToMultiply == '1': simplifiedTermToMultiply = ''
+                                        # if simplifiedTermToMultiply[0] == '1': simpl
+                                        term = term.replace(multipliedTerm, simplifiedTermToMultiply)
+                                        expression = Expression(expression.replace(multipliedTerm, simplifiedTermToMultiply))
+                                        # COMBINE RESULTS STEP
+                                        mainStep = createMainStep(r'\text{Combine Result}', latexify(f"{cpyTerm}={term}"))
+                                        Steps.append(mainStep)
+
+                                    if keyword == 'expand':
+                                        termsToBeMultiplied = joinList(termsInParen, '')
+                                        simplifiedTermsToBeMultiplied = distributeTerms(termsToBeMultiplied, Steps)
+                                        expression = Expression(expression.replace(joinList(termsInParen, ''), f"*({str(simplifiedTermsToBeMultiplied)})"))
+                                        return simplifyExpression(expression, keyword, Steps, finalResult=finalResult)
+
+                        else:
+                            termsToBeMultiplied = joinList(termsInParen, '')
+                            simplifiedTermsToBeMultiplied = distributeTerms(termsToBeMultiplied, Steps)
+                            expression = Expression(expression.replace(joinList(termsInParen, '*'), str(simplifiedTermsToBeMultiplied)))
                 else:
                     if term[0] == '-': term = term[1:]
                     termsToBeMultiplied = term.split('*')
@@ -1439,6 +1455,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
 
         expression = simplifyImplicitProduct(expression, Steps)
 
+    expression = Expression(expression.replace('+-', '-').replace('++', '+').replace('--', '+'))
 
     if groupedTerms is None: groupedTerms = expression.getGroupedTerms()
 
@@ -1793,7 +1810,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                     simplificationStepInfo = latexify(f"{fraction}={numerator_simplification}")
                     if simplificationStepInfo[0] == '+' or simplificationStepInfo[0] == '-': simplificationStepInfo = simplificationStepInfo[1:]
                     simplificationStep = createMainStep(r'\text{Simplify Numerator}', simplificationStepInfo)
-                    temp_fraction = fraction
+                    temp_fraction = parseLatex(fraction)
                     if temp_fraction[0] == '+' or temp_fraction[0] == '-': temp_fraction = temp_fraction[1:]
                     if (str(temp_fraction) != str(numerator_simplification)) and fraction.denominator != '1': steps.append(simplificationStep)
 
@@ -1922,12 +1939,13 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
 
 
                     # CREATE AND ADD E-STEP
-                    cmp_fraction = fraction
+                    cmp_fraction = parseLatex(fraction)
                     if cmp_fraction[0] == '+' or cmp_fraction[0] == '-': cmp_fraction = cmp_fraction[1:]
                     heading = latexify(f"{fraction}={final_simplification}")
                     if heading[0] == '+' or heading[0] == '-': heading = heading[1:]
                     e_step = createExpandableStep(heading, steps)
-                    if str(cmp_fraction) != str(final_simplification): Steps.append(e_step)
+                    if str(cmp_fraction) != str(final_simplification):
+                        Steps.append(e_step)
                     # UPDATE FINAL RESULT
                     sign = fraction[0]
                     if (sign != '+' and sign != '-'): sign = '+'
@@ -2530,12 +2548,19 @@ def simplifyImplicitProduct(expression: Expression, Steps) -> Expression:
                                 separatedTerms = separatedTerms[:-4]
                                 termToAdd += 'sqrt'
 
-                        if not beginExpression and (char == '+' or char == '-'):
+                        if not beginExpression and (char == '+' or char == '-') and i != 0:
                             """ leftProductMatches OR rightProductMatches WERE INVALID """
                             separatedTerms = []
                             break
 
-                        termToAdd += char
+                        if char != '-':
+                            termToAdd += char
+                        else:
+                            """ FIXES sqrt{10x-2x} SO THAT sqrt{10x-2x} DOES NOT GET PARSED AS sqrt{10x-12x} """
+                            if not beginExpression:
+                                termToAdd += '-1'
+                            else:
+                                termToAdd += char
 
                         if beginExpression and '{' in termToAdd and parenIsBalanced(termToAdd, 'curly'):
                             termToSimplify = termToAdd
@@ -3018,11 +3043,27 @@ def isDigit2(item: str, considerSpecialNumbers=False):
     if item.isdigit():
         return True
     if 'frac' in item :
-        item = Fraction(item)
-        if parenIsBalanced(item.numerator, 'both') and parenIsBalanced(item.denominator, 'both'):
-            simplifiedNumerator = simplifyExpression(item.numerator)['finalResult']
-            simplifiedDenominator = simplifyExpression(item.denominator)['finalResult']
-            return isDigit2(simplifiedNumerator) and isDigit2(simplifiedDenominator)
+        if '*' in item:
+            allProducts = item.split('*')
+            allParenBalanced = True
+            for term in allProducts:
+                if not parenIsBalanced(term, 'both'):
+                    allParenBalanced = False
+            if allParenBalanced:
+                # CASE: frac{x+1}{y+1}*frac{u+1}{v+1} -> Constant
+                return False
+            else:
+                item = Fraction(item)
+                if parenIsBalanced(item.numerator, 'both') and parenIsBalanced(item.denominator, 'both'):
+                    simplifiedNumerator = simplifyExpression(item.numerator)['finalResult']
+                    simplifiedDenominator = simplifyExpression(item.denominator)['finalResult']
+                    return isDigit2(simplifiedNumerator) and isDigit2(simplifiedDenominator)
+        else:
+            item = Fraction(item)
+            if parenIsBalanced(item.numerator, 'both') and parenIsBalanced(item.denominator, 'both'):
+                simplifiedNumerator = simplifyExpression(item.numerator)['finalResult']
+                simplifiedDenominator = simplifyExpression(item.denominator)['finalResult']
+                return isDigit2(simplifiedNumerator) and isDigit2(simplifiedDenominator)
 
     if '.' in item:
         try:
@@ -3066,7 +3107,11 @@ def getProduct2(terms: list):
 
         rightProductPattern = re.compile(r'}\w')
         rightProductMatches = rightProductPattern.findall(term)
-        if len(leftProductMatches) > 0 or len(rightProductMatches):
+
+        nonExponentialProductPattern = re.compile(r'[a-zA-Z][a-zA-Z]')
+        nonExponentialProductMatches = nonExponentialProductPattern.findall(term)
+
+        if len(leftProductMatches) > 0 or len(rightProductMatches) or (len(nonExponentialProductMatches) > 0 and '^' not in term and 'sqrt' not in term):
             separatedTerms = []
             termToAdd = ''
             i = 0
@@ -3120,15 +3165,9 @@ def getProduct2(terms: list):
         if Constant(term).is_digit:  C = term
         else:
             C = Exponential(term, CETAEIOCF=True).coefficient
-            # C = ''
-            # for char in term:
-            #     if not Constant(char).is_digit and char != '.':
-            #         break
-            #     else:
-            #         if not Constant(char).is_digit:
-            #             C += char
-            # if C == '': C = '1'
-
+            if term[0] == '-' and C[0] != '-':
+                """ FIXES term = -x """
+                C = f'-{C}'
         Coefficients.append(C)
 
     seenTerms = {}
@@ -3177,6 +3216,72 @@ def getProduct2(terms: list):
 
 
     return finalProduct
+def distributeTerms(expression: str, Steps: list) -> Expression:
+    if ')(' not in expression:
+        return Expression(expression)
+
+    term1, term2, finalExpression = '', '', ''
+
+    """ GET term1 """
+    i = 0
+    while i < len(expression):
+        term1 += expression[i]
+        if parenIsBalanced(term1, 'both'):
+            break
+        i += 1
+    i += 1
+    term1 = Expression(term1[1:-1])
+    """ GET term2 """
+    while i < len(expression):
+        term2 += expression[i]
+        if parenIsBalanced(term2, 'both'):
+            break
+        i += 1
+    term2 = Expression(term2[1:-1])
+
+    for i in range(len(term1.getTerms())):
+        T1 = term1.getTerms()[i]
+        if T1[0] == '+': T1 = T1[1:]
+        for j in range(len(term2.getTerms())):
+            T2 = term2.getTerms()[j]
+            if T2[0] == '+': T2 = T2[1:]
+            finalExpression += f"{T1}*{T2}+"
+
+    """ REMOVE THE FIRST TWO TERMS THAT WERE JUST MULTIPLIED. (+4 FOR THE FOUR PARENTHESES REMOVED) """
+    expression = expression[len(str(term1)) + len(str(term2)) + 4:]
+    """ SIMPLIFY finalExpression """
+    finalExpression = finalExpression[:-1]
+    finalExpressionSimplification = simplifyExpression(Expression(finalExpression))
+    simplifiedFinalExpression = parseLatex(finalExpressionSimplification['finalResult'])
+    combineStep = createMainStep(r'\text{Combine Results}', latexify(f"{finalExpression}={simplifiedFinalExpression}"))
+    finalExpressionSimplification['steps'].append(combineStep)
+    """ CREATE AND ADD E-STEP """
+    heading = latexify(f'({term1})({term2})={simplifiedFinalExpression}')
+    e_steps = []
+    if len(term1) == 2 and len(term2) == 2:
+        foilStep = createMainStep(r'\text{Apply FOIL Method}: \\ (a+b)(c+d)=ac+ad+bc+bd',
+                                  latexify(f"({term1})({term2})={finalExpression}"))
+    else:
+        foilStep = createMainStep(r'\text{Distribute Parentheses}', latexify(f"({term1})({term2})={finalExpression}"))
+
+    # ADD FOIL STEP
+    e_steps.append(foilStep)
+    # CREATE AND ADD SIMPLIFICATION E-STEP
+    # finalExpressionSimplificationEStepHeading = latexify(f'{finalExpression}={simplifiedFinalExpression}')
+    # finalExpressionSimplificationESteps = createExpandableStep(finalExpressionSimplificationEStepHeading, finalExpressionSimplification['steps'])
+    # e_steps.append(finalExpressionSimplificationESteps)
+    for step in finalExpressionSimplification['steps']:
+        e_steps.append(step)
+
+    e_step = createExpandableStep(heading, e_steps)
+
+
+    Steps.append(e_step)
+
+    if expression != '':
+        return distributeTerms(f"({simplifiedFinalExpression}){expression}", Steps)
+    else:
+        return distributeTerms(simplifiedFinalExpression, Steps)
 
 def listIsInt(X: list):
     """ RETURNS THE TYPE OF THE ELEMENTS IN A LIST """
@@ -3334,7 +3439,9 @@ def main():
     # E = Expression('1*1*(x+3)*(x+2)*(x+5)*1*
     # E = Expression('frac{x+y}{a+b}*frac{u+v}{s+t}')
     # E = Expression('2x*3x*sqrt{5x^{2}+3x^{2}+2+3}*5u^{2}*u')
-    E = Expression('2x*3x*5u^{2}*u*sqrt{5x^{2}+3x^{2}+2+3}*3t*t')
+
+    # E = Expression('(frac{x+2}{x+3}+frac{x+4}{x+5})*(frac{x+6}{x+7}+frac{x+8}{x+9})*(frac{x+2}{x+3}+frac{x+4}{x+5})')
+    E = Expression('frac{x^{2}+2x+2}{x^{2}+3x+5}*frac{x+1}{x+2}')
     print(simplifyExpression(E, keyword='simplify'))
 
 
