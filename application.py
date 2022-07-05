@@ -174,6 +174,9 @@ def solve(requestFromHistory, liveSolve):
         userInput = ''
         for item in inputsItems[1:]:
             userInput += item
+            
+    userInput = userInput.replace('\\', '')
+
 
     # ADD HISTORY
     if 'user_id' in session and requestFromHistory == False:

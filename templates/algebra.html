@@ -145,8 +145,6 @@
                     enteredMath = enteredMath.replace('expand', '\\text{expand}');
                     enteredMath = enteredMath.replace('graph', '\\text{graph}')
 
-                    console.log(enteredMath)
-
                     const suggestionsRequest = new XMLHttpRequest();
                     suggestionsRequest.open('POST', `/getSuggestions`);
                     suggestionsRequest.onload = () => {
@@ -172,7 +170,6 @@
                                     suggestionItem = suggestionItem.parentElement;
                                 }
                                 let suggestionContent = suggestionItem.dataset.suggestionContent;
-                                // console.log(exampleContent);
                                 if (suggestionContent.includes('\\text')) {
                                     let keyword = suggestionContent.split(' ')[0].replaceAll('\\', '').replace('{', '').replace('}', '').replace('text', '')
                                     let content = suggestionContent.split(' ')[1]
