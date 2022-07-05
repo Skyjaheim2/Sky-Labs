@@ -320,11 +320,13 @@
 								
 							})
 						})
-
+						// Add margin to last history date
+						const lastExpandableDate = document.querySelectorAll('.expandable-date-container')[numHistory-1];
+						lastExpandableDate.style.marginBottom = '25px';
 						// Open the most recent history item after half a second
 						setTimeout(() => {
-							let historyContainer = document.querySelectorAll('.history-container')[numHistory-1];
-							HistoryUI.expandHistoryContainer(historyContainer);
+							let lastHistoryContainer = document.querySelectorAll('.history-container')[numHistory-1];
+							HistoryUI.expandHistoryContainer(lastHistoryContainer);
 						}, 500)
 							
 					}

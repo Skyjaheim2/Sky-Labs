@@ -15,6 +15,7 @@ from models import *
 from datetime import date, timedelta, tzinfo, datetime
 from pytz import timezone
 from math import inf
+from random import randint
 
 # Check for environment variables
 load_dotenv()
@@ -37,7 +38,7 @@ db.init_app(app)
 # ENABLE SESSION
 Session(app)
 
-from Methods import parseLatex, latexify, simplifyExpression, Expression, reverseList
+from Methods import parseLatex, latexify, simplifyExpression, Expression, reverseList, Fraction, isMatch
 from methodsDiscreteMath import solveDiscreteMath
 from calculusMethods import solveCalculus
 
@@ -232,6 +233,57 @@ def solve(requestFromHistory, liveSolve):
         Solution = simplifyExpression(userInput)
         return jsonify(Solution)
 
+@app.route("/getSuggestions", methods=["POST"])
+def getSuggestions():
+    enteredMath = request.form.get('enteredMath')
+    allExamples = json.loads(request.form.get('allExamples'))
+
+    json.loads(checkIfUserIsStillLoggedIn())
+
+    allSuggestions = []
+    # ADD SUGGESTIONS FROM EXAMPLES
+    for example in allExamples:
+        # fractionMatch = False
+        # if Expression(enteredMath).isSingleExpression() and Expression(example).isSingleExpression():
+        #     if enteredMath[1:5] == 'frac' and example[1:5] == 'frac':
+        #         enteredMath, checkExp = Fraction(enteredMath), Fraction(example)
+        #         if (enteredMath.numerator in checkExp.numerator) or (enteredMath.denominator in checkExp.denominator):
+        #             fractionMatch = True
+        #
+        #     enteredMath = str(enteredMath)
+        # if enteredMath in example or fractionMatch:
+        #     allSuggestions.append(example)
+        try:
+            if isMatch(enteredMath, example):
+                allSuggestions.append(example)
+        except:
+            pass
+
+    # ADD SUGGESTIONS FROM HISTORY
+    if json.loads(checkIfUserIsStillLoggedIn()):
+        allHistory = json.loads(getUserHistory())
+        for date in allHistory:
+            for history in allHistory[date]:
+                if history['keyword'] != None:
+                    expToCheck = fr"\text{'{'}{history['keyword']}{'}'}\ {history['expression']}"
+                else:
+                    expToCheck = history['expression']
+                try:
+                    if isMatch(enteredMath, expToCheck):
+                        allSuggestions.append(expToCheck)
+                except:
+                    pass
+
+    numSuggestionsToReturn = 5
+    if len(allSuggestions) > numSuggestionsToReturn:
+        n = len(allSuggestions)
+
+        randomSI = randint(0, n - numSuggestionsToReturn)
+        randomEI = randomSI + numSuggestionsToReturn
+
+        allSuggestions = allSuggestions[randomSI: randomEI]
+
+    return jsonify(list(set(allSuggestions)))
 
 @app.route("/test")
 def test():

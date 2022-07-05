@@ -1008,14 +1008,20 @@ class Fraction:
         denominator_pattern = re.compile(r'}{.+}')
         denominator_matches = denominator_pattern.findall(expression)
 
-        if len(numerator_matches) == 0 or len(denominator_matches) == 0:
+        if len(numerator_matches) != 0:
+            self.numerator = numerator_matches[0][5:-2]
+        else:
+            self.numerator = None
+        if len(denominator_matches) != 0:
+            self.denominator = denominator_matches[0][2:-1]
+        else:
+            self.denominator = None
+
+
+        if len(numerator_matches) == 0 and len(denominator_matches) == 0:
             self.numerator = expression
             if self.numerator[0] == '+': self.numerator = self.numerator[1:]
             self.denominator = '1'
-            # raise ExpressionFormatError(expression)
-        else:
-            self.numerator = numerator_matches[0][5:-2]
-            self.denominator = denominator_matches[0][2:-1]
 
     def reduceFraction(self):
         numerator = castToFloatOrInt(self.numerator)
@@ -3326,6 +3332,32 @@ def multiplyTerms(terms: list):
 
     product = product.replace('^{1}', '')
     return product
+
+def isMatch(exp1, exp2):
+    """ CHECK IF exp1 is CONTAINED IN exp2 """
+    exp1, exp2 = parseLatex(exp1), parseLatex(exp2)
+    fractionMatch = False
+    radicalMatch = False
+    if Expression(exp1).isSingleExpression() and Expression(exp2).isSingleExpression():
+        if exp1[0:4] == 'frac' and exp2[0:4] == 'frac':
+            exp1, exp2 = Fraction(exp1), Fraction(exp2)
+            if (exp1.numerator in exp2.numerator) or (exp1.denominator in exp2.denominator):
+                fractionMatch = True
+            # if isMatch(exp1.numerator, exp2.numerator) or isMatch(exp1.denominator, exp2.denominator) or isMatch(exp1.denominator, exp2.denominator):
+            #     fractionMatch = True
+        if exp1[0:4] == 'sqrt' and exp2[0:4] == 'sqrt':
+            exp1, exp2 = Radical(exp1), Radical(exp2)
+
+            if isMatch(str(exp1.getRadicand()), str(exp2.getRadicand())):
+                radicalMatch = True
+
+
+        exp1 = str(exp1)
+        exp2 = str(exp2)
+    if exp1 in exp2 or fractionMatch or radicalMatch:
+        return True
+    else:
+        return False
 
 def indexOf(iterable, searchFor):
     for i, item in enumerate(iterable):

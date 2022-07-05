@@ -8,6 +8,9 @@
 <style>
     #solveBtn {
         margin-bottom: 10px;
+        margin-left: 10px;
+        height: 40px;
+        border-radius: 10px;
     }
     #userInput {
         padding: 5px;
@@ -29,7 +32,6 @@
         padding: 20px;
         overflow-y: hidden;
         overflow-x: auto;
-
     }
 </style>
 {% endblock %}
@@ -38,8 +40,23 @@
 {% block subject_features %}
 <div>$ $</div>
 <label class="inputLabel" for="userInput">Enter Algebra Problem:</label>
-<p><span id="userInput"></span></p>
-<button id="solveBtn" type="button" class="btn btn-primary">Solve</button>
+<div class="sf-container">
+    <p><span id="userInput"></span></p>
+    <button id="solveBtn" type="button" class="btn btn-primary">Solve</button>
+</div>
+
+<div class="suggestions-container">
+<!--    <div class="suggestion-item">$ x^{2}+5x^{2}+3x+2+4 $</div>-->
+<!--    <hr>-->
+<!--    <div class="suggestion-item">$ 9x+2x+10+2 $</div>-->
+<!--    <hr>-->
+<!--    <div class="suggestion-item">$ \displaystyle \ \text{combine} \ \frac{1}{1+x}+\frac{3}{1+x} $</div>-->
+<!--    <hr>-->
+
+
+</div>
+
+
 <div class="form-check">
     <input class="form-check-input" type="checkbox" value="" id="liveSolveRadioBtn">
     <label class="form-check-label inputLabel" for="liveSolveRadioBtn">
@@ -102,15 +119,96 @@
         /* ON-KEY UP EVENTS */
 
         // UserInput
-        document.querySelector('#userInput').addEventListener('keyup', function() {
+        document.querySelector('#userInput').addEventListener('keyup', function(e) {
             let enteredMath = answerMathField.latex(); // Get entered math in LaTeX format
-            let liveSolveRadioBtn = document.querySelector('#liveSolveRadioBtn')
-            let liveSolveSolutionsContainer = document.querySelector('#liveSolveSolutionContainer')
+            let liveSolveRadioBtn = document.querySelector('#liveSolveRadioBtn');
+            let liveSolveSolutionsContainer = document.querySelector('#liveSolveSolutionContainer');
+            const suggestionContainer = document.querySelector('.suggestions-container');
 
-            let selectedTopic = LayoutUI.getSelectedTopic()
-            let subjectAndTopic = {'subject': 'algebra', 'selectedTopic': selectedTopic}
+            let selectedTopic = LayoutUI.getSelectedTopic();
+            let subjectAndTopic = {'subject': 'algebra', 'selectedTopic': selectedTopic};
+
+            // Suggestions
+            if (!([37, 38, 39, 40].includes(e.keyCode)) && !(liveSolveRadioBtn.checked)) {
+                // DO NOT CHANGE SUGGESTIONS IF ARROW KEYS ARE PRESSED
+                if (!(enteredMath === '')) {
+                    suggestionContainer.style.display = 'block'
+
+                    const allTopics = SubjectTabsUI.getSubjectTopics()['algebra'];
+                    const allExamples = [];
+                    allTopics.forEach((topic) => {
+                        const examples = ApplicationContent.getExamples('Algebra', replaceAll(topic, '-', ' '), null, true);
+                        allExamples.push(...examples);
+                    })
+                    enteredMath = enteredMath.replace('combine', '\\text{combine}');
+                    enteredMath = enteredMath.replace('simplify', '\\text{simplify}');
+                    enteredMath = enteredMath.replace('expand', '\\text{expand}');
+                    enteredMath = enteredMath.replace('graph', '\\text{graph}')
+
+                    console.log(enteredMath)
+
+                    const suggestionsRequest = new XMLHttpRequest();
+                    suggestionsRequest.open('POST', `/getSuggestions`);
+                    suggestionsRequest.onload = () => {
+                        const allSuggestions = JSON.parse(suggestionsRequest.responseText);
+
+                        // ADD SUGGESTIONS TO DOM
+                        const suggestionsContainer = document.querySelector('.suggestions-container');
+                        suggestionsContainer.innerHTML = '';
+                        allSuggestions.forEach((suggestion) => {
+                            const suggestionItem = document.createElement('div');
+                            suggestionItem.className = 'suggestion-item';
+                            suggestionItem.dataset.suggestionContent = suggestion;
+                            StepsUI.addLatexToElement(suggestionItem, `\\displaystyle\\ ${suggestion}`);
+                            suggestionsContainer.appendChild(suggestionItem)
+                            suggestionsContainer.innerHTML += `<hr>`
+                        })
+
+                        // ADD EVENT LISTENER
+                        document.querySelectorAll('.suggestion-item').forEach((suggestion) => {
+                            suggestion.addEventListener('click', (e) => {
+                                let suggestionItem = e.target;
+                                while (suggestionItem.className !== 'suggestion-item') {
+                                    suggestionItem = suggestionItem.parentElement;
+                                }
+                                let suggestionContent = suggestionItem.dataset.suggestionContent;
+                                // console.log(exampleContent);
+                                if (suggestionContent.includes('\\text')) {
+                                    let keyword = suggestionContent.split(' ')[0].replaceAll('\\', '').replace('{', '').replace('}', '').replace('text', '')
+                                    let content = suggestionContent.split(' ')[1]
+                                    suggestionContent = `${keyword}\\ ${content}`
+                                }
+                                // ADD STEPS TO DOM
+                                const SU = new StepsUI();
+                                SU.addStepsToDOM(suggestionContent, false, false, true);
+                                // ADD EXPRESSION TO USER INPUT
+                                answerMathField.latex(suggestionContent)
+                                // REMOVE SUGGESTIONS
+                                suggestionContainer.style.display = 'none'
+                                // SCROLL TO TOP
+                                window.scroll({
+                                    top: 500,
+                                    left: 0,
+                                    behavior: 'smooth'
+                                });
+
+                            })
+                        })
+
+                    }
+                    const data = new FormData;
+                    data.set('enteredMath', enteredMath);
+                    data.set('allExamples', JSON.stringify(allExamples));
+                    suggestionsRequest.send(data);
+                }
+                else {
+                    suggestionContainer.style.display = 'none'
+                }
 
 
+            }
+
+            // Live Solve
             if (liveSolveRadioBtn.checked === true && enteredMath !== '') {
                 const request = new XMLHttpRequest()
                 request.open('POST', '/solve/false/true')
@@ -141,6 +239,12 @@
                 this.style.borderColor = ''
             }
         })
+        document.querySelector('#userInput').addEventListener('focusout', function() {
+            setTimeout(() => {
+                document.querySelector('.suggestions-container').style.display = 'none'
+            }, 300)
+
+        })
 
         /* ON-CLICK EVENTS */
 
@@ -155,12 +259,14 @@
         document.querySelector('#sidebar').addEventListener('click', (e) => {
 
             if (e.target.className === 'topic-extension-item') {
-                let mainTopic = e.target.parentElement.parentElement.parentElement.previousElementSibling.textContent
-                mainTopic = replaceAll(replaceAll(mainTopic.trim(), '\\n', ''), '+ ', '').trim()
-                let topicExtension = e.target.textContent
+
+                // let mainTopic = e.target.parentElement.parentElement.parentElement.previousElementSibling.textContent
+                let mainTopic = e.target.parentElement.parentElement.parentElement.id;
+                mainTopic = replaceAll(replaceAll(mainTopic.trim(), '\\n', ''), '+ ', '').trim();
+                let topicExtension = e.target.textContent;
 
                 switch (mainTopic) {
-                    case 'Basic Operations':
+                    case 'Basic-Operations':
                         switch (topicExtension) {
 
                         }
@@ -193,7 +299,7 @@
                                 answerMathField.latex('\\sum_{i=1}^{}\\sum_{j=1}^{}\\sum_{k=1}^{}\\left( \\right)')
                         }
                         break
-                    case 'Pi Product Notation':
+                    case 'Pi-Product-Notation':
                         switch (topicExtension) {
                             case 'Single Product':
                                 answerMathField.latex('\\prod_{i=1}^{}\\left( \\right)')
@@ -228,7 +334,7 @@
                                 break
                         }
                         break
-                    case 'Rational Expressions':
+                    case 'Rational-Expressions':
                         switch (topicExtension) {
                             case 'Add':
                                 answerMathField.latex('\\frac{}{}+\\frac{}{}')

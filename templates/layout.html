@@ -132,6 +132,25 @@
         width: 805px;
 
     }
+    .sf-container {
+        display: flex;
+    }
+    .suggestions-container {
+        display: none;
+        position: absolute;
+        background: white;
+        box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+        padding: 10px;
+        height: auto;
+        width: 800px;
+        z-index: 1000;
+    }
+    .suggestion-item {
+        cursor: pointer;
+        height: auto;
+        font-size: 17px;
+    }
     /* STEPS */
     .main-container {
         /*margin-left: 20%;*/
@@ -705,12 +724,12 @@
             // Load Default Subject Tab
             let defaultSubjectTabBtn = document.querySelector(`#${defaultSubject}SubjectTabBtn`)
             let subjectTopicsContainer = document.querySelector('.subject-topics')
-            let subjectOptions = subjectTabsUI.getSubjectOptions()
+            let subjectOptions = SubjectTabsUI.getSubjectTopics()
 
             subjectOptions[defaultSubject].forEach((topic) => {
                 subjectTopicsContainer.innerHTML += `<button class="btn btn-light subject-option-btn">${topic}</button>`
             })
-            subjectTabsUI.subjectTabBtnSelected(defaultSubjectTabBtn)
+            SubjectTabsUI.subjectTabBtnSelected(defaultSubjectTabBtn)
         }
         static loadSymbolsContainer() {
 
@@ -1004,7 +1023,7 @@
 
         
     }
-    class subjectTabsUI {
+    class SubjectTabsUI {
         static subjectTabBtnSelected(btnObj) {
             let subjectTabHeading = document.querySelector('#selectedSubjectTabHeading')
             let allBtnObjects = document.querySelectorAll('.subject-tab-btn')
@@ -1100,7 +1119,7 @@
             })
             return htmlToReturn
         }
-        static getSubjectOptions() {
+        static getSubjectTopics() {
             return {
                 'algebra': ['Basic-Operations', 'Equations', 'Summation', 'Pi-Product-Notation', 'Polynomials', 'Rational-Expressions'],
                 'discreteMath': ['Propositional-Logic', 'Set-Theory', 'Induction', 'Number-Theory', 'Relations'],
@@ -1154,7 +1173,7 @@
     }
 
     class ApplicationContent {
-        static getExamples(subject, mainTopic, extensionTopic) {
+        static getExamples(subject, mainTopic, extensionTopic, getAll=false) {
             let examples = [];
             const allExtensionTopics = this.getTopicsExtension(subject, mainTopic.replaceAll(' ', '-'))
             if (extensionTopic === null) {
@@ -1163,10 +1182,18 @@
                 allExtensionTopics.forEach((e_topic) => {
                     const e_topic_examples = this.getExamples(subject, mainTopic, e_topic);
                     if (e_topic_examples.length > 0) {
-                        const randomExampleIndex = getRandomInt(e_topic_examples.length-1);
-                        examples.push(e_topic_examples[randomExampleIndex]);
-                        // if (randomExampleIndex !== 0)
-                        examples.push(e_topic_examples[randomExampleIndex+1]);
+                        if (getAll) {
+                            e_topic_examples.forEach((example) => {
+                                examples.push(example)
+                            })
+
+                        }
+                        else {
+                            const randomExampleIndex = getRandomInt(e_topic_examples.length - 1);
+                            examples.push(e_topic_examples[randomExampleIndex]);
+                            examples.push(e_topic_examples[randomExampleIndex + 1]);
+                        }
+
                     }
                 })
                 return examples
@@ -1184,7 +1211,7 @@
                                     examples = ['24-56+19-20', '10-47+90-12+50', '-12-56-24-29', '30-102+15-10']
                                     break
                                 case 'Multiplication':
-                                    examples = ['23\\cdot 19\\cdot 3', '32\\cdot 10+15\\cdot 3', '50\\cdot 19', '4\\cdot 2\\cdot 19\\cdot 10']
+                                    examples = ['23\\cdot19\\cdot 3', '32\\cdot10+15\\cdot3', '50\\cdot19', '4\\cdot 2\\cdot 19\\cdot 10']
                                     break
                                 case 'Division':
                                     examples = ['\\frac{23+13}{19}', '\\frac{19+21+10-13}{12+20}', '\\frac{50}{51+23}+\\frac{13+25}{12+18}',
@@ -1198,14 +1225,14 @@
                                     examples = ['5x+3=3', '12x+25x-34=5x+10', '50t-25t+20t=43+10t-1', '43t=10t-14'];
                                     break
                                 case 'Quadratic':
-                                    examples = ['x^{2}+3x=0', '3x^{2}+5x+19=10', 't^{2}+4t+4=0', 't^{2}+6t+5=0'];
+                                    examples = ['x^{2}+3x=0', '3x^{2}+5x+19=10', 't^2+4t+4=0', 't^2+6t+5=0'];
                                     break
                                 case 'Logarithmic':
-                                    examples = ['\\ln(5x+10)=14', '\\ln(25x^{2}+14x+10)=\\ln(10x^{2}+20x)', '\\ln(5x+10)+\\ln(13x+14)=\\ln(25x-10)',
-                                                '\\ln\\left((5x^2+13)^{2}\\right)=25', '\\ln(19x^{2}-10x+5)-\\ln(5x+19) = \\ln(20x+14)'];
+                                    examples = ['\\ln\\left(5x+10\\right)=14', '\\ln\\left(25x^2+14x+10\\right)=\\ln\\left(10x^2+20x\\right)', '\\ln\\left(5x+10\\right)+\\ln\\left(13x+14\\right)=\\ln\\left(25x-10\\right)',
+                                                '\\ln\\left((5x^2+13)^{2}\\right)=25', '\\ln\\left(19x^2-10x+5\\right)-\\ln\\left(5x+19\\right) = \\ln\\left(20x+14\\right)'];
                                     break
                                 case 'Exponential':
-                                    examples = ['e^{3x+10}=19', '2e^{5x^{2}+13x+9}=25', '2^{\\sqrt{5x+10}}=26', 'e^{19x^{2}+15x+19}=e^{23x+10}'];
+                                    examples = ['e^{3x+10}=19', '2e^{5x^2+13x+9}=25', '2^{\\sqrt{5x+10}}=26', 'e^{19x^2+15x+19}=e^{23x+10}'];
                                     break
                             }
                             break
@@ -1231,31 +1258,30 @@
                                     break
                             }
                             break
-
                         case 'Polynomials':
                             switch (extensionTopic) {
                                 case 'Properties':
-                                    examples = ['\\text{properties}\\\ f(x)=3x^{2}+2x^{2}+x+5', '\\text{properties}\\\ f(x)=x^{2}+3x+2',
-                                                '\\text{properties}\\\ 5x^{4}+3x^{2}+9x-1', '\\text{properties}\\\ 6t^{2}+3t+9']
+                                    examples = ['\\text{properties}\\\ f(x)=3x^2+2x^2+x+5', '\\text{properties}\\\ f(x)=x^2+3x+2',
+                                                '\\text{properties}\\\ 5x^4+3x^2+9x-1', '\\text{properties}\\\ 6t^2+3t+9']
                                     break
                                 case 'Add':
-                                    examples = ['(3x^{2}+5x+9)+(9x^{2}+7x-5)', '(5x^{3}+9x^{2}+3x)+(7x^{2}+3x+9)', '(4x^{4}+3x^{2}+9)+(9x^{4}+2x-1)',
-                                                '(10x^{2}+13x+9)+(15x+23)']
+                                    examples = ['\\left(3x^2+5x+9\\right)+\\left(9x^2+7x-5\\right)', '\\left(5x^3+9x^2+3x\\right)+\\left(7x^2+3x+9\\right)', '\\left(4x^4+3x^2+9\\right)+\\left(9x^4+2x-1\\right)',
+                                                '\\left(10x^2+13x+9\\right)+\\left(15x+23\\right)']
                                     break
                                 case 'Subtract':
-                                    examples = ['(12x^{2}+13x+9)-(5x^{2}+9x-4)', '(14x^{3}+3x^{2}+4)-(7x^{2}+34x-10)',
-                                                '(19x^{2}+13x-5)-(10x+9)', '(23x^{2}+19x+4)-(10x^{2}-19x-5)']
+                                    examples = ['\\left(12x^2+13x+9\\right)-\\left(5x^2+9x-4\\right)', '\\left(14x^3+3x^2+4\\right)-\\left(7x^2+34x-10\\right)',
+                                                '\\left(19x^2+13x-5\\right)-\\left(10x+9\\right)', '\\left(23x^2+19x+4\\right)-\\left(10x^2-19x-5\\right)']
                                     break
                                 case 'Multiply':
-                                    examples = ['(4x+9)(3x-4)', '(x^{2}+4)(9x^{2}-6)', '(x^{2}-6x-9)\\cdot(15x^{2}+23x-4)']
+                                    examples = ['\\left(4x+9\\right)\\left(3x-4\\right)', '\\left(x^2+4\\right)\\left(9x^2-6\\right)', '\\left(x^2-6x-9\\right)\\cdot\\left(15x^2+23x-4\\right)']
                                     break
                                 case 'Divide':
-                                    examples = ['\\text{long division}\\\ \\frac{x^{2}+3x+2}{4x-1}', '\\text{long division}\\\ \\frac{5x-9}{x^{2}+3x-4}',
-                                                '\\text{long division}\\\ \\frac{x-1}{4x^{2}+3x-9}', '\\text{long division}\\\ \\frac{3x-1}{x^{2}-3x-4}']
+                                    examples = ['\\text{long division}\\\ \\frac{x^2+3x+2}{4x-1}', '\\text{long division}\\\ \\frac{5x-9}{x^2+3x-4}',
+                                                '\\text{long division}\\\ \\frac{x-1}{4x^2+3x-9}', '\\text{long division}\\\ \\frac{3x-1}{x^2-3x-4}']
                                     break
                                 case 'Factor':
-                                    examples = ['\\text{factor}\\\ x^{2}-4', '\\text{factor}\\\ x^{2}+3x+2', '\\text{factor}\\\ x^{4}-1',
-                                                '\\text{factor}\\\ x^{4}+3x^{2}']
+                                    examples = ['\\text{factor}\\\ x^2-4', '\\text{factor}\\\ x^2+3x+2', '\\text{factor}\\\ x^4-1',
+                                                '\\text{factor}\\\ x^4+3x^2']
                                     break
                             }
 
@@ -1264,20 +1290,20 @@
                             switch (extensionTopic) {
                                 case 'Add':
                                     examples = ['\\text{combine}\\ \\frac{5x+2x+3+6}{1+x+3x+9x}+\\frac{15y+13-7+21}{1+2y}',
-                                                '\\text{combine}\\ \\frac{5x^{3}-2x^{3}+\\sqrt{13x+4x+1}}{1+3x^2+5x^2-6x^2}+\\frac{5x-2x}{1+x^{2}}'];
+                                                '\\text{combine}\\ \\frac{5x^3-2x^3+\\sqrt{13x+4x+1}}{1+3x^2+5x^2-6x^2}+\\frac{5x-2x}{1+x^2}'];
                                     break
                                 case 'Subtract':
-                                    examples = ['\\text{combine}\\ \\frac{15x^{2}+(5e^{x}-3e^{x}+(7x-2x+2+3))}{5+\\sqrt{9x+(3x+x)}-4}-\\frac{17x^{2}+2x^{2}+3}{1+x}',
-                                                '\\text{combine}\\ \\frac{3x^{2}+5x+2x+1}{x^{3}+9x^{3}+4x-x+1}-\\frac{5x-x+1}{x+9}'];
+                                    examples = ['\\text{combine}\\ \\frac{15x^2+(5e^x-3e^x+(7x-2x+2+3))}{5+\\sqrt{9x+(3x+x)}-4}-\\frac{17x^2+2x^2+3}{1+x}',
+                                                '\\text{combine}\\ \\frac{3x^2+5x+2x+1}{x^3+9x^3+4x-x+1}-\\frac{5x-x+1}{x+9}'];
                                     break
                                 case 'Multiply':
-                                    examples = ['\\frac{3x}{x+1}\\cdot\\frac{x}{5x+3}', '\\frac{2x}{7x^{2}+9}', '\\frac{x+1}{x^{2}+3x-4}\\cdot\\frac{3x+2}{x^{2}-5x+9}'];
+                                    examples = ['\\frac{3x}{x+1}\\cdot\\frac{x}{5x+3}', '\\frac{2x}{7x^2+9}', '\\frac{x+1}{x^2+3x-4}\\cdot\\frac{3x+2}{x^2-5x+9}'];
                                     break
                                 case 'Divide':
-                                    examples = ['\\frac{\\frac{3x}{7}}{\\frac{9x}{2}}', '\\frac{\\frac{3x+7}{2}}{4x}', '\\frac{\\frac{5x+3x+4}{3x-4x+9}}{\\frac{9x^{2}+4x^{2}+1}{8x+18x-4+5}}'];
+                                    examples = ['\\frac{\\frac{3x}{7}}{\\frac{9x}{2}}', '\\frac{\\frac{3x+7}{2}}{4x}', '\\frac{\\frac{5x+3x+4}{3x-4x+9}}{\\frac{9x^2+4x^{2}+1}{8x+18x-4+5}}'];
                                     break
                                 case 'Reduce':
-                                    examples = ['\\frac{x-3}{5x-15}', '\\frac{x^{2}+4x-45}{x^{2}+x-30}', '\\frac{\\left(z-8\\right)^2}{z^{2}-64}']
+                                    examples = ['\\frac{x-3}{5x-15}', '\\frac{x^2+4x-45}{x^2+x-30}', '\\frac{\\left(z-8\\right)^2}{z^2-64}']
                             }
                             break
                     }
@@ -1444,6 +1470,21 @@
         LayoutUI.loadSymbolsContainer();
         // Animations.animateShowAllSteps();
 
+        /* KEYUP EVENTS */
+        document.querySelector('#userInput').addEventListener('keyup', function () {
+            let enteredMath = answerMathField.latex(); // Get entered math in LaTeX format
+            let liveSolveRadioBtn = document.querySelector('#liveSolveRadioBtn')
+            let liveSolveSolutionsContainer = document.querySelector('#liveSolveSolutionContainer')
+
+            let selectedTopic = LayoutUI.getSelectedTopic()
+            let subjectAndTopic = {'subject': 'algebra', 'selectedTopic': selectedTopic}
+
+
+
+            // console.log(enteredMath)
+
+        })
+
 
     })
 
@@ -1529,28 +1570,28 @@
                 'probability': '535px',
                 'physics': '625px',
             }
-            let subjectOptions = subjectTabsUI.getSubjectOptions()
+            let subjectOptions = SubjectTabsUI.getSubjectTopics()
 
             switch (btnObj.textContent) {
                 case "Algebra":
                     subjectOptionsDiv.style.left = btnSubjectPos['algebra']
-                    subjectTabsUI.populateSubjectOptions(subjectOptions['algebra'])
+                    SubjectTabsUI.populateSubjectOptions(subjectOptions['algebra'])
                     break
                 case "Discrete Math":
                     subjectOptionsDiv.style.left = btnSubjectPos['discreteMath']
-                    subjectTabsUI.populateSubjectOptions(subjectOptions['discreteMath'])
+                    SubjectTabsUI.populateSubjectOptions(subjectOptions['discreteMath'])
                     break
                 case "Calculus":
                     subjectOptionsDiv.style.left = btnSubjectPos['calculus']
-                    subjectTabsUI.populateSubjectOptions(subjectOptions['calculus'])
+                    SubjectTabsUI.populateSubjectOptions(subjectOptions['calculus'])
                     break
                 case "Probability":
                     subjectOptionsDiv.style.left = btnSubjectPos['probability']
-                    subjectTabsUI.populateSubjectOptions(subjectOptions['probability'])
+                    SubjectTabsUI.populateSubjectOptions(subjectOptions['probability'])
                     break
                 case "Physics":
                     subjectOptionsDiv.style.left = btnSubjectPos['physics']
-                    subjectTabsUI.populateSubjectOptions(subjectOptions['physics'])
+                    SubjectTabsUI.populateSubjectOptions(subjectOptions['physics'])
                     break
 
             }
@@ -1559,12 +1600,15 @@
     // Container-1
     document.querySelector('.heading-container').addEventListener('mouseover', (e) => {
         if (e.target.classList.contains('subject-option-btn') || e.target.classList.contains('subject-tab-btn') || e.target.className === 'subject-topics') {
-            subjectTabsUI.showSubjectTopics()
+            SubjectTabsUI.showSubjectTopics()
         }
         else {
-            subjectTabsUI.removeSubjectTopics()
+            SubjectTabsUI.removeSubjectTopics()
         }
     })
+
+
+
 
     function getRandomInt(max) {
         return Math.floor(Math.random() * max);

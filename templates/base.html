@@ -280,12 +280,12 @@
             // Load Default Subject Tab
             let defaultSubjectTabBtn = document.querySelector(`#${defaultSubject}SubjectTabBtn`)
             let subjectTopicsContainer = document.querySelector('.subject-topics')
-            let subjectOptions = subjectTabsUI.getSubjectOptions()
+            let subjectOptions = SubjectTabsUI.getSubjectTopics()
 
             subjectOptions[defaultSubject].forEach((topic) => {
                 subjectTopicsContainer.innerHTML += `<button class="btn btn-light subject-option-btn">${topic}</button>`
             })
-            subjectTabsUI.subjectTabBtnSelected(defaultSubjectTabBtn)
+            SubjectTabsUI.subjectTabBtnSelected(defaultSubjectTabBtn)
         }
         static updateHeaderButtons(btn) {
             let headerBtn
