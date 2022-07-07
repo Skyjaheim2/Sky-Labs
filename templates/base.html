@@ -354,30 +354,40 @@
 
     class Storage {
         static instantiateStorage() {
+            const allKeys = ['last-solution', 'last-topic-clicked', 'last-subject'];
             if (!(localStorage.getItem('appData'))) {
-                localStorage.setItem('appData', JSON.stringify({
+                const appData = {
                     'last-solution': null,
                     'last-topic-clicked': null,
-                }))
+                    'last-subject': null
+                }
+                this.setAppData(appData);
             }
-            // if (!(localStorage.getItem('last-solution'))) {
-            //     localStorage.setItem('last-solution', 'empty');
-            // }
-            // if (!(localStorage.getItem('last-topic-clicked'))) {
-            //     localStorage.setItem('last-topic-clicked', 'empty');
-            // }
+            else {
+                const appData = this.getAppData();
+                allKeys.forEach((key) => {
+                    if (!(key in appData)) {
+                        appData[key] = null;
+                    }
+                })
+                this.setAppData(appData);
+
+            }
 
         }
 
         static reloadSolution(answerMathField) {
+            // const subject = document.querySelector('#selectedSubjectTabHeading').children[0].textContent;
+            // console.log(subject)
             const SU = new StepsUI();
             this.instantiateStorage();
-            let lastSolution = this.getLastSolution();
+            const lastSolution = this.getLastSolution();
+            const lastSubject = this.getLastSubject();
 
             if (lastSolution !== null) {
                 let enteredMath = lastSolution['enteredMath'];
                 answerMathField.write(enteredMath);
-                SU.addStepsToDOM(enteredMath, true, false, false);
+                SU.addStepsToDOM(enteredMath, true, false, false, lastSubject);
             }
         }
 
@@ -393,6 +403,12 @@
             this.setAppData(appData);
         }
 
+        static addLastSubject(subject) {
+            const appData = this.getAppData();
+            appData['last-subject'] = subject;
+            this.setAppData(appData);
+        }
+
         static getLastTopicClicked() {
             const appData = this.getAppData();
             return appData['last-topic-clicked'];
@@ -401,6 +417,11 @@
         static getLastSolution() {
             const appData = this.getAppData();
             return JSON.parse(appData['last-solution']);
+        }
+
+        static getLastSubject() {
+            const appData = this.getAppData();
+            return appData['last-subject'];
         }
 
         static setAppData(appData) {

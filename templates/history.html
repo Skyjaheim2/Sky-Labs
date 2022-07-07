@@ -258,6 +258,7 @@
 												solution = JSON.parse(solution);
 												solution['enteredMath'] = enteredMath;
 												Storage.addLastSolution(solution);
+												Storage.addLastSubject(item.dataset.subject);
 											}
 											else {
 												// localStorage.setItem('last-solution', 'empty');
@@ -265,6 +266,9 @@
 											switch (item.dataset.subject) {
 												case 'algebra':
 													window.location.assign('/algebra');
+													break
+												case 'calculus':
+													window.location.assign('/calculus');
 													break
 											}
 										}

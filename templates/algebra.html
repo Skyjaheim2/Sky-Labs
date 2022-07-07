@@ -88,7 +88,6 @@
             maxDepth: 10,
         }
 
-
         var userInput = document.getElementById('userInput');
 
         var answerMathField = MQ.MathField(userInput, config, {
@@ -177,7 +176,7 @@
                                 }
                                 // ADD STEPS TO DOM
                                 const SU = new StepsUI();
-                                SU.addStepsToDOM(suggestionContent, false, false, true);
+                                SU.addStepsToDOM(suggestionContent, false, false, true, 'algebra');
                                 // ADD EXPRESSION TO USER INPUT
                                 answerMathField.latex(suggestionContent)
                                 // REMOVE SUGGESTIONS
@@ -364,7 +363,7 @@
             const SU = new StepsUI();
             let enteredMath = answerMathField.latex();
 
-            SU.addStepsToDOM(enteredMath, false, false, true);
+            SU.addStepsToDOM(enteredMath, false, false, true, 'algebra');
         })
 
         // Live Solve Button

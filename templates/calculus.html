@@ -7,6 +7,9 @@
 <style>
     #solveBtn {
         margin-bottom: 10px;
+        margin-left: 10px;
+        height: 40px;
+        border-radius: 10px;
     }
     #userInput {
         padding: 5px;
@@ -34,8 +37,22 @@
 {% block subject_features %}
 <div>$ $</div>
 <label class="inputLabel" for="userInput">Enter Calculus Problem:</label>
-<p><span id="userInput"></span></p>
-<button id="solveBtn" type="button" class="btn btn-primary">Solve</button>
+<div class="sf-container">
+    <p><span id="userInput"></span></p>
+    <button id="solveBtn" type="button" class="btn btn-primary">Solve</button>
+</div>
+
+<div class="suggestions-container">
+    <!--    <div class="suggestion-item">$ x^{2}+5x^{2}+3x+2+4 $</div>-->
+    <!--    <hr>-->
+    <!--    <div class="suggestion-item">$ 9x+2x+10+2 $</div>-->
+    <!--    <hr>-->
+    <!--    <div class="suggestion-item">$ \displaystyle \ \text{combine} \ \frac{1}{1+x}+\frac{3}{1+x} $</div>-->
+    <!--    <hr>-->
+
+
+</div>
+
 <div class="form-check">
     <input class="form-check-input" type="checkbox" value="" id="liveSolveRadioBtn">
     <label class="form-check-label inputLabel" for="liveSolveRadioBtn">
@@ -90,6 +107,129 @@
         /* ON-KEY UP EVENTS */
 
         // UserInput
+        document.querySelector('#userInput').addEventListener('keyup', function (e) {
+            let enteredMath = answerMathField.latex(); // Get entered math in LaTeX format
+            let liveSolveRadioBtn = document.querySelector('#liveSolveRadioBtn');
+            let liveSolveSolutionsContainer = document.querySelector('#liveSolveSolutionContainer');
+            const suggestionContainer = document.querySelector('.suggestions-container');
+
+            let selectedTopic = LayoutUI.getSelectedTopic();
+            let subjectAndTopic = {'subject': 'calculus', 'selectedTopic': selectedTopic};
+
+            // Suggestions
+            if (!([37, 38, 39, 40].includes(e.keyCode)) && !(liveSolveRadioBtn.checked)) {
+                // DO NOT CHANGE SUGGESTIONS IF ARROW KEYS ARE PRESSED
+                if (!(enteredMath === '')) {
+                    suggestionContainer.style.display = 'block'
+
+                    const allTopics = SubjectTabsUI.getSubjectTopics()['calculus'];
+                    const allExamples = [];
+                    allTopics.forEach((topic) => {
+                        const examples = ApplicationContent.getExamples('Calculus', replaceAll(topic, '-', ' '), null, true);
+                        allExamples.push(...examples);
+                    })
+                    enteredMath = enteredMath.replace('combine', '\\text{combine}');
+                    enteredMath = enteredMath.replace('simplify', '\\text{simplify}');
+                    enteredMath = enteredMath.replace('expand', '\\text{expand}');
+                    enteredMath = enteredMath.replace('graph', '\\text{graph}')
+
+                    const suggestionsRequest = new XMLHttpRequest();
+                    suggestionsRequest.open('POST', `/getSuggestions`);
+                    suggestionsRequest.onload = () => {
+                        const allSuggestions = JSON.parse(suggestionsRequest.responseText);
+
+                        // ADD SUGGESTIONS TO DOM
+                        const suggestionsContainer = document.querySelector('.suggestions-container');
+                        suggestionsContainer.innerHTML = '';
+                        allSuggestions.forEach((suggestion) => {
+                            const suggestionItem = document.createElement('div');
+                            suggestionItem.className = 'suggestion-item';
+                            suggestionItem.dataset.suggestionContent = suggestion;
+                            StepsUI.addLatexToElement(suggestionItem, `\\displaystyle\\ ${suggestion}`);
+                            suggestionsContainer.appendChild(suggestionItem)
+                            suggestionsContainer.innerHTML += `<hr>`
+                        })
+
+                        // ADD EVENT LISTENER
+                        document.querySelectorAll('.suggestion-item').forEach((suggestion) => {
+                            suggestion.addEventListener('click', (e) => {
+                                let suggestionItem = e.target;
+                                while (suggestionItem.className !== 'suggestion-item') {
+                                    suggestionItem = suggestionItem.parentElement;
+                                }
+                                let suggestionContent = suggestionItem.dataset.suggestionContent;
+                                if (suggestionContent.includes('\\text')) {
+                                    let keyword = suggestionContent.split(' ')[0].replaceAll('\\', '').replace('{', '').replace('}', '').replace('text', '')
+                                    let content = suggestionContent.split(' ')[1]
+                                    suggestionContent = `${keyword}\\ ${content}`
+                                }
+                                // ADD STEPS TO DOM
+                                const SU = new StepsUI();
+                                SU.addStepsToDOM(suggestionContent, false, false, true);
+                                // ADD EXPRESSION TO USER INPUT
+                                answerMathField.latex(suggestionContent)
+                                // REMOVE SUGGESTIONS
+                                suggestionContainer.style.display = 'none'
+                                // SCROLL TO TOP
+                                window.scroll({
+                                    top: 500,
+                                    left: 0,
+                                    behavior: 'smooth'
+                                });
+
+                            })
+                        })
+
+                    }
+                    const data = new FormData;
+                    data.set('enteredMath', enteredMath);
+                    data.set('allExamples', JSON.stringify(allExamples));
+                    suggestionsRequest.send(data);
+                } else {
+                    suggestionContainer.style.display = 'none'
+                }
+
+
+            }
+
+            // Live Solve
+            if (liveSolveRadioBtn.checked === true && enteredMath !== '') {
+                const request = new XMLHttpRequest()
+                request.open('POST', '/solve/false/true')
+                request.onload = () => {
+                    if (request.status === 200) {
+                        let response = request.responseText;
+                        response = JSON.parse(response);
+                        if (response.message === 'solved') {
+                            solution = response.content;
+                            StepsUI.addLatexToElement(liveSolveSolutionsContainer, `\\displaystyle =${solution['finalResult']}`);
+                            this.style.borderColor = '';
+                        } else {
+                            this.style.borderColor = 'red';
+                        }
+
+                    }
+
+                }
+
+                const data = new FormData()
+                data.set('userInput', enteredMath)
+                data.set('subjectAndTopic', JSON.stringify(subjectAndTopic))
+                request.send(data)
+            }
+            if (enteredMath === '') {
+                liveSolveSolutionsContainer.textContent = ''
+                this.style.borderColor = ''
+            }
+        })
+        document.querySelector('#userInput').addEventListener('focusout', function () {
+            setTimeout(() => {
+                document.querySelector('.suggestions-container').style.display = 'none'
+            }, 300)
+
+        })
+
+        // UserInput
         document.querySelector('#userInput').addEventListener('keyup', function() {
             let enteredMath = answerMathField.latex(); // Get entered math in LaTeX format
             let liveSolveRadioBtn = document.querySelector('#liveSolveRadioBtn')
@@ -126,8 +266,7 @@
         })
         // Sidebar
         document.querySelector('#sidebar').addEventListener('click', (e) => {
-            // console.log(e.target)
-            // console.log(e.target.classList.contains('topics-btn'))
+
 
             if (e.target.className === 'topic-extension-item') {
                 // console.log(e.target.parentElement.parentElement.parentElement.previousElementSibling.textContent)
@@ -273,53 +412,10 @@
 
         // Solve Button
         document.querySelector('#solveBtn').addEventListener('click', () => {
-            let enteredMath = answerMathField.latex()
-            let resultsContainer = document.querySelector('.results-container')
-            // Clear previous work
-            resultsContainer.innerHTML = `
-                <div id="finalSolutionHeading"></div>
-                <div class="steps-heading">Steps</div>
-                <div class="steps-container"></div>
-            `
+            const SU = new StepsUI();
+            let enteredMath = answerMathField.latex();
 
-
-            let selectedTopic = LayoutUI.getSelectedTopic()
-            let subjectAndTopic = {'subject': 'calculus', 'selectedTopic': selectedTopic}
-
-            const request = new XMLHttpRequest()
-            request.open('POST', `/solve/false`)
-            request.onload = () => {
-                if (request.status === 200) {
-                    let solution = request.responseText
-                    if (solution !== 'Unable To Solve') {
-                        let Steps = JSON.parse(solution)['steps']
-                        let finalResult = JSON.parse(solution)['finalResult']
-                        let stepsContainer = document.querySelector('.steps-container')
-
-                        let e_step_id = 1
-                        Steps.forEach((step) => {
-                            if (step['type'] === 'main-step') {
-                                StepsUI.displayStep(stepsContainer, step, 'main-step')
-                            }
-                            else if (step['type'] === 'e-step') {
-                                StepsUI.displayStep(stepsContainer, step, 'e-step', e_step_id)
-                                let num_e_steps_added = document.querySelectorAll('.expandable-step-container').length
-                                e_step_id = num_e_steps_added+1
-                            }
-                        })
-                        stepsContainer.innerHTML += `<div class="final-step"></div>`
-                        StepsUI.addLatexToSteps(finalResult, enteredMath)
-                        StepsUI.makeStepsExpandable()
-                    }
-                    else {
-
-                    }
-                }
-            }
-            const data = new FormData()
-            data.set('userInput', enteredMath)
-            data.set('subjectAndTopic', JSON.stringify(subjectAndTopic))
-            request.send(data)
+            SU.addStepsToDOM(enteredMath, false, false, true, 'calculus');
         })
 
         // Live Solve Button

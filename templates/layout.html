@@ -613,8 +613,9 @@
             desmosGraph.style.height = '400px';
             resultsContainer.appendChild(desmosGraph);
         }
-        addStepsToDOM(enteredMath, requestFromHistory, liveSolve, addSolutionToLS) {
-            let resultsContainer = document.querySelector('.results-container');
+        addStepsToDOM(enteredMath, requestFromHistory, liveSolve, addSolutionToLS, subject) {
+            const selectedTopic = LayoutUI.getSelectedTopic();
+            const resultsContainer = document.querySelector('.results-container');
             // Clear previous work
             resultsContainer.innerHTML = `
                 <div id="finalSolutionHeading"></div>
@@ -631,10 +632,6 @@
                 'settingsMenu': true,
                 'keypad': false
             });
-
-            let selectedTopic = LayoutUI.getSelectedTopic();
-            let subjectAndTopic = {'subject': 'algebra', 'selectedTopic': selectedTopic};
-
 
             const request = new XMLHttpRequest();
             request.open('POST', `/solve/${requestFromHistory}/${liveSolve}`);
@@ -653,6 +650,7 @@
                             let solution = {'finalResult': `${enteredMath}`, 'steps': [], 'enteredMath': `${enteredMath}`};
                             solution['enteredMath'] = enteredMath;
                             Storage.addLastSolution(solution);
+                            Storage.addLastSubject(subject.toLowerCase());
                         }
                         document.querySelector('.steps-container').style.display = 'none';
                         StepsUI.addLatexToElement(document.querySelector('#finalSolutionHeading'), `{\\displaystyle \\text{Graphing} \\ ${functionToGraph}}`)
@@ -670,7 +668,7 @@
                             if (step['type'] === 'main-step') {
                                 this.displayStep(stepsContainer, step, 'main-step')
                             } else if (step['type'] === 'e-step') {
-                                // console.log(e_step_id)
+
                                 this.displayStep(stepsContainer, step, 'e-step', e_step_id)
                                 let num_e_steps_added = document.querySelectorAll('.expandable-step-container').length
                                 e_step_id = num_e_steps_added + 1
@@ -682,8 +680,9 @@
                         StepsUI.makeStepsExpandable()
 
                         if (addSolutionToLS) {
-                            solution['enteredMath'] = enteredMath
-                            Storage.addLastSolution(solution)
+                            solution['enteredMath'] = enteredMath;
+                            Storage.addLastSolution(solution);
+                            Storage.addLastSubject(subject.toLowerCase());
                         }
 
                         Animations.animateShowAllSteps()
@@ -696,6 +695,8 @@
                 // document.querySelector('.results-container').style.height = '0'
             }
             const data = new FormData()
+            const subjectAndTopic = {'subject': subject, 'topic': selectedTopic}
+
             data.set('userInput', enteredMath)
             data.set('subjectAndTopic', JSON.stringify(subjectAndTopic))
             request.send(data)
@@ -912,17 +913,13 @@
             const exampleItemsContainer = document.querySelector('.example-items-container');
             const subject = document.querySelector('#selectedSubjectTabHeading').children[0].textContent;
 
-            // console.log(document.querySelector('#selectedSubjectTabHeading').children[1])
             let mainTopic = document.querySelector('#selectedSubjectTabHeading').children[1].textContent.trim();
             let extensionTopic;
-            // console.log(mainTopic)
             if (mainTopic.includes('→')) {
                 let splitTopics = mainTopic.split('→');
                 mainTopic = splitTopics[0].replace('-', '').trim();
                 extensionTopic = splitTopics[1];
-                // console.log(splitTopics)
-                // console.log(mainTopic)
-                // console.log(mainTopic === 'Limits')
+
             }
             else {
                 extensionTopic = null;
@@ -930,7 +927,6 @@
             // Clear prev examples
             exampleItemsContainer.innerHTML = '';
 
-            // console.log(mainTopic)
             examples = ApplicationContent.getExamples(subject, mainTopic.replaceAll(' ', ' '), extensionTopic);
             examples.forEach((example) => {
 
@@ -949,7 +945,6 @@
                         exampleItem = exampleItem.parentElement;
                     }
                     let exampleContent = exampleItem.dataset.exampleContent;
-                    // console.log(exampleContent);
                     if (exampleContent.includes('\\text')) {
                         let keyword = exampleContent.split(' ')[0].replaceAll('\\', '').replace('{', '').replace('}', '').replace('text', '')
                         let content = exampleContent.split(' ')[1]
@@ -957,7 +952,9 @@
                     }
                     // Add steps to DOM
                     const SU = new StepsUI();
-                    SU.addStepsToDOM(exampleContent, false, false, true);
+                    SU.addStepsToDOM(exampleContent, false, false, true, subject.toLowerCase());
+                    // ADD EXPRESSION TO USER INPUT
+                    // answerMathField.latex(exampleContent)
                     // Scroll to top
                     window.scroll({
                         top: 500,
@@ -1066,7 +1063,6 @@
 
             subjectTopicsContainer.childNodes.forEach((btn) => {
                 let topic = btn.textContent
-                // console.log(topic)
                 let extensionTopics = this.getTopicsExtensionHTML(subject, topic)
 
                 let extendTopicsSymbol
@@ -1200,7 +1196,6 @@
             }
             switch (subject) {
                 case 'Algebra':
-                    // console.log(mainTopic)
                     switch (mainTopic) {
                         case 'Basic Operations':
                             switch (extensionTopic) {
@@ -1312,7 +1307,6 @@
                     switch (mainTopic) {
 
                     }
-                    // console.log(extensionTopic)
                     break
                 case 'Calculus':
                     switch (mainTopic) {
@@ -1462,6 +1456,8 @@
             // console.log('not reloaded')
             // Storage.clear()
         }
+        // const subject = document.querySelector('#selectedSubjectTabHeading').children[0].textContent;
+        // console.log(subject)
         Storage.instantiateStorage();
         Storage.reloadSolution(answerMathField);
 

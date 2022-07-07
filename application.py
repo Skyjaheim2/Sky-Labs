@@ -166,6 +166,8 @@ def solve(requestFromHistory, liveSolve):
     userInput = request.form.get('userInput')
     subjectAndTopic = json.loads(request.form.get('subjectAndTopic'))
 
+    print(subjectAndTopic)
+
     keyword = None
     allKeywords = ['simplify', 'combine', 'graph', 'expand']
 
@@ -236,7 +238,7 @@ def solve(requestFromHistory, liveSolve):
     if subjectAndTopic['subject'] == 'calculus':
         userInput = Expression(userInput)
         Solution = simplifyExpression(userInput)
-        return jsonify(Solution)
+        return jsonify({'message': 'solved', 'content': Solution})
 
 @app.route("/getSuggestions", methods=["POST"])
 def getSuggestions():
