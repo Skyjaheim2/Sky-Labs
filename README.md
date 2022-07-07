@@ -1,6 +1,6 @@
 # Sky-Labs
 
-Sky Labs is a flask application inspired by https://www.symbolab.com/ that allows users to do mathematical computations.
+Sky Labs is a computer algebra system (CAS) inspired by https://www.symbolab.com/ that allows users to do symbolic mathematical computations.
 
 ![image](https://user-images.githubusercontent.com/64718777/160222769-b98b45a5-01c8-416d-b0a3-b2ac1212238c.png)
 ![ss7](https://user-images.githubusercontent.com/64718777/160222561-184628a2-5317-4769-8824-1a72ec96c9d0.png)
@@ -21,8 +21,12 @@ All requirements are listed in requirements.txt.
 
 ## Technologies
 
-* Python Flask
-* Vanilla JavaScript
+* HTML
+* CSS
+* JavaScript
+* Python
+* Flask
+
 
 ## Testing
 

@@ -1,13 +1,9 @@
-import sys
-
-sys.path.append(
-    r"C:\Users\jahei\OneDrive\Documents\Flask-Projects\Flask\Personal-Projects\Computer Algebra")  # Add path where project is located to allow for import of application
-import os
 import unittest
-# from .. import Methods
-from Methods import *
+import sys
+""" ADD PATH WHERE PROJECT IS LOCATED TO ALLOW FOR IMPORT OF APPLICATION """
+sys.path.append(r"C:\Users\jahei\OneDrive\Documents\Flask-Projects\Flask\Personal-Projects\Computer Algebra")
+from Algebra import get_start_of_var, get_var, get_coefficient, addNumbers, simplifyExpression, latexify, Expression
 
-# from test import *
 
 
 # RUN: python -m unittest test_Methods.py
@@ -2365,7 +2361,8 @@ class TestCalc(unittest.TestCase):
             expectedVal = item['expected_val']
             keyword = item['keyword']
             returnedVal = simplifyExpression(expression, keyword=keyword)
-            self.assertEqual(expectedVal, returnedVal, f"Failed: {expression}\nLatex: {latexify(expression)}\nKeyword: {keyword}")
+            self.assertEqual(expectedVal, returnedVal,
+                             f"Failed: {expression}\nLatex: {latexify(expression)}\nKeyword: {keyword}")
 
             # except Exception as error:
             #     print(f"Error: {error}\nOn: {item['expression']}\nLatex: {latexify(item['expression'])}\nKeyword: {item['keyword']}\n")

@@ -38,7 +38,8 @@ db.init_app(app)
 # ENABLE SESSION
 Session(app)
 
-from Methods import parseLatex, latexify, simplifyExpression, Expression, reverseList, Fraction, isMatch
+from Algebra import (parseLatex, latexify, simplifyExpression, Expression, reverseList, isMatch, solveEquation,
+                     Equation)
 from methodsDiscreteMath import solveDiscreteMath
 from calculusMethods import solveCalculus
 
@@ -214,10 +215,14 @@ def solve(requestFromHistory, liveSolve):
     userInput = parseLatex(userInput)
     if subjectAndTopic['subject'] == 'algebra':
 
-        userInput = Expression(userInput)
         if not app.config['TESTING'] or liveSolve == True:
             try:
-                Solution = simplifyExpression(userInput, keyword=keyword)
+                if '=' not in userInput:
+                    userInput = Expression(userInput)
+                    Solution = simplifyExpression(userInput, keyword=keyword)
+                else:
+                    userInput = Equation(userInput)
+                    Solution = solveEquation(userInput)
                 return jsonify({'message': 'solved', 'content': Solution})
             except:
                 return jsonify({'message': 'unable to solve', 'content': None})

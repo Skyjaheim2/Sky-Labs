@@ -1,5 +1,5 @@
 from math import floor
-from Methods import latexify
+from Algebra import latexify
 
 class Monomial:
     def __init__(self, poly_string):
