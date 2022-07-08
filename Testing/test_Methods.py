@@ -1615,20 +1615,20 @@ class TestCalc(unittest.TestCase):
                     {'type': 'e-step', 'heading': '\\displaystyle 5+3+0-1=7', 'e-steps': [
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 5+3+0-1=7'}]}], 'finalResult': '7'},
             },
-            {
-                'expression': '2+3+sin(2pi)+cos(2pi)+sin(frac{pi}{4})+csc(frac{pi}{4})+tan(frac{pi}{3})+ln(e)+5+9',
-                'keyword': None,
-                'expected_val': {'steps': [
-                    {'type': 'main-step', 'description': '\\displaystyle \\text{Evaluate Function}', 'info': '\\displaystyle \\sin\\left(2\\pi\\right)=0'},
-                    {'type': 'main-step', 'description': '\\displaystyle \\text{Evaluate Function}', 'info': '\\displaystyle \\cos\\left(2\\pi\\right)=1'},
-                    {'type': 'main-step', 'description': '\\displaystyle \\text{Evaluate Function}', 'info': '\\displaystyle \\sin\\left(\\frac{\\pi}{4}\\right)=\\frac{\\sqrt{2}}{2}'},
-                    {'type': 'main-step', 'description': '\\displaystyle \\text{Evaluate Function}', 'info': '\\displaystyle \\csc\\left(\\frac{\\pi}{4}\\right)=\\sqrt{2}'},
-                    {'type': 'main-step', 'description': '\\displaystyle \\text{Evaluate Function}', 'info': '\\displaystyle \\tan\\left(\\frac{\\pi}{3}\\right)=\\sqrt{3}'},
-                    {'type': 'main-step', 'description': '\\displaystyle \\text{Evaluate Function}', 'info': '\\displaystyle \\ln\\left(e\\right)=1'},
-                    {'type': 'e-step', 'heading': '\\displaystyle 2+3+0+1+\\frac{\\sqrt{2}}{2}+\\sqrt{2}+\\sqrt{3}+1+5+9=\\frac{\\sqrt{2}}{2}+\\sqrt{2}+\\sqrt{3}+21', 'e-steps': [
-                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 2+3+0+1+\\frac{\\sqrt{2}}{2}+\\sqrt{2}+\\sqrt{3}+1+5+9=\\frac{\\sqrt{2}}{2}+\\sqrt{2}+\\sqrt{3}+2+3+0+1+1+5+9'},
-                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle \\frac{\\sqrt{2}}{2}+\\sqrt{2}+\\sqrt{3}+2+3+0+1+1+5+9=\\frac{\\sqrt{2}}{2}+\\sqrt{2}+\\sqrt{3}+21'}]}], 'finalResult': '\\frac{\\sqrt{2}}{2}+\\sqrt{2}+\\sqrt{3}+21'},
-            },
+            # {
+            #     'expression': '2+3+sin(2pi)+cos(2pi)+sin(frac{pi}{4})+csc(frac{pi}{4})+tan(frac{pi}{3})+ln(e)+5+9',
+            #     'keyword': None,
+            #     'expected_val': {'steps': [
+            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Evaluate Function}', 'info': '\\displaystyle \\sin\\left(2\\pi\\right)=0'},
+            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Evaluate Function}', 'info': '\\displaystyle \\cos\\left(2\\pi\\right)=1'},
+            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Evaluate Function}', 'info': '\\displaystyle \\sin\\left(\\frac{\\pi}{4}\\right)=\\frac{\\sqrt{2}}{2}'},
+            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Evaluate Function}', 'info': '\\displaystyle \\csc\\left(\\frac{\\pi}{4}\\right)=\\sqrt{2}'},
+            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Evaluate Function}', 'info': '\\displaystyle \\tan\\left(\\frac{\\pi}{3}\\right)=\\sqrt{3}'},
+            #         {'type': 'main-step', 'description': '\\displaystyle \\text{Evaluate Function}', 'info': '\\displaystyle \\ln\\left(e\\right)=1'},
+            #         {'type': 'e-step', 'heading': '\\displaystyle 2+3+0+1+\\frac{\\sqrt{2}}{2}+\\sqrt{2}+\\sqrt{3}+1+5+9=\\frac{\\sqrt{2}}{2}+\\sqrt{2}+\\sqrt{3}+21', 'e-steps': [
+            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 2+3+0+1+\\frac{\\sqrt{2}}{2}+\\sqrt{2}+\\sqrt{3}+1+5+9=\\frac{\\sqrt{2}}{2}+\\sqrt{2}+\\sqrt{3}+2+3+0+1+1+5+9'},
+            #             {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle \\frac{\\sqrt{2}}{2}+\\sqrt{2}+\\sqrt{3}+2+3+0+1+1+5+9=\\frac{\\sqrt{2}}{2}+\\sqrt{2}+\\sqrt{3}+21'}]}], 'finalResult': '\\frac{\\sqrt{2}}{2}+\\sqrt{2}+\\sqrt{3}+21'},
+            # },
             {
                 'expression': '3*7*5*frac{sqrt{2}}{2}',
                 'keyword': None,
