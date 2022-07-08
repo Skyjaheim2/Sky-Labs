@@ -13,7 +13,6 @@ from models import *
 
 
 from datetime import date, timedelta, tzinfo, datetime
-from pytz import timezone
 from math import inf
 from random import randint
 
