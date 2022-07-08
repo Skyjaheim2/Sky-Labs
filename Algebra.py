@@ -2124,11 +2124,15 @@ def formatExpression(expression):
 def formatSpecialValues(solution: str) -> str:
     MIN_VAL = 10 ** (-10)
     MAX_VAL = 10 ** (10)
-    solution = solution.replace('0.7071067811865476', 'frac{sqrt{2}}{2}').replace('0.8660254037844386',
-                                                                                  'frac{sqrt{3}}{2}') \
-        .replace('0.49999999999999994', 'frac{1}{2}').replace('0.5773502691896257', 'frac{sqrt{3}}{3}') \
-        .replace('1.7320508075688767', 'sqrt{3}').replace('1.414213562373095', 'sqrt{2}').replace('0.5000000000000001',
-                                                                                                  'frac{1}{2}')
+    solution = solution.replace('0.7071067811865476', 'frac{sqrt{2}}{2}')\
+                        .replace('7071067811865475', 'frac{sqrt{2}}{2}')\
+                        .replace('0.8660254037844386','frac{sqrt{3}}{2}')\
+                        .replace('0.49999999999999994', 'frac{1}{2}')\
+                        .replace('0.5773502691896257', 'frac{sqrt{3}}{3}') \
+                        .replace('1.7320508075688767', 'sqrt{3}')\
+                        .replace('1.414213562373095', 'sqrt{2}')\
+                        .replace('0.5000000000000001','frac{1}{2}')
+
     if 'frac' not in solution:
         if Constant(solution).is_digit:
             if abs(float(solution)) < MIN_VAL:

@@ -2355,8 +2355,6 @@ class TestCalc(unittest.TestCase):
         ]
 
         for item in expressionsAndExpectedVal:
-            if item['expression'] == '2+3+sin(2pi)+cos(2pi)+sin(frac{pi}{4})+csc(frac{pi}{4})+tan(frac{pi}{3})+ln(e)+5+9':
-                print(f"Expected val: {simplifyExpression(Expression(item['expression']), item['keyword'])}")
             # try:
             expression = Expression(item['expression'])
             # print(expression)
