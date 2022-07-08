@@ -2134,8 +2134,8 @@ def formatSpecialValues(solution: str) -> str:
                         .replace('0.49999999999999994', 'frac{1}{2}')\
                         .replace('0.5773502691896257', 'frac{sqrt{3}}{3}') \
                         .replace('1.7320508075688767', 'sqrt{3}')\
-                        .replace('1.414213562373095', 'sqrt{2}')\
                         .replace('1.4142135623730951', 'sqrt{2}')\
+                        .replace('1.414213562373095', 'sqrt{2}')\
                         .replace('0.5000000000000001','frac{1}{2}')
 
     if 'frac' not in solution:
