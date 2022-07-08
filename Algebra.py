@@ -1841,11 +1841,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                                     specialFunctionArg = f"{sign}({specialFunctionArg.numerator})/({specialFunctionArg.denominator})"
 
                                 solution = str(eval(f"{specialFunction}({specialFunctionArg})"))
-                                if specialFunction == 'csc' and specialFunctionArg == '(pi)/(4)':
-                                    print(f"SOLUTION BEFORE: {solution}")
                                 solution = formatSpecialValues(solution)
-                                if specialFunction == 'csc' and specialFunctionArg == '(pi)/(4)':
-                                    print(f"SOLUTION AFTER: {solution}")
                                 # CREATE MAIN STEP
                                 mainStep = createMainStep(r'\text{Evaluate Function}', latexify(f'{const}={solution}'))
                                 Steps.append(mainStep)
