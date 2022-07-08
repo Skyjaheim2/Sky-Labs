@@ -1841,7 +1841,11 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                                     specialFunctionArg = f"{sign}({specialFunctionArg.numerator})/({specialFunctionArg.denominator})"
 
                                 solution = str(eval(f"{specialFunction}({specialFunctionArg})"))
+                                if specialFunction == 'csc' and specialFunctionArg == '(pi)/(4)':
+                                    print(f"SOLUTION BEFORE: {solution}")
                                 solution = formatSpecialValues(solution)
+                                if specialFunction == 'csc' and specialFunctionArg == '(pi)/(4)':
+                                    print(f"SOLUTION AFTER: {solution}")
                                 # CREATE MAIN STEP
                                 mainStep = createMainStep(r'\text{Evaluate Function}', latexify(f'{const}={solution}'))
                                 Steps.append(mainStep)
@@ -2888,7 +2892,8 @@ def main():
     # E = Expression('2x*3x*sqrt{5x^{2}+3x^{2}+2+3}*5u^{2}*u')
 
     # E = Expression('(frac{x+2}{x+3}+frac{x+4}{x+5})*(frac{x+6}{x+7}+frac{x+8}{x+9})*(frac{x+2}{x+3}+frac{x+4}{x+5})')
-    E = Expression('frac{x^{2}+2x+2}{x^{2}+3x+5}*frac{x+1}{x+2}')
+    # E = Expression('frac{x^{2}+2x+2}{x^{2}+3x+5}*frac{x+1}{x+2}')
+    E = Expression('csc(frac{pi}{4})')
     print(simplifyExpression(E, keyword='simplify'))
 
 
