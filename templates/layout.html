@@ -510,7 +510,7 @@
             else {
                 userInput = enteredMath;
             }
-
+            console.log(`{\\displaystyle ${userInput}=${finalResult}}`)
             StepsUI.addLatexToElement(document.querySelector('#finalSolutionHeading'), `{\\displaystyle ${userInput}=${finalResult}}`)
 
         }

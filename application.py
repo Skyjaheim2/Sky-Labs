@@ -40,7 +40,7 @@ Session(app)
 from Algebra import (parseLatex, latexify, simplifyExpression, Expression, reverseList, isMatch, solveEquation,
                      Equation)
 from methodsDiscreteMath import solveDiscreteMath
-from calculusMethods import solveCalculus
+from Calculus import evaluateCalculusExpression
 
 
 @app.route("/")
@@ -215,7 +215,6 @@ def solve(requestFromHistory, liveSolve):
 
     userInput = parseLatex(userInput)
     if subjectAndTopic['subject'] == 'algebra':
-
         if not app.config['TESTING'] or liveSolve == True:
             try:
                 if '=' not in userInput:
@@ -233,10 +232,10 @@ def solve(requestFromHistory, liveSolve):
 
 
     if subjectAndTopic['subject'] == 'discreteMath':
-        Solution = solveDiscreteMath(subjectAndTopic['selectedTopic'], userInput)
+        Solution = simplifyExpression(subjectAndTopic['selectedTopic'], userInput)
     if subjectAndTopic['subject'] == 'calculus':
         userInput = Expression(userInput)
-        Solution = simplifyExpression(userInput)
+        Solution = evaluateCalculusExpression(userInput)
         return jsonify({'message': 'solved', 'content': Solution})
 
 @app.route("/getSuggestions", methods=["POST"])

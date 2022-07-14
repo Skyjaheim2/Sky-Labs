@@ -2321,21 +2321,29 @@ class TestCalc(unittest.TestCase):
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle x^{2}\\cdot x+x^{2}\\cdot2+3x\\cdot x+3x\\cdot2+5\\cdot x+5\\cdot2=x^{3}+5x^{2}+11x+10'},
                         {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Denominator}', 'info': '\\displaystyle \\frac{x^{3}+3x^{2}+4x+2}{\\left(x^{2}+3x+5\\right)\\cdot\\left(x+2\\right)}=\\frac{x^{3}+3x^{2}+4x+2}{x^{3}+5x^{2}+11x+10}'}]}], 'finalResult': '\\frac{x^{3}+3x^{2}+4x+2}{x^{3}+5x^{2}+11x+10}'},
             },
-            # {
-            #     'expression': '',
-            #     'keyword': None,
-            #     'expected_val': {},
-            # },
-            # {
-            #     'expression': '',
-            #     'keyword': None,
-            #     'expected_val': {},
-            # },
-            # {
-            #     'expression': '',
-            #     'keyword': None,
-            #     'expected_val': {},
-            # },
+            {
+                'expression': 'frac{3sqrt{1+x^{4}}}{2x^{3}}+frac{c}{x^{3}}',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\frac{3\\sqrt{1+x^{4}}}{2x^{3}}=\\frac{3\\sqrt{x^{4}+1}}{2x^{3}}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 1+x^{4}=x^{4}+1'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle 3\\sqrt{1+x^{4}}=3\\sqrt{x^{4}+1}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{3\\sqrt{1+x^{4}}}{2x^{3}}=\\frac{3\\sqrt{x^{4}+1}}{2x^{3}}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }2x^{3}', 'info': '\\displaystyle \\frac{3\\sqrt{x^{4}+1}}{2x^{3}}+\\frac{c}{x^{3}}=\\frac{3\\sqrt{x^{4}+1}}{2x^{3}}+\\frac{c2}{2x^{3}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{3\\sqrt{x^{4}+1}}{2x^{3}}+\\frac{c2}{2x^{3}}=\\frac{3\\sqrt{x^{4}+1}+2c}{2x^{3}}'}], 'finalResult': '\\frac{3\\sqrt{x^{4}+1}+2c}{2x^{3}}'},
+            },
+
+            {
+                'expression': '3-frac{1}{e^{6}}+1',
+                'keyword': 'combine',
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 3-\\frac{1}{e^{6}}+1=-\\frac{1}{e^{6}}+3+1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Adjust fractions based on their LCM of }e^{6}', 'info': '\\displaystyle 3-\\frac{1}{e^{6}}+1=\\frac{3e^{6}}{e^{6}}-\\frac{1}{e^{6}}+\\frac{e^{6}}{e^{6}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply The Fraction Rule:}\\ \\frac{a}{c}\\pm\\frac{b}{c}=\\frac{a \\pm b}{c}', 'info': '\\displaystyle \\frac{3e^{6}}{e^{6}}-\\frac{1}{e^{6}}+\\frac{e^{6}}{e^{6}}=\\frac{3e^{6}+e^{6}-1}{e^{6}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\frac{3e^{6}+e^{6}-1}{e^{6}}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 3e^{6}+e^{6}=4e^{6}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{3e^{6}+e^{6}-1}{e^{6}}=\\frac{4e^{6}-1}{e^{6}}'}], 'finalResult': '\\frac{4e^{6}-1}{e^{6}}'},
+            },
             # {
             #     'expression': '',
             #     'keyword': None,

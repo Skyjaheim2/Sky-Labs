@@ -199,7 +199,9 @@ class Expression:
             rightExponentialProductPattern = re.compile(r'}[\w]')
             rightExponentialProductMatches = rightExponentialProductPattern.findall(Terms[i])
 
-            if len(leftExponentialProductMatches) > 0 or len(rightExponentialProductMatches) > 0:
+            if Terms[i][0:3] == 'lim':
+                Terms[i] = Constant(Terms[i])
+            elif len(leftExponentialProductMatches) > 0 or len(rightExponentialProductMatches) > 0:
                 # if len(matches) > 0:
                 Terms[i] = Constant(Terms[i])
             elif ('frac' in Terms[i][0:5] or fraction_matches != []) and Terms[i][0:5][0] != '(':
@@ -455,8 +457,8 @@ class Exponential:
         return self.expression[index]
 
     def __eq__(self, other):
-        return (str(self.base) == str(other.base)) and (str(self.exponent) == str(other.exponent))
-
+        # return (str(self.base) == str(other.base)) and (str(self.exponent) == str(other.exponent))
+        return self.expression == other.expression
 class Polynomial(Exponential):
     def __init__(self, expression):
         super().__init__(expression)
@@ -683,8 +685,7 @@ class Equation:
 
 MAX_SIZE_OF_NUM_BEFORE_CONVERTED_TO_STANDARD_FORM = 10 ** 20
 
-def simplifyExpression(expression: Expression, keyword=None, Steps=None, groupedTerms=None, recursiveCall=False,
-                       finalResult=None):
+def simplifyExpression(expression: Expression, keyword=None, Steps=None, groupedTerms=None, recursiveCall=False, finalResult=None):
     expression = Expression(expression.replace(' ', ''))
 
     radical_product_pattern = re.compile(r'sqrt{.+}sqrt{.+}')
@@ -1300,12 +1301,10 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                             for e_step in step['e-steps']:
                                 steps.append(e_step)
 
-                    numerator_simplification = Fraction(
-                        f"frac{'{'}{parseLatex(simplifiedNumerator['finalResult'])}{'}'}{'{'}{denominator}{'}'}")
+                    numerator_simplification = Fraction(f"frac{'{'}{parseLatex(simplifiedNumerator['finalResult'])}{'}'}{'{'}{denominator}{'}'}")
                     # SIMPLIFICATION STEP 1
                     simplificationStepInfo = latexify(f"{fraction}={numerator_simplification}")
-                    if simplificationStepInfo[0] == '+' or simplificationStepInfo[
-                        0] == '-': simplificationStepInfo = simplificationStepInfo[1:]
+                    if simplificationStepInfo[0] == '+' or simplificationStepInfo[0] == '-': simplificationStepInfo = simplificationStepInfo[1:]
                     simplificationStep = createMainStep(r'\text{Simplify Numerator}', simplificationStepInfo)
                     temp_fraction = parseLatex(fraction)
                     if temp_fraction[0] == '+' or temp_fraction[0] == '-': temp_fraction = temp_fraction[1:]
@@ -1322,8 +1321,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                             for e_step in step['e-steps']:
                                 steps.append(e_step)
 
-                    denominator_simplification = Fraction(
-                        f"frac{'{'}{numerator_simplification.numerator}{'}'}{'{'}{parseLatex(simplifiedDenominator['finalResult'])}{'}'}")
+                    denominator_simplification = Fraction(f"frac{'{'}{numerator_simplification.numerator}{'}'}{'{'}{parseLatex(simplifiedDenominator['finalResult'])}{'}'}")
                     # SIMPLIFICATION STEP 2
                     simplificationStepInfo = latexify(f"{numerator_simplification}={denominator_simplification}")
                     if simplificationStepInfo[0] == '+' or simplificationStepInfo[
@@ -1506,8 +1504,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                     for frac in simplifiedFractions:
                         sign = frac.expression[0]
                         if not seenDigitTerm:
-                            if frac.denominator[0] != '(' and len(
-                                Expression(frac.denominator)) > 1: frac.denominator = f'({frac.denominator})'
+                            if frac.denominator[0] != '(' and len(Expression(frac.denominator)) > 1: frac.denominator = f'({frac.denominator})'
                             if len(Expression(frac.denominator)) == 1:
                                 if '^' not in frac.denominator and '^' not in lcm:
                                     exp_denominator = Exponential(frac.denominator, cast_entire_term_as_exp=True)
@@ -1517,30 +1514,29 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                                     exp_lcm = Exponential(lcm, CETAEIOCF=True)
 
                                 if exp_denominator.base == exp_lcm.base:
-                                    lcmFactorExponentExpression = Expression(
-                                        f'{Exponential(lcm).exponent}-{Exponential(frac.denominator).exponent}')
-                                    lcmFactorExponentExpression = simplifyExpression(lcmFactorExponentExpression)[
-                                        'finalResult']
+                                    lcmFactorExponentExpression = Expression(f'{Exponential(lcm).exponent}-{Exponential(frac.denominator).exponent}')
+                                    lcmFactorExponentExpression = simplifyExpression(lcmFactorExponentExpression)['finalResult']
                                     if lcmFactorExponentExpression == '0':
-                                        lcmFactor = '1'
+                                        if str(exp_lcm) == str(exp_denominator):
+                                            lcmFactor = '1'
+                                        else:
+                                            lcmFactor = f'{exp_lcm.coefficient}'
                                     else:
                                         lcmFactor = f"{Exponential(frac.denominator).base}^{'{'}{lcmFactorExponentExpression}{'}'}"
                                 else:
                                     lcmFactor = getLCMFactor(frac.denominator, denominators)
-                                if lcmFactor[0] == '1' and len(lcmFactor) > 1 and not Constant(
-                                    lcmFactor).is_digit: lcmFactor = lcmFactor[1:]
+                                if lcmFactor[0] == '1' and len(lcmFactor) > 1 and not Constant(lcmFactor).is_digit: lcmFactor = lcmFactor[1:]
                                 if len(lcmFactor) > 1:
                                     if lcmFactor[-1] == '1': lcmFactor = lcmFactor[:-1]
                             else:
                                 lcmFactor = getLCMFactor(f'({frac.denominator})', denominators)
-                            if lcmFactor == '1': lcmFactor = ''
+
                             if frac.numerator != '1':
+                                if lcmFactor == '1': lcmFactor = ''
                                 if len(Expression(frac.numerator)) == 1:
-                                    adjustedFrac = Fraction(
-                                        f"{sign}frac{'{'}{frac.numerator}{lcmFactor}{'}'}{'{'}{lcm}{'}'}")
+                                    adjustedFrac = Fraction(f"{sign}frac{'{'}{frac.numerator}{lcmFactor}{'}'}{'{'}{lcm}{'}'}")
                                 else:
-                                    adjustedFrac = Fraction(
-                                        f"{sign}frac{'{'}({frac.numerator}){lcmFactor}{'}'}{'{'}{lcm}{'}'}")
+                                    adjustedFrac = Fraction(f"{sign}frac{'{'}({frac.numerator}){lcmFactor}{'}'}{'{'}{lcm}{'}'}")
                             else:
                                 if numOccurrences(lcmFactor, '(') == 1 and Exponential(lcmFactor).exponent == '1':
                                     lcmFactor = Exponential(lcmFactor).base[1:-1]  # REMOVE UNNECESSARY PARENTHESES
@@ -1552,8 +1548,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                                     adjustedFrac = Fraction(
                                         f"{sign}frac{'{'}{int(frac.numerator) * lcmFactor}{'}'}{'{'}{lcm}{'}'}")
                                 else:
-                                    adjustedFrac = Fraction(
-                                        f"{sign}frac{'{'}{lcmFactor}*{frac.numerator}{'}'}{'{'}{lcm}{'}'}")
+                                    adjustedFrac = Fraction(f"{sign}frac{'{'}{lcmFactor}*{frac.numerator}{'}'}{'{'}{lcm}{'}'}")
                             else:
                                 adjustedFrac = Fraction(f"{sign}frac{'{'}{lcmFactor}{'}'}{'{'}{lcm}{'}'}")
 
@@ -1566,8 +1561,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
 
                     # CREATE STEP
                     adjustFractionStepInfo = latexify(f"{fractionSumStr}={adjustedFractionsStr}")
-                    adjustedFractionStep = createMainStep(
-                        r"\text{Adjust fractions based on their LCM of }" + latexify(str(lcm)), adjustFractionStepInfo)
+                    adjustedFractionStep = createMainStep(r"\text{Adjust fractions based on their LCM of }" + latexify(str(lcm)), adjustFractionStepInfo)
                     Steps.append(adjustedFractionStep)
 
                     """ COMBINE FRACTIONS """
@@ -1577,16 +1571,13 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                         combinedNumerator += f'{sign}{frac.numerator}'
 
                     if combinedNumerator[0] == '+': combinedNumerator = combinedNumerator[1:]
-                    combinedFraction = Fraction(
-                        f"frac{'{'}{convertToStandardForm(combinedNumerator)}{'}'}{'{'}{lcm}{'}'}")
+                    combinedFraction = Fraction(f"frac{'{'}{convertToStandardForm(combinedNumerator)}{'}'}{'{'}{lcm}{'}'}")
 
                     # combinedFraction.numerator = convertToStandardForm(combinedNumerator)
 
                     # CREATE STEP
                     combineFractionStepInfo = latexify(f"{adjustedFractionsStr}={combinedFraction}")
-                    combineFractionStep = createMainStep(
-                        r"\text{Apply The Fraction Rule:}\ \frac{a}{c}\pm\frac{b}{c}=\frac{a \pm b}{c}",
-                        combineFractionStepInfo)
+                    combineFractionStep = createMainStep(r"\text{Apply The Fraction Rule:}\ \frac{a}{c}\pm\frac{b}{c}=\frac{a \pm b}{c}", combineFractionStepInfo)
                     Steps.append(combineFractionStep)
                     # UPDATE FINAL RESULT
                     originalFractionStr = ''
@@ -2889,8 +2880,8 @@ def main():
 
     # E = Expression('(frac{x+2}{x+3}+frac{x+4}{x+5})*(frac{x+6}{x+7}+frac{x+8}{x+9})*(frac{x+2}{x+3}+frac{x+4}{x+5})')
     # E = Expression('frac{x^{2}+2x+2}{x^{2}+3x+5}*frac{x+1}{x+2}')
-    E = Expression('csc(frac{pi}{4})')
-    print(simplifyExpression(E, keyword='simplify'))
+    E = Expression('3-frac{1}{e^{6}}+1')
+    print(simplifyExpression(E, keyword='combine'))
 
 
 if __name__ == '__main__':

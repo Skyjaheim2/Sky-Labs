@@ -3,6 +3,7 @@
 Sky Labs is a computer algebra system (CAS) inspired by https://www.symbolab.com/ that allows users to do symbolic mathematical computations.
 
 ![image](https://user-images.githubusercontent.com/64718777/160222769-b98b45a5-01c8-416d-b0a3-b2ac1212238c.png)
+![image](https://user-images.githubusercontent.com/64718777/178858974-76149a69-eb5b-41f4-9c5e-f70e59b79c0c.png)
 ![ss7](https://user-images.githubusercontent.com/64718777/160222561-184628a2-5317-4769-8824-1a72ec96c9d0.png)
 ![image](https://user-images.githubusercontent.com/64718777/160734861-a7e43995-607c-4a57-a440-f7800f3cf887.png)
 ![image](https://user-images.githubusercontent.com/64718777/167980670-952abf3a-fa3e-4f55-b4cb-9b711e797150.png)
