@@ -2344,6 +2344,43 @@ class TestCalc(unittest.TestCase):
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 3e^{6}+e^{6}=4e^{6}'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Numerator}', 'info': '\\displaystyle \\frac{3e^{6}+e^{6}-1}{e^{6}}=\\frac{4e^{6}-1}{e^{6}}'}], 'finalResult': '\\frac{4e^{6}-1}{e^{6}}'},
             },
+            {
+                'expression': 'sqrt{(1+x^{2})*(1+4x^{2})}',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply FOIL Method}: \\\\ (a+b)(c+d)=ac+ad+bc+bd', 'info': '\\displaystyle \\left(1+x^{2}\\right)\\left(1+4x^{2}\\right)=1\\cdot1+1\\cdot4x^{2}+x^{2}\\cdot1+x^{2}\\cdot4x^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 1\\cdot1=1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 1\\cdot4x^{2}=4x^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle x^{2}\\cdot1=x^{2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle x^{2}\\cdot4x^{2}=4x^{2+2}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 1+4x^{2}+x^{2}+4x^{2+2}=4x^{2}+x^{2}+4x^{2+2}+1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+2=4'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 4x^{2+2}=4x^{4}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle 4x^{2}+x^{2}+4x^{2+2}=4x^{2}+x^{2}+4x^{4}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 4x^{2}+x^{2}+4x^{4}=5x^{2}+4x^{4}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle 1\\cdot1+1\\cdot4x^{2}+x^{2}\\cdot1+x^{2}\\cdot4x^{2}=5x^{2}+4x^{4}+1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify}', 'info': '\\displaystyle \\sqrt{\\left(1+x^{2}\\right)\\cdot\\left(1+4x^{2}\\right)}=\\sqrt{5x^{2}+4x^{4}+1}'}], 'finalResult': '\\sqrt{5x^{2}+4x^{4}+1}'},
+            },
+            {
+                'expression': 'e^{3*2+2}+e^{2*2+4}',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle e^{3\\cdot2+2}=e^{8}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 3\\cdot2=6'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 6+2=8'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle e^{3\\cdot2+2}=e^{8}'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle e^{2\\cdot2+4}=e^{8}', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 2\\cdot2=4'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 4+4=8'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle e^{2\\cdot2+4}=e^{8}'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle e^{3\\cdot2+2}+e^{2\\cdot2+4}=e^{8}+e^{8}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle e^{8}+e^{8}=2e^{8}'}], 'finalResult': '2e^{8}'},
+            },
+            # {
+            #     'expression': '',
+            #     'keyword': None,
+            #     'expected_val': {},
+            # },
             # {
             #     'expression': '',
             #     'keyword': None,
@@ -2363,8 +2400,7 @@ class TestCalc(unittest.TestCase):
         ]
 
         for item in expressionsAndExpectedVal:
-            # if item['expression'] == '2+3+sin(2pi)+cos(2pi)+sin(frac{pi}{4})+csc(frac{pi}{4})+tan(frac{pi}{3})+ln(e)+5+9':
-            #     print(f"Expected val: {simplifyExpression(Expression(item['expression']), item['keyword'])}")
+
             # try:
             expression = Expression(item['expression'])
             # print(expression)
@@ -2376,7 +2412,7 @@ class TestCalc(unittest.TestCase):
 
             # except Exception as error:
             #     print(f"Error: {error}\nOn: {item['expression']}\nLatex: {latexify(item['expression'])}\nKeyword: {item['keyword']}\n")
-
+            #
 
 def test():
     pass

@@ -717,7 +717,8 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
     if '*' in expression or len(matches) > 0:
         for term in expression.getTerms():
             if term[0] == '+': term = term[1:]
-            if '*' in term and type(term) != Fraction:
+
+            if '*' in term and type(term) != Fraction and type(term) != Radical:
                 if '(' in term:
                     numberOfTermsInParen = 0
                     termsInParen = []
@@ -873,6 +874,14 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                 else:
                     if term[0] == '-': term = term[1:]
                     termsToBeMultiplied = term.split('*')
+                    """ CHECK FOR INVALID TERMS """
+                    invalidTerm = False
+                    for foo in termsToBeMultiplied:
+                        if not parenIsBalanced(foo, 'both'):
+                            invalidTerm = True
+                    if invalidTerm:
+                        break
+
                     """ MOVE RADICALS TO THE BACK """
                     for i in range(len(termsToBeMultiplied)):
                         if termsToBeMultiplied[i][0:4] == 'sqrt':
@@ -2880,8 +2889,9 @@ def main():
 
     # E = Expression('(frac{x+2}{x+3}+frac{x+4}{x+5})*(frac{x+6}{x+7}+frac{x+8}{x+9})*(frac{x+2}{x+3}+frac{x+4}{x+5})')
     # E = Expression('frac{x^{2}+2x+2}{x^{2}+3x+5}*frac{x+1}{x+2}')
-    E = Expression('3-frac{1}{e^{6}}+1')
-    print(simplifyExpression(E, keyword='combine'))
+    # E = Expression('e^{3*2+2}')
+    E = Expression('e^{3*2+2}+e^{2*2+4}')
+    print(simplifyExpression(E, keyword='simplify'))
 
 
 if __name__ == '__main__':
