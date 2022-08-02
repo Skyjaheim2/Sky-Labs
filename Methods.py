@@ -3,7 +3,8 @@ import re
 def parseLatex(latexString: str):
     latexString = latexString.replace('\left(', '(').replace('\\right)', ')').replace('\left\{', '{').replace('\\right\}', '}') \
         .replace('\cdot', '*').replace(r'\pi', 'pi').replace('\sqrt', 'sqrt').replace('\sqrt[2]', 'sqrt') \
-        .replace(r'\frac', 'frac').replace('^1', '').replace('^{1}', '').replace(r'\lim', 'lim').replace(r'\to', '→')
+        .replace(r'\frac', 'frac').replace('^1', '').replace('^{1}', '').replace(r'\lim', 'lim').replace(r'\to', '→')\
+        .replace(r'\infty', 'infty')
 
     specialFunctions = getSpecialFunctions()
     for func in specialFunctions:
@@ -22,7 +23,7 @@ def parseLatex(latexString: str):
 def latexify(expression):
     expression = expression.replace('(', '\left(').replace(')', '\\right)').replace('*', '\cdot').replace('pi', r'\pi') \
                            .replace('sqrt', '\\sqrt').replace('sqrt[2]', 'sqrt').replace('frac', r'\frac').replace('^{1}', '')\
-                           .replace('lim', r'\lim').replace('→', r'\to')
+                           .replace('lim', r'\lim').replace('→', r'\to').replace(r'infty', r'\infty')
 
     """ REPLACE \sin with sin  """
     specialFunctions = getSpecialFunctions()

@@ -491,7 +491,7 @@
                 StepsUI.addLatexToElement(heading, heading.textContent)
             })
             // Add latex to .final-step
-            StepsUI.addLatexToElement(document.querySelector('.final-step'), `\\displaystyle \\text{Solution:}\\ ${finalResult}`)
+            StepsUI.addLatexToElement(document.querySelector('.final-step'), `\\displaystyle \\text{Solution:}\\ ${finalResult.replace('diverges', '\\text{diverges}')}`)
             /* Add Latex To Solution Heading */
 
             // Check for keyword
@@ -510,8 +510,8 @@
             else {
                 userInput = enteredMath;
             }
-            console.log(`{\\displaystyle ${userInput}=${finalResult}}`)
-            StepsUI.addLatexToElement(document.querySelector('#finalSolutionHeading'), `{\\displaystyle ${userInput}=${finalResult}}`)
+            // console.log(`{\\displaystyle ${userInput}=${finalResult}}`)
+            StepsUI.addLatexToElement(document.querySelector('#finalSolutionHeading'), `{\\displaystyle ${userInput}=${finalResult.replace('diverges', '\\text{diverges}')}}`)
 
         }
         static makeStepsExpandable() {

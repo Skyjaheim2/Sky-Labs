@@ -28,7 +28,7 @@ class MyTestCase(unittest.TestCase):
     def setUp(self) -> None:
         pass
 
-    def test_Limits(self):
+    def test_regularLimits(self):
         expressionsAndExpectedVal = [
             {
                 'expression': 'lim_{x→2}(frac{x^{2}+23x+1}{x+2})',
@@ -139,16 +139,49 @@ class MyTestCase(unittest.TestCase):
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle 6+4+30'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 6+4+30=40'}], 'finalResult': '40'},
             },
-            # {
-            #     'expression': '',
-            #     'keyword': None,
-            #     'expected_val': {},
-            # },
-            # {
-            #     'expression': '',
-            #     'keyword': None,
-            #     'expected_val': {},
-            # },
+            {
+                'expression': 'lim_{x→3}(3t^{2}+2t+1)',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Limit Law:}\\lim_{x\\to a}\\left[c\\right]=c', 'info': '\\displaystyle \\lim_{x\\to3}\\left(3t^{2}+2t+1\\right)=3t^{2}+2t+1'}], 'finalResult': '3t^{2}+2t+1'},
+            },
+            {
+                'expression': 'lim_{x→3}(3t^{2}+2t+x^{2}+3x+1)+5t^{2}+t+3',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'e-step', 'heading': '\\displaystyle \\lim_{x\\to3}\\left(3t^{2}+2t+x^{2}+3x+1\\right)=3t^{2}+2t+19', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Plug in the value}\\ x=3', 'info': '\\displaystyle 3t^{2}+2t+x^{2}+3x+1=3t^{2}+2t+3^{2}+3\\cdot3+1'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 3\\cdot3=9'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 3t^{2}+2t+3^{2}+9+1=3t^{2}+3^{2}+2t+9+1'},
+                        {'type': 'e-step', 'heading': '\\displaystyle 3^{2}=9', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Exponent}', 'info': '3^{2}=9'}]},
+                        {'type': 'e-step', 'heading': '\\displaystyle 2t+9+1=2t+10', 'e-steps': [
+                            {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2t+9+1=2t+10'}]},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle 9+3t^{2}+2t+10'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 9+3t^{2}+2t+10=3t^{2}+9+2t+10'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 9+2t+10=2t+9+10'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2t+9+10=2t+19'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle 3t^{2}+2t+19+5t^{2}+t+3'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle 3t^{2}+2t+19+5t^{2}+t+3=3t^{2}+5t^{2}+2t+19+t+3'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle 3t^{2}+5t^{2}=8t^{2}'},
+                    {'type': 'e-step', 'heading': '\\displaystyle 2t+19+t+3=3t+22', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Group Like Terms}', 'info': '\\displaystyle 2t+19+t+3=2t+t+19+3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle 2t+t+19+3=3t+19+3'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 3t+19+3=3t+22'}]}], 'finalResult': '8t^{2}+3t+22'},
+            },
+            {
+                'expression': 'lim_{x→3}(x^{2}+2x+1)',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Plug in the value}\\ x=3', 'info': '\\displaystyle x^{2}+2x+1=3^{2}+2\\cdot3+1'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 2\\cdot3=6'},
+                    {'type': 'e-step', 'heading': '\\displaystyle 3^{2}=9', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Exponent}', 'info': '\\displaystyle 3^{2}=9'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle 6+1=7', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 6+1=7'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle 9+7'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 9+7=16'}], 'finalResult': '16'},
+            }
 
         ]
 
@@ -160,6 +193,162 @@ class MyTestCase(unittest.TestCase):
             keyword = item['keyword']
             returnedVal = evaluateCalculusExpression(expression, keyword=keyword)
             self.assertEqual(expectedVal, returnedVal, f"Failed: {expression}\nLatex: {latexify(expression)}\nKeyword: {keyword}")
+
+            # except Exception as error:
+            #     print(f"Error: {error}\nOn: {item['expression']}\nLatex: {latexify(item['expression'])}\nKeyword: {item['keyword']}\n")
+
+
+    def test_limitsAtInfinity(self):
+
+        expressionsAndExpectedVal = [
+            {
+                'expression': "lim_{x→infty}(x^{2}+2x+1)",
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinite Limit Property:}\\lim_{x\\to\\pm\\infty}\\left( ax^{n}+\\dots+bx+c \\right)=\\infty,a>0, n\\ \\text{is even}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(x^{2}+2x+1\\right)=\\infty'}], 'finalResult': '\\infty'},
+            },
+            {
+                'expression': 'lim_{x→infty}(-x^{4}-3x^{3}+2x+1)',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinite Limit Property:}\\lim_{x\\to\\pm\\infty}\\left( ax^{n}+\\dots+bx+c \\right)=-\\infty,a<0, n\\ \\text{is even}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(-x^{4}-3x^{3}+2x+1\\right)=-\\infty'}], 'finalResult': '-\\infty'},
+            },
+            {
+                'expression': 'lim_{x→infty}(x^{3}+5x^{2}+2x+3)',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinite Limit Property:}\\lim_{x\\to\\pm\\infty}\\left( ax^{n}+\\dots+bx+c \\right)=\\infty,a>0, n\\ \\text{is odd}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(x^{3}+5x^{2}+2x+3\\right)=\\infty'}], 'finalResult': '\\infty'},
+            },
+            {
+                'expression': 'lim_{x→infty}(-3x^{3}+5x^{2}+2x+3)',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinite Limit Property:}\\lim_{x\\to\\pm\\infty}\\left( ax^{n}+\\dots+bx+c \\right)=-\\infty,a<0, n\\ \\text{is odd}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(-3x^{3}+5x^{2}+2x+3\\right)=-\\infty'}], 'finalResult': '-\\infty'},
+            },
+            {
+                'expression': 'lim_{x→infty}(10x^{6}+5x^{3}+2x^{2}+x+1)+10+12+1-5',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinite Limit Property:}\\lim_{x\\to\\pm\\infty}\\left( ax^{n}+\\dots+bx+c \\right)=\\infty,a>0, n\\ \\text{is even}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(10x^{6}+5x^{3}+2x^{2}+x+1\\right)=\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\infty+10+12+1--5'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle \\infty+10+12+1+5=\\infty+28'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinity Property}\\ \\infty+c=\\infty', 'info': '\\displaystyle \\infty+28=\\infty'}], 'finalResult': '\\infty'},
+            },
+            {
+                'expression': 'lim_{x→infty}(3x^{2})',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinite Limit Property:}\\lim_{x\\to\\pm\\infty}\\left( ax^{n}+\\dots+bx+c \\right)=\\infty,a>0, n\\ \\text{is even}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(3x^{2}\\right)=\\infty'}], 'finalResult': '\\infty'},
+            },
+            {
+                'expression': 'lim_{x→infty}(sqrt{10x^{3}+5x^{2}+x+1})',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Limit Law:}\\lim_{x\\to a}\\left[\\sqrt{f(x)}\\right]=\\sqrt{\\lim_{x\\to a}\\left( f(x) \\right)}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\sqrt{10x^{3}+5x^{2}+x+1}\\right)=\\sqrt{\\lim_{x\\to\\infty}\\left(10x^{3}+5x^{2}+x+1\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinite Limit Property:}\\lim_{x\\to\\pm\\infty}\\left( ax^{n}+\\dots+bx+c \\right)=\\infty,a>0, n\\ \\text{is odd}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(10x^{3}+5x^{2}+x+1\\right)=\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\sqrt{10x^{3}+5x^{2}+x+1}\\right)=\\sqrt{\\infty}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinity Property}:\\ \\sqrt{\\infty}=\\infty', 'info': '\\displaystyle \\sqrt{\\infty}=\\infty'}], 'finalResult': '\\infty'},
+            },
+            {
+                'expression': 'lim_{x→infty}(15x^{3}+sqrt{10x^{3}+5x^{2}+x+1})',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Limit Law:}\\lim_{x\\to a}\\left[f(x)\\pm g(x)\\right]=\\lim_{x\\to a}f(x)\\pm \\lim_{x\\to a}g(x)', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(15x^{3}+\\sqrt{10x^{3}+5x^{2}+x+1}\\right)=\\lim_{x\\to\\infty}\\left(15x^{3}\\right)+\\lim_{x\\to\\infty}\\left(\\sqrt{10x^{3}+5x^{2}+x+1}\\right)'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinite Limit Property:}\\lim_{x\\to\\pm\\infty}\\left( ax^{n}+\\dots+bx+c \\right)=\\infty,a>0, n\\ \\text{is odd}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(15x^{3}\\right)=\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Limit Law:}\\lim_{x\\to a}\\left[\\sqrt{f(x)}\\right]=\\sqrt{\\lim_{x\\to a}\\left( f(x) \\right)}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\sqrt{10x^{3}+5x^{2}+x+1}\\right)=\\sqrt{\\lim_{x\\to\\infty}\\left(10x^{3}+5x^{2}+x+1\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinite Limit Property:}\\lim_{x\\to\\pm\\infty}\\left( ax^{n}+\\dots+bx+c \\right)=\\infty,a>0, n\\ \\text{is odd}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(10x^{3}+5x^{2}+x+1\\right)=\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\sqrt{10x^{3}+5x^{2}+x+1}\\right)=\\sqrt{\\infty}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\infty+\\sqrt{\\infty}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle \\infty+\\sqrt{\\infty}=\\sqrt{\\infty}+\\infty'},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\sqrt{\\infty}=\\infty', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinity Property}:\\ \\sqrt{\\infty}=\\infty', 'info': '\\displaystyle \\sqrt{\\infty}=\\infty'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\infty+\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle \\infty+\\infty=2\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinity Property}\\ c\\cdot\\infty=\\infty', 'info': '\\displaystyle 2\\infty=\\infty'}], 'finalResult': '\\infty'},
+            },
+            {
+                'expression': 'lim_{x→infty}(sqrt{x^{2}+sqrt{10x^{3}+5x^{2}+x+1}})',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Limit Law:}\\lim_{x\\to a}\\left[\\sqrt{f(x)}\\right]=\\sqrt{\\lim_{x\\to a}\\left( f(x) \\right)}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\sqrt{x^{2}+\\sqrt{10x^{3}+5x^{2}+x+1}}\\right)=\\sqrt{\\lim_{x\\to\\infty}\\left(x^{2}+\\sqrt{10x^{3}+5x^{2}+x+1}\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Limit Law:}\\lim_{x\\to a}\\left[f(x)\\pm g(x)\\right]=\\lim_{x\\to a}f(x)\\pm \\lim_{x\\to a}g(x)', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(x^{2}+\\sqrt{10x^{3}+5x^{2}+x+1}\\right)=\\lim_{x\\to\\infty}\\left(x^{2}\\right)+\\lim_{x\\to\\infty}\\left(\\sqrt{10x^{3}+5x^{2}+x+1}\\right)'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinite Limit Property:}\\lim_{x\\to\\pm\\infty}\\left( ax^{n}+\\dots+bx+c \\right)=\\infty,a>0, n\\ \\text{is even}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(x^{2}\\right)=\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Limit Law:}\\lim_{x\\to a}\\left[\\sqrt{f(x)}\\right]=\\sqrt{\\lim_{x\\to a}\\left( f(x) \\right)}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\sqrt{10x^{3}+5x^{2}+x+1}\\right)=\\sqrt{\\lim_{x\\to\\infty}\\left(10x^{3}+5x^{2}+x+1\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinite Limit Property:}\\lim_{x\\to\\pm\\infty}\\left( ax^{n}+\\dots+bx+c \\right)=\\infty,a>0, n\\ \\text{is odd}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(10x^{3}+5x^{2}+x+1\\right)=\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\sqrt{10x^{3}+5x^{2}+x+1}\\right)=\\sqrt{\\infty}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\infty+\\sqrt{\\infty}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle \\infty+\\sqrt{\\infty}=\\sqrt{\\infty}+\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinity Property}:\\ \\sqrt{\\infty}=\\infty', 'info': '\\displaystyle \\sqrt{\\infty}=\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\infty+\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle \\infty+\\infty=2\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinity Property}\\ c\\cdot\\infty=\\infty', 'info': '\\displaystyle 2\\infty=\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\sqrt{x^{2}+\\sqrt{10x^{3}+5x^{2}+x+1}}\\right)=\\sqrt{\\infty}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinity Property}:\\ \\sqrt{\\infty}=\\infty', 'info': '\\displaystyle \\sqrt{\\infty}=\\infty'}], 'finalResult': '\\infty'},
+            },
+            {
+                'expression': 'lim_{x→infty}(e^{3x^{2}+2x+3})',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Limit Law:}\\lim_{x\\to a}\\left[f(x)\\right]^b=\\left[ \\lim_{x\\to a}\\left( f(x) \\right) \\right]^b', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(e^{3x^{2}+2x+3}\\right)=e^{\\lim_{x\\to\\infty}\\left(3x^{2}+2x+3\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinite Limit Property:}\\lim_{x\\to\\pm\\infty}\\left( ax^{n}+\\dots+bx+c \\right)=\\infty,a>0, n\\ \\text{is even}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(3x^{2}+2x+3\\right)=\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(e^{3x^{2}+2x+3}\\right)=e^{\\infty}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinity Property}:\\ \\infty^c=\\infty', 'info': '\\displaystyle e^{\\infty}=\\infty'}], 'finalResult': '\\infty'},
+            },
+            {
+                'expression': 'lim_{x→infty}(e^{3x+sqrt{3x^{3}+sqrt{10x^{6}+20x^{4}+5x+1}}})',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Limit Law:}\\lim_{x\\to a}\\left[f(x)\\right]^b=\\left[ \\lim_{x\\to a}\\left( f(x) \\right) \\right]^b', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(e^{3x+\\sqrt{3x^{3}+\\sqrt{10x^{6}+20x^{4}+5x+1}}}\\right)=e^{\\lim_{x\\to\\infty}\\left(3x+\\sqrt{3x^{3}+\\sqrt{10x^{6}+20x^{4}+5x+1}}\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Limit Law:}\\lim_{x\\to a}\\left[f(x)\\pm g(x)\\right]=\\lim_{x\\to a}f(x)\\pm \\lim_{x\\to a}g(x)', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(3x+\\sqrt{3x^{3}+\\sqrt{10x^{6}+20x^{4}+5x+1}}\\right)=\\lim_{x\\to\\infty}\\left(3x\\right)+\\lim_{x\\to\\infty}\\left(\\sqrt{3x^{3}+\\sqrt{10x^{6}+20x^{4}+5x+1}}\\right)'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinite Limit Property:}\\lim_{x\\to\\pm\\infty}\\left( ax^{n}+\\dots+bx+c \\right)=\\infty,a>0, n\\ \\text{is odd}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(3x\\right)=\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Limit Law:}\\lim_{x\\to a}\\left[\\sqrt{f(x)}\\right]=\\sqrt{\\lim_{x\\to a}\\left( f(x) \\right)}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\sqrt{3x^{3}+\\sqrt{10x^{6}+20x^{4}+5x+1}}\\right)=\\sqrt{\\lim_{x\\to\\infty}\\left(3x^{3}+\\sqrt{10x^{6}+20x^{4}+5x+1}\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Limit Law:}\\lim_{x\\to a}\\left[f(x)\\pm g(x)\\right]=\\lim_{x\\to a}f(x)\\pm \\lim_{x\\to a}g(x)', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(3x^{3}+\\sqrt{10x^{6}+20x^{4}+5x+1}\\right)=\\lim_{x\\to\\infty}\\left(3x^{3}\\right)+\\lim_{x\\to\\infty}\\left(\\sqrt{10x^{6}+20x^{4}+5x+1}\\right)'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinite Limit Property:}\\lim_{x\\to\\pm\\infty}\\left( ax^{n}+\\dots+bx+c \\right)=\\infty,a>0, n\\ \\text{is odd}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(3x^{3}\\right)=\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Limit Law:}\\lim_{x\\to a}\\left[\\sqrt{f(x)}\\right]=\\sqrt{\\lim_{x\\to a}\\left( f(x) \\right)}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\sqrt{10x^{6}+20x^{4}+5x+1}\\right)=\\sqrt{\\lim_{x\\to\\infty}\\left(10x^{6}+20x^{4}+5x+1\\right)}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinite Limit Property:}\\lim_{x\\to\\pm\\infty}\\left( ax^{n}+\\dots+bx+c \\right)=\\infty,a>0, n\\ \\text{is even}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(10x^{6}+20x^{4}+5x+1\\right)=\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\sqrt{10x^{6}+20x^{4}+5x+1}\\right)=\\sqrt{\\infty}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\infty+\\sqrt{\\infty}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle \\infty+\\sqrt{\\infty}=\\sqrt{\\infty}+\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinity Property}:\\ \\sqrt{\\infty}=\\infty', 'info': '\\displaystyle \\sqrt{\\infty}=\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\infty+\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle \\infty+\\infty=2\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinity Property}\\ c\\cdot\\infty=\\infty', 'info': '\\displaystyle 2\\infty=\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\sqrt{3x^{3}+\\sqrt{10x^{6}+20x^{4}+5x+1}}\\right)=\\sqrt{\\infty}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\infty+\\sqrt{\\infty}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Group Terms}', 'info': '\\displaystyle \\displaystyle \\infty+\\sqrt{\\infty}=\\sqrt{\\infty}+\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinity Property}:\\ \\sqrt{\\infty}=\\infty', 'info': '\\displaystyle \\sqrt{\\infty}=\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\infty+\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Terms Left to Right}', 'info': '\\displaystyle \\infty+\\infty=2\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinity Property}\\ c\\cdot\\infty=\\infty', 'info': '\\displaystyle 2\\infty=\\infty'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(e^{3x+\\sqrt{3x^{3}+\\sqrt{10x^{6}+20x^{4}+5x+1}}}\\right)=e^{\\infty}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinity Property}:\\ \\infty^c=\\infty', 'info': '\\displaystyle e^{\\infty}=\\infty'}], 'finalResult': '\\infty'},
+            },
+            {
+                'expression': 'lim_{x→infty}(frac{3t^{2}+5t+2}{sqrt{x^{2}+2x+1}})',
+                'keyword': None,
+                'expected_val': {'steps': [
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Limit Law:}\\lim_{x\\to a}\\left[\\cfrac{f(x)}{g(x)}\\right]=\\cfrac{\\lim_{x\\to a}f(x)}{\\lim_{x\\to a}g(x)}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\frac{3t^{2}+5t+2}{\\sqrt{x^{2}+2x+1}}\\right)=\\frac{\\lim_{x\\to\\infty}\\left(3t^{2}+5t+2\\right)}{\\lim_{x\\to\\infty}\\left(\\sqrt{x^{2}+2x+1}\\right)}'},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\lim_{x\\to\\infty}\\left(3t^{2}+5t+2\\right)=3t^{2}+5t+2', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Limit Law:}\\lim_{x\\to a}\\left[c\\right]=c', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(3t^{2}+5t+2\\right)=3t^{2}+5t+2'}]},
+                    {'type': 'e-step', 'heading': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\sqrt{x^{2}+2x+1}\\right)=\\infty', 'e-steps': [
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Limit Law:}\\lim_{x\\to a}\\left[\\sqrt{f(x)}\\right]=\\sqrt{\\lim_{x\\to a}\\left( f(x) \\right)}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\sqrt{x^{2}+2x+1}\\right)=\\sqrt{\\lim_{x\\to\\infty}\\left(x^{2}+2x+1\\right)}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinite Limit Property:}\\lim_{x\\to\\pm\\infty}\\left( ax^{n}+\\dots+bx+c \\right)=\\infty,a>0, n\\ \\text{is even}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(x^{2}+2x+1\\right)=\\infty'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\sqrt{x^{2}+2x+1}\\right)=\\sqrt{\\infty}'},
+                        {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinity Property}:\\ \\sqrt{\\infty}=\\infty', 'info': '\\displaystyle \\sqrt{\\infty}=\\infty'}]},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Results}', 'info': '\\displaystyle \\lim_{x\\to\\infty}\\left(\\frac{3t^{2}+5t+2}{\\sqrt{x^{2}+2x+1}}\\right)=\\frac{3t^{2}+5t+2}{\\infty}'},
+                    {'type': 'main-step', 'description': '\\displaystyle \\text{Apply Infinity Property}:\\ \\cfrac{c}{\\infty}=0', 'info': '\\displaystyle \\frac{3t^{2}+5t+2}{\\infty}=0'}], 'finalResult': '0'},
+            }
+        ]
+
+        for item in expressionsAndExpectedVal:
+            # try:
+            expression = Expression(item['expression'])
+            # print(expression)
+            expectedVal = item['expected_val']
+            keyword = item['keyword']
+            returnedVal = evaluateCalculusExpression(expression, keyword=keyword)
+            self.assertEqual(expectedVal, returnedVal,
+                             f"Failed: {expression}\nLatex: {latexify(expression)}\nKeyword: {keyword}")
 
             # except Exception as error:
             #     print(f"Error: {error}\nOn: {item['expression']}\nLatex: {latexify(item['expression'])}\nKeyword: {item['keyword']}\n")

@@ -172,6 +172,22 @@ class Expression:
     def isSingleExpression(self):
         return len(self.getTerms()) == 1
 
+    def isPolynomial(self):
+        if len(self.getGroupedTerms()['Radicals']) > 0:
+            return False
+        if len(self.getGroupedTerms()['Fractions']) > 0:
+            return False
+        for term in self.getTerms():
+            try:
+                checkTerm = Exponential(term)
+            except TypeError:
+                return False
+            if checkTerm.base[0] == '(' and checkTerm.base[-1] == ')':
+                checkTerm.base = checkTerm.base[1:-1]
+            if not Constant(checkTerm.exponent).is_integer or not Expression(checkTerm.base).isSingleExpression():
+                return False
+        return True
+
     @staticmethod
     def castTerms(Terms):
         for i in range(len(Terms)):
@@ -201,9 +217,7 @@ class Expression:
 
             if Terms[i][0:3] == 'lim':
                 Terms[i] = Constant(Terms[i])
-            elif len(leftExponentialProductMatches) > 0 or len(rightExponentialProductMatches) > 0:
-                # if len(matches) > 0:
-                Terms[i] = Constant(Terms[i])
+
             elif ('frac' in Terms[i][0:5] or fraction_matches != []) and Terms[i][0:5][0] != '(':
                 if '*' in Terms[i]:
                     allProducts = Terms[i].split('*')
@@ -219,13 +233,18 @@ class Expression:
                         Terms[i] = Fraction(Terms[i])
                 else:
                     Terms[i] = Fraction(Terms[i])
+
+            elif (len(leftExponentialProductMatches) > 0 or len(rightExponentialProductMatches) > 0) and Terms[i][0:5] != 'infty':
+                # if len(matches) > 0:
+                Terms[i] = Constant(Terms[i])
+
+
             elif ('sqrt' in Terms[i][0:5] and parenIsBalanced(Terms[i][0:5])) or radical_matches != []:
                 Terms[i] = Radical(Terms[i])
             elif '^' in Terms[i] or exponential_matches != []:
                 try:
                     exp = Exponential(Terms[i])
-                    if parenIsBalanced(exp.base) and parenIsBalanced(exp.exponent) and Constant(
-                            exp.coefficient).is_digit:
+                    if parenIsBalanced(exp.base) and parenIsBalanced(exp.exponent) and Constant(exp.coefficient).is_digit:
                         Terms[i] = Exponential(Terms[i])
                     else:
                         Terms[i] = Constant(Terms[i])
@@ -381,6 +400,8 @@ class Exponential:
             if coefficient == '':
                 self.coefficient = '1'
                 if sign == '-': self.coefficient = '-1'
+            elif coefficient == 'inft':
+                self.coefficient = '1'
             else:
                 self.coefficient = coefficient
                 if self.coefficient[-1] == '*': self.coefficient = self.coefficient[:-1]
@@ -398,19 +419,27 @@ class Exponential:
                 self.coefficient = f"{sign}{self.coefficient}"
 
     def computeExponential(self):
-        base = Constant(self.base)
-        exponent = Constant(self.exponent)
-        if (base.is_digit or Constant(str(base)[1:-1]).is_digit) and exponent.is_digit:
-            solution = Constant(str(eval(f'{self.base}**{self.exponent}')))
-            if solution.is_integer:
-                if solution.val > maxInt:
-                    return False
-                return solution
+        if self.base not in ['infty', '-infty', '(infty)'] and self.exponent not in ['infty', '-infty', '(infty)']:
+            base = Constant(self.base)
+            exponent = Constant(self.exponent)
+            if (base.is_digit or Constant(str(base)[1:-1]).is_digit) and exponent.is_digit:
+                solution = Constant(str(eval(f'{self.base}**{self.exponent}')))
+                if solution.is_integer:
+                    if solution.val > maxInt:
+                        return False
+                    return solution
+                else:
+                    decimal_approx = Constant(f'{solution[:7]}...')
+                    return decimal_approx
             else:
-                decimal_approx = Constant(f'{solution[:7]}...')
-                return decimal_approx
-        else:
-            return False
+                return False
+        if self.base in ['infty', '-infty', '(infty)'] and self.exponent not in ['infty', '-infty', '(infty)']:
+            return 'infty'
+        if self.base not in ['infty', '-infty', '(infty)'] and self.exponent in ['infty', '-infty', '(infty)']:
+            if self.exponent[0] == '-':
+                return Constant('0')
+            else:
+                return 'infty'
 
     def isSimplified(self):
         base = Expression(self.base)
@@ -459,9 +488,48 @@ class Exponential:
     def __eq__(self, other):
         # return (str(self.base) == str(other.base)) and (str(self.exponent) == str(other.exponent))
         return self.expression == other.expression
-class Polynomial(Exponential):
-    def __init__(self, expression):
-        super().__init__(expression)
+
+
+class Polynomial:
+    def __init__(self, expression: str):
+        self.expression = expression
+
+    def getLeadingTerm(self):
+        maxExponent = -math.inf
+        currentLeadingTerm = None
+        for term in Expression(self.expression).getTerms():
+            term = Exponential(term)
+            if int(term.exponent) > maxExponent:
+                maxExponent = int(term.exponent)
+                currentLeadingTerm = term
+        if currentLeadingTerm[0] == '+': currentLeadingTerm = Exponential(currentLeadingTerm[1:])
+
+        return currentLeadingTerm
+
+    def replace(self, subStringToBeReplace: str, replacement: str):
+        return self.expression.replace(subStringToBeReplace, replacement)
+
+    def split(self, char):
+        return self.expression.split(char)
+
+    def __str__(self):
+        return self.expression
+
+    def __repr__(self):
+        return self.expression
+
+    def __len__(self):
+        return len(Expression(self.expression))
+
+    def __contains__(self, item):
+        """ 'in' OPERATOR """
+        return item in self.expression
+
+    def __getitem__(self, index):
+        """ [] OPERATOR """
+        if isinstance(index, slice):
+            return Expression(self.expression[index])
+        return self.expression[index]
 
 class Radical(Expression):
     def __init__(self, expression):
@@ -511,6 +579,8 @@ class Radical(Expression):
                 return False
         else:
             index = Constant(self.index)
+            if str(self.getRadicand()) == 'infty':
+                return 'infty'
             if index.is_digit:
                 try:
                     solution = Constant(str(eval(f'{self.getRadicand()}**(1/{self.index})')))
@@ -561,11 +631,17 @@ class Fraction:
 
         return Fraction(f"frac{'{'}{reducedNumerator}{'}'}{'{'}{reducedDenominator}{'}'}")
 
-    def computeFraction(self, reduce=False):
+    def computeFraction(self, reduce=False, specialOperations=None):
         numerator = Constant(self.numerator)
         denominator = Constant(self.denominator)
         if numerator.is_integer and denominator.is_integer:
-            solution = Constant(str(eval(f'{self.numerator}/{self.denominator}')))
+            if specialOperations == 'limit':
+                try:
+                    solution = Constant(str(eval(f'{self.numerator}/{self.denominator}')))
+                except ZeroDivisionError:
+                    return 'DNE'
+            else:
+                solution = Constant(str(eval(f'{self.numerator}/{self.denominator}')))
             if solution.is_integer:
                 if solution.val > maxInt:
                     return False
@@ -589,6 +665,8 @@ class Fraction:
 
                 return decimal_approx
         else:
+            if str(numerator) not in ['infty','-infty'] and str(denominator) in ['infty', '-infty']:
+                return '→0'
             return False
 
     def isSimplified(self):
@@ -685,7 +763,7 @@ class Equation:
 
 MAX_SIZE_OF_NUM_BEFORE_CONVERTED_TO_STANDARD_FORM = 10 ** 20
 
-def simplifyExpression(expression: Expression, keyword=None, Steps=None, groupedTerms=None, recursiveCall=False, finalResult=None):
+def simplifyExpression(expression: Expression, keyword=None, specialOperations=None, Steps=None, groupedTerms=None, recursiveCall=False, finalResult=None):
     expression = Expression(expression.replace(' ', ''))
 
     radical_product_pattern = re.compile(r'sqrt{.+}sqrt{.+}')
@@ -864,7 +942,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                                         simplifiedTermsToBeMultiplied = distributeTerms(termsToBeMultiplied, Steps)
                                         expression = Expression(expression.replace(joinList(termsInParen, ''),
                                                                                    f"*({str(simplifiedTermsToBeMultiplied)})"))
-                                        return simplifyExpression(expression, keyword, Steps, finalResult=finalResult)
+                                        return simplifyExpression(expression, keyword=keyword, Steps=Steps, finalResult=finalResult)
 
                         else:
                             termsToBeMultiplied = joinList(termsInParen, '')
@@ -926,13 +1004,20 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                                 Steps.append(mainStep)
 
                                 newExpression = expression.replace(str(term), productExpression)
-                                return simplifyExpression(newExpression, keyword, Steps, finalResult=finalResult)
+                                return simplifyExpression(newExpression, keyword=keyword, Steps=Steps, finalResult=finalResult)
 
                         solution = getProduct2(termsToBeMultiplied)
-                        productStep = createMainStep(r'\text{Multiply And Divide (left to right)}',
-                                                     latexify(f'{term}={solution}'))
+                        productStep = createMainStep(r'\text{Multiply And Divide (left to right)}', latexify(f'{term}={solution}'))
                         if str(term) != solution:
                             Steps.append(productStep)
+
+                        constTimesInftyPattern = re.compile("\d*infty")
+                        constTimesInftyMatches = constTimesInftyPattern.findall(solution)
+                        if len(constTimesInftyMatches) > 0:
+                            inftyPropertyStep = createMainStep(r'\text{Apply Infinity Property}\ c\cdot\infty=\infty',latexify(f"{constTimesInftyMatches[0]}={'infty'}"))
+                            Steps.append(inftyPropertyStep)
+                            solution = solution.replace(constTimesInftyMatches[0], 'infty')
+
                         expression = expression.replace(str(term), solution)
                     expression = Expression(expression)
 
@@ -1024,9 +1109,22 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                         steps = []
                         # COMPUTATION STEP
                         solutionToExponential = exponential.computeExponential()
-                        if solutionToExponential != False and solutionToExponential.is_integer:
-                            computationStep = createMainStep(r'\text{Compute Exponent}',
-                                                             latexify(f'{exponential}={solutionToExponential}'))
+                        if solutionToExponential == 'infty':
+                            computationStep = createMainStep(r'\text{Apply Infinity Property}:\ \infty^c=\infty',latexify(f'{exponential}={solutionToExponential}'))
+                            steps.append(computationStep)
+                            final_simplification = solutionToExponential
+                            # CREATE AND ADD E-STEP
+                            heading = latexify(f"{exponential}={solutionToExponential}")
+                            if heading[0] == '+' or heading[0] == '-': heading = heading[1:]
+                            e_step = createExpandableStep(heading, steps)
+                            Steps.append(e_step)
+                            # UPDATE FINAL RESULT
+                            sign = final_simplification[0]
+                            if (sign != '+' and sign != '-'): sign = '+'
+                            finalResult += f'{sign}{final_simplification}'
+
+                        elif solutionToExponential != False and solutionToExponential.is_integer:
+                            computationStep = createMainStep(r'\text{Compute Exponent}',latexify(f'{exponential}={solutionToExponential}'))
                             if computationStep['info'][14] == '+' or computationStep['info'][14] == '-':
                                 computationStep['info'] = computationStep['info'][15:]
                             steps.append(computationStep)
@@ -1060,13 +1158,13 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                                 for e_step in step['e-steps']:
                                     steps.append(e_step)
 
-                        base_simplification = Exponential(
-                            f"{coefficient}({parseLatex(simplifiedBase['finalResult'])})^{'{'}{exponent}{'}'}")
+
+                        base_simplification = Exponential(f"{coefficient}({parseLatex(simplifiedBase['finalResult'])})^{'{'}{exponent}{'}'}")
+
                         base_simplification.format()
                         # SIMPLIFICATION STEP #1
                         simplificationStepInfo = latexify(f"{exponential}={base_simplification}")
-                        if simplificationStepInfo[0] == '+' or simplificationStepInfo[
-                            0] == '-': simplificationStepInfo = simplificationStepInfo[1:]
+                        if simplificationStepInfo[0] == '+' or simplificationStepInfo[0] == '-': simplificationStepInfo = simplificationStepInfo[1:]
                         simplificationStep = createMainStep(r'\text{Simplify Base}', simplificationStepInfo)
                         temp_exponential = exponential
                         if temp_exponential[0] == '+': temp_exponential = temp_exponential[1:]
@@ -1081,8 +1179,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                                 for e_step in step['e-steps']:
                                     steps.append(e_step)
 
-                        exponent_simplification = Exponential(
-                            f"{coefficient}{base_simplification.base}^{'{'}{parseLatex(simplifiedExponent['finalResult'])}{'}'}")
+                        exponent_simplification = Exponential(f"{coefficient}{base_simplification.base}^{'{'}{parseLatex(simplifiedExponent['finalResult'])}{'}'}")
                         exponent_simplification.format()
                         # SIMPLIFICATION STEP #2
                         simplificationStepInfo = latexify(f"{base_simplification}={exponent_simplification}")
@@ -1097,9 +1194,13 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
 
                         # COMPUTATION STEP
                         solutionToFinalExponential = final_simplification.computeExponential()
-                        if solutionToFinalExponential != False and solutionToFinalExponential.is_integer:
-                            finalStep = createMainStep(r'\text{Compute Exponential}',
-                                                       latexify(f'{final_simplification}={solutionToFinalExponential}'))
+                        if solutionToFinalExponential == 'infty':
+                            computationStep = createMainStep(r'\text{Apply Infinity Property}:\ \infty^c=\infty',latexify(f'{final_simplification}={solutionToFinalExponential}'))
+                            steps.append(computationStep)
+                            final_simplification = Exponential(solutionToFinalExponential)
+
+                        elif solutionToFinalExponential != False and solutionToFinalExponential.is_integer:
+                            finalStep = createMainStep(r'\text{Compute Exponential}',latexify(f'{final_simplification}={solutionToFinalExponential}'))
                             steps.append(finalStep)
                             final_simplification = Exponential(solutionToFinalExponential)
                         else:
@@ -1215,8 +1316,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                         simplification = f"{radical.coefficient}sqrt[{radical.index}]{'{'}{parseLatex(simplifiedRadicand['finalResult'])}{'}'}"
                         # SIMPLIFICATION STEP
                         simplificationStepInfo = latexify(f"{radical}={simplification}")
-                        if simplificationStepInfo[0] == '+' or simplificationStepInfo[
-                            0] == '-': simplificationStepInfo = simplificationStepInfo[1:]
+                        if simplificationStepInfo[0] == '+' or simplificationStepInfo[0] == '-': simplificationStepInfo = simplificationStepInfo[1:]
                         simplificationStep = createMainStep(r'\text{Simplify}', simplificationStepInfo)
                         temp_radical = radical
                         if temp_radical[0] == '+' or temp_radical[0] == '-': temp_radical = temp_radical[1:]
@@ -1224,7 +1324,11 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                         # COMPUTATION STEP
                         finalRadical = Radical(simplification)
                         solutionToFinalRadical = finalRadical.computeRadical()
-                        if solutionToFinalRadical != False and solutionToFinalRadical.is_integer:
+                        if solutionToFinalRadical == 'infty':
+                            computationStep = createMainStep(r'\text{Apply Infinity Property}:\ \sqrt{\infty}=\infty',latexify(f'{finalRadical}={solutionToFinalRadical}'))
+                            steps.append(computationStep)
+                            simplification = solutionToFinalRadical
+                        elif solutionToFinalRadical != False and solutionToFinalRadical.is_integer:
                             if finalRadical.coefficient == '1':
                                 finalStep = createMainStep(r'\text{Compute Radical}',
                                                            latexify(f'{simplification}={solutionToFinalRadical}'))
@@ -1233,15 +1337,11 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                             else:
                                 finalRadical.coefficient = Constant(finalRadical.coefficient)
                                 if finalRadical.coefficient.is_digit:
-                                    finalStep = createMainStep(r'\text{Compute Radical}',
-                                                               latexify(
-                                                                   f'{simplification}={finalRadical.coefficient}*{solutionToFinalRadical}'))
+                                    finalStep = createMainStep(r'\text{Compute Radical}',latexify(f'{simplification}={finalRadical.coefficient}*{solutionToFinalRadical}'))
                                     steps.append(finalStep)
                                     simplification = f'{finalRadical.coefficient}*{solutionToFinalRadical}'
                                 else:
-                                    finalStep = createMainStep(r'\text{Compute Radical}',
-                                                               latexify(
-                                                                   f'{simplification}={solutionToFinalRadical}{finalRadical.coefficient}'))
+                                    finalStep = createMainStep(r'\text{Compute Radical}',latexify(f'{simplification}={solutionToFinalRadical}{finalRadical.coefficient}'))
                                     steps.append(finalStep)
                                     simplification = f'{solutionToFinalRadical}{finalRadical.coefficient}'
                         else:
@@ -1317,8 +1417,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                     simplificationStep = createMainStep(r'\text{Simplify Numerator}', simplificationStepInfo)
                     temp_fraction = parseLatex(fraction)
                     if temp_fraction[0] == '+' or temp_fraction[0] == '-': temp_fraction = temp_fraction[1:]
-                    if (str(temp_fraction) != str(
-                        numerator_simplification)) and fraction.denominator != '1': steps.append(simplificationStep)
+                    if (str(temp_fraction) != str(numerator_simplification)) and fraction.denominator != '1': steps.append(simplificationStep)
 
                     """ SIMPLIFY DENOMINATOR """
                     simplifiedDenominator = simplifyExpression(denominator)
@@ -1347,17 +1446,27 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
 
                     # COMPUTATION STEP
                     fractionSplit = False
-                    solutionToFraction = simplifiedFraction.computeFraction(True)
+                    solutionToFraction = simplifiedFraction.computeFraction(reduce=True, specialOperations=specialOperations)
                     if solutionToFraction != False and type(solutionToFraction) == Fraction:
                         computationStep = createMainStep(r'\text{Reduce Fraction}',
                                                          latexify(f'{simplifiedFraction}={solutionToFraction}'))
                         steps.append(computationStep)
                         final_simplification = solutionToFraction
+                    elif solutionToFraction == 'DNE':
+                        computationStep = createMainStep(r'\text{Evaluate The Limit}', latexify(f'{simplifiedFraction}=' + r'\text{diverges}'))
+                        steps.append(computationStep)
+                        final_simplification = 'diverges'
+                    elif solutionToFraction == '→0':
+                        computationStep = createMainStep(r'\text{Apply Infinity Property}:\ \cfrac{c}{\infty}=0',
+                                                         latexify(f'{simplifiedFraction}=0'))
+                        steps.append(computationStep)
+                        final_simplification = '0'
                     elif solutionToFraction != False and solutionToFraction.is_integer:
                         computationStep = createMainStep(r'\text{Divide The Numbers}',
                                                          latexify(f'{simplifiedFraction}={solutionToFraction}'))
                         steps.append(computationStep)
                         final_simplification = solutionToFraction
+
                     else:
                         if len(Expression(str(simplifiedFraction.denominator))) == 1:
                             numerator = Expression(simplifiedFraction.numerator)
@@ -1681,7 +1790,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                                                             latexify(f"{expression}={newExpression}")))
 
                                 newExpression = Expression(newExpression)
-                                return simplifyExpression(newExpression, keyword, Steps, finalResult=finalResult)
+                                return simplifyExpression(newExpression, keyword=keyword, Steps=Steps, finalResult=finalResult)
 
                 if '(' in constantsExpression:
                     for k, const in enumerate(Constants):
@@ -1851,7 +1960,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
 
                     if simplifiedExpression != constantsExpression:
                         simplifiedExpression = Expression(simplifiedExpression)
-                        return simplifyExpression(simplifiedExpression, keyword, Steps, finalResult=finalResult)
+                        return simplifyExpression(simplifiedExpression, keyword=keyword, Steps=Steps, finalResult=finalResult)
 
                 """ HANDLE MULTIPLICATION """
                 # TODO
@@ -1892,7 +2001,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
                                     if steps != []: Steps.append(e_step)
 
                                     newExpression = Expression(expression.replace(str(term), simplification))
-                                    return simplifyExpression(newExpression, keyword, Steps, finalResult=finalResult)
+                                    return simplifyExpression(newExpression, keyword=keyword, Steps=Steps, finalResult=finalResult)
 
 
                             else:
@@ -1914,7 +2023,7 @@ def simplifyExpression(expression: Expression, keyword=None, Steps=None, grouped
 
                                 newExpression = Expression(newExpression)
                                 if str(newExpression) != str(expression):
-                                    return simplifyExpression(newExpression, keyword, Steps, finalResult=finalResult)
+                                    return simplifyExpression(newExpression, keyword=keyword, Steps=Steps, finalResult=finalResult)
 
                             # Steps.append(createMainStep(r'\text{Combine Results}', latexify(f'{expression}')))
                         else:
@@ -2191,14 +2300,18 @@ def simplifyConstants(expression, constants: list):
         if variablesStr[0] == '+': variablesStr = variablesStr[1:]
         sumOfVariables = addVariables(variables)
         if sumOfVariables[0] == '+': sumOfVariables = sumOfVariables[1:]
-        # FORMATTING
-        if numbersStr == '' and sumOfVariables[0] == '+': sumOfVariables = sumOfVariables[1:]
+
         if newExpression != newExpression.replace(variablesStr, sumOfVariables):
-            mainStep = createMainStep(r'\text{Add Like Terms Left to Right}',
-                                      latexify(
-                                          f'{newExpression}={newExpression.replace(variablesStr, sumOfVariables)}'))
+            mainStep = createMainStep(r'\text{Add Like Terms Left to Right}', latexify(f'{newExpression}={newExpression.replace(variablesStr, sumOfVariables)}'))
             Steps.append(mainStep)
             newExpression = newExpression.replace(variablesStr, sumOfVariables)
+
+            constTimesInftyPattern = re.compile("\d*infty")
+            constTimesInftyMatches = constTimesInftyPattern.findall(newExpression)
+            if len(constTimesInftyMatches) > 0:
+                inftyPropertyStep = createMainStep(r'\text{Apply Infinity Property}\ c\cdot\infty=\infty', latexify(f"{constTimesInftyMatches[0]}={'infty'}"))
+                Steps.append(inftyPropertyStep)
+                newExpression = newExpression.replace(constTimesInftyMatches[0], 'infty')
 
     if numbersStr != '':
         if numbersStr[0] == '+': numbersStr = numbersStr[1:]
@@ -2206,16 +2319,25 @@ def simplifyConstants(expression, constants: list):
         if numbersStr[0] == '-' and variablesStr != '' and sumOfNumbers > 0: sumOfNumbers = f'+{sumOfNumbers}'
 
         if newExpression != newExpression.replace(numbersStr, str(sumOfNumbers)):
-            mainStep = createMainStep(r'\text{Add Numbers Left to Right}',
-                                      latexify(
-                                          f'{newExpression}={newExpression.replace(numbersStr, str(sumOfNumbers))}'))
+            mainStep = createMainStep(r'\text{Add Numbers Left to Right}', latexify(f'{newExpression}={newExpression.replace(numbersStr, str(sumOfNumbers))}'))
             Steps.append(mainStep)
             newExpression = newExpression.replace(numbersStr, str(sumOfNumbers))
 
+
+    inftyPlusConstPattern = re.compile("infty\+\d+")
+    inftyPlusConstMatches = inftyPlusConstPattern.findall(expression)
+
+    # inftyPlusVarPattern = re.compile("infty\+\w+")
+    # inftyPlusVarMatches = inftyPlusVarPattern.findall(expression)
+
+    if len(inftyPlusConstMatches) > 0:
+        inftyPropertyStep = createMainStep(r'\text{Apply Infinity Property}\ \infty+c=\infty',
+                                           latexify(f"{newExpression}={'infty'}"))
+        Steps.append(inftyPropertyStep)
+        newExpression = 'infty'
+
     finalExpression = newExpression
-    finalExpression = finalExpression.replace('++', '+').replace('--', '+').replace('+-', '-').replace('-+',
-                                                                                                       '-').replace(
-        '+0', '').replace('-0', '')
+    finalExpression = finalExpression.replace('++', '+').replace('--', '+').replace('+-', '-').replace('-+','-').replace('+0', '').replace('-0', '')
 
     return {'finalExpression': finalExpression, 'Steps': Steps}
 
@@ -2581,8 +2703,7 @@ def getProduct2(terms: list):
         nonExponentialProductPattern = re.compile(r'[a-zA-Z][a-zA-Z]')
         nonExponentialProductMatches = nonExponentialProductPattern.findall(term)
 
-        if len(leftProductMatches) > 0 or len(rightProductMatches) or (
-                len(nonExponentialProductMatches) > 0 and '^' not in term and 'sqrt' not in term):
+        if len(leftProductMatches) > 0 or len(rightProductMatches) or (len(nonExponentialProductMatches) > 0 and '^' not in term and 'sqrt' not in term):
             separatedTerms = []
             termToAdd = ''
             i = 0
@@ -2890,8 +3011,10 @@ def main():
     # E = Expression('(frac{x+2}{x+3}+frac{x+4}{x+5})*(frac{x+6}{x+7}+frac{x+8}{x+9})*(frac{x+2}{x+3}+frac{x+4}{x+5})')
     # E = Expression('frac{x^{2}+2x+2}{x^{2}+3x+5}*frac{x+1}{x+2}')
     # E = Expression('e^{3*2+2}')
-    E = Expression('e^{3*2+2}+e^{2*2+4}')
-    print(simplifyExpression(E, keyword='simplify'))
+    E = Expression('infty+infty+1+2')
+    E = Expression('2*infty+1')
+    E = Expression('infty')
+    print(simplifyExpression(E, keyword='simplify', specialOperations='limit'))
 
 
 if __name__ == '__main__':
