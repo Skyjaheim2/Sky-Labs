@@ -324,7 +324,7 @@ class Exponential:
 
         if '^' not in expression or cast_as_non_exponential:
             if Constant(expression).is_digit:
-                self.base = expression
+                self.base = f"{sign}{expression}"
                 self.coefficient = '1'
                 self.exponent = '1'
                 return
@@ -854,7 +854,7 @@ def simplifyExpression(expression: Expression, keyword=None, specialOperations=N
                         if termToMultiply[0] == '*': termToMultiply = termToMultiply[1:]
 
                         if '*' in termToMultiply:
-                            simplifiedTermToMultiply = getProduct2(termToMultiply.split('*'))
+                            simplifiedTermToMultiply = getProduct2(termToMultiply.split('*'), Steps)
                             if termToMultiply != simplifiedTermToMultiply:
                                 mainStep = createMainStep(r'\text{Multiply Terms (left to right)}',
                                                           latexify(f'{termToMultiply}={simplifiedTermToMultiply}'))
@@ -906,7 +906,7 @@ def simplifyExpression(expression: Expression, keyword=None, specialOperations=N
                             cpyTerm = term
                             termToMultiply = termsNotInParen
                             if '*' in termToMultiply:
-                                multipliedTerm = getProduct2(termToMultiply.split('*'))
+                                multipliedTerm = getProduct2(termToMultiply.split('*'), Steps)
                                 if termToMultiply != multipliedTerm:
                                     mainStep = createMainStep(r'\text{Multiply Terms (left to right)}',
                                                               latexify(f'{termToMultiply}={multipliedTerm}'))
@@ -1006,7 +1006,25 @@ def simplifyExpression(expression: Expression, keyword=None, specialOperations=N
                                 newExpression = expression.replace(str(term), productExpression)
                                 return simplifyExpression(newExpression, keyword=keyword, Steps=Steps, finalResult=finalResult)
 
-                        solution = getProduct2(termsToBeMultiplied)
+                        """ CHECK FOR COMPUTABLE EXPONENTIALS """
+                        for k, item in enumerate(termsToBeMultiplied):
+                            if '^' in item:
+                                expTerm = Exponential(item, CETAEIOCF=True)
+                                if Constant(expTerm.base).is_digit:
+                                    expTermSimplification = simplifyExpression(Expression(str(expTerm)))
+                                    simplifiedTerm = parseLatex(expTermSimplification['finalResult'])
+                                    """ CREATE E-STEP """
+                                    EStep = createExpandableStep(f"{item}={simplifiedTerm}", expTermSimplification['steps'])
+                                    Steps.append(EStep)
+                                    """ UPDATE TERM AND EXPRESSION """
+                                    term = term.replace(item, simplifiedTerm)
+                                    expression = expression.replace(item, simplifiedTerm)
+                                    """ UPDATE ITEM """
+                                    item = simplifiedTerm
+                                    termsToBeMultiplied[k] = item
+
+
+                        solution = getProduct2(termsToBeMultiplied, Steps)
                         productStep = createMainStep(r'\text{Multiply And Divide (left to right)}', latexify(f'{term}={solution}'))
                         if str(term) != solution:
                             Steps.append(productStep)
@@ -2014,7 +2032,7 @@ def simplifyExpression(expression: Expression, keyword=None, specialOperations=N
                                     newExpression = expression.replace(str(term), str(solution))
                                 else:
                                     # if Constant(str(Exponential(termsToBeMultiplied[0]).exponent)).is_digit and Constant(str(Exponential(termsToBeMultiplied[1]).exponent)).is_digit:
-                                    solution = getProduct2(termsToBeMultiplied)
+                                    solution = getProduct2(termsToBeMultiplied, Steps)
                                     productStep = createMainStep(r'\text{Multiply And Divide (left to right)}',
                                                                  latexify(f'{term}={solution}'))
                                     if str(term) != solution:
@@ -2052,7 +2070,7 @@ def simplifyExpression(expression: Expression, keyword=None, specialOperations=N
                                     productTerms.append(simplifiedTerm)
                                     termToAdd = ''
 
-                            simplifiedProduct = getProduct2(productTerms)
+                            simplifiedProduct = getProduct2(productTerms, Steps)
                             newExpression = Expression(newExpression.replace(str(term), simplifiedProduct))
 
                     # return simplifyExpression(newExpression, keyword, Steps, finalResult=finalResult)
@@ -2123,8 +2141,7 @@ def simplifyExpression(expression: Expression, keyword=None, specialOperations=N
     return {'steps': Steps, 'finalResult': latexify(finalResult)}
 
 def simplifyImplicitProduct(expression: Expression, Steps) -> Expression:
-    if expression.isSingleExpression() and len(
-            expression.getGroupedTerms()['Exponential']) == 1 and '*' not in expression:
+    if expression.isSingleExpression() and len(expression.getGroupedTerms()['Exponential']) == 1 and '*' not in expression:
         """ SINGLE EXPONENTIAL: 25x^{1+2} -> 25x^{3} """
         simplification = simplifyExpression(expression)
         expression = Expression(simplification['finalResult'])
@@ -2222,7 +2239,7 @@ def simplifyImplicitProduct(expression: Expression, Steps) -> Expression:
                         i += 1
 
             if len(separatedTerms) > 0:
-                simplifiedProduct = getProduct2(separatedTerms)
+                simplifiedProduct = getProduct2(separatedTerms, Steps)
                 expression = Expression(expression.replace(str(term), simplifiedProduct))
 
     return expression
@@ -2685,7 +2702,7 @@ def product(numbers: list):
     else:
         return float(str(prod))
 
-def getProduct2(terms: list):
+def getProduct2(terms: list, Steps: list):
     """ RETURNS THE ALGEBRAIC PRODUCT OF THE ITEMS IN terms """
 
     """ SEPARATE PRODUCT: [3x, 5x^{2}, 20uv^{2}xyz] -> [3x, 5x^{2}, 20u, v^{2}, x, y, ] """
@@ -2693,7 +2710,7 @@ def getProduct2(terms: list):
         if '*' in term:
             terms.pop(k)
             terms = terms + term.split('*')
-            return getProduct2(terms)
+            return getProduct2(terms, Steps)
         leftProductPattern = re.compile(r'[a-zA-Z]\w\^{')
         leftProductMatches = leftProductPattern.findall(term)
 
@@ -2741,8 +2758,8 @@ def getProduct2(terms: list):
                 numerators.append(Fraction(term).numerator)
                 denominators.append(Fraction(term).denominator)
 
-            numeratorProduct = getProduct2(numerators)
-            denominatorProduct = getProduct2(denominators)
+            numeratorProduct = getProduct2(numerators, Steps)
+            denominatorProduct = getProduct2(denominators, Steps)
 
             finalProduct = f"frac{'{'}{numeratorProduct}{'}'}{'{'}{denominatorProduct}{'}'}"
             return finalProduct
@@ -2782,12 +2799,13 @@ def getProduct2(terms: list):
 
     for term in seenTerms:
         if (term != finalProduct and not Constant(term).is_digit) or finalProduct == '':
-            # if term != finalProduct:
             finalProduct += f"{term}^{'{'}{seenTerms[term]}{'}'}"
+
+        # elif (term == finalProduct or Constant(term).is_digit) and finalProduct != '':
         else:
-            pass
             if term != finalProduct and not Constant(simplifyExpression(seenTerms[term])['finalResult']).is_digit:
                 finalProduct += f"*{term}^{'{'}{seenTerms[term]}{'}'}"
+
 
     """ CONSTANT TIMES A FRACTION """
     fractionProductPattern = re.compile('\w+frac')
@@ -2999,21 +3017,7 @@ def solveEquation(equation: Equation):
     pass
 
 def main():
-    # E = Expression('tanh(frac{3x^{2}+x^{2}+3+4}{3x+x+ln(x+2x+1)+1+2})')
-    # E = Expression('4u*5*v^{2}*x*(5x^{2}+3x^{2}+2x+1)')
-    # E = Expression('20uv^{2}*5x^{2}+2uv^{2}*3x^{2}')
-    # E = Expression('240x^{2}*(a+b)')
-
-    # E = Expression('1*1*(x+3)*(x+2)*(x+5)*1*
-    # E = Expression('frac{x+y}{a+b}*frac{u+v}{s+t}')
-    # E = Expression('2x*3x*sqrt{5x^{2}+3x^{2}+2+3}*5u^{2}*u')
-
-    # E = Expression('(frac{x+2}{x+3}+frac{x+4}{x+5})*(frac{x+6}{x+7}+frac{x+8}{x+9})*(frac{x+2}{x+3}+frac{x+4}{x+5})')
-    # E = Expression('frac{x^{2}+2x+2}{x^{2}+3x+5}*frac{x+1}{x+2}')
-    # E = Expression('e^{3*2+2}')
-    E = Expression('infty+infty+1+2')
-    E = Expression('2*infty+1')
-    E = Expression('infty')
+    E = Expression('3*2^{1+1}*4^{2+3}*5')
     print(simplifyExpression(E, keyword='simplify', specialOperations='limit'))
 
 

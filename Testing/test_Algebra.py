@@ -2376,6 +2376,26 @@ class TestCalc(unittest.TestCase):
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Combine Exponentials}', 'info': '\\displaystyle e^{3\\cdot2+2}+e^{2\\cdot2+4}=e^{8}+e^{8}'},
                     {'type': 'main-step', 'description': '\\displaystyle \\text{Add Like Exponentials}', 'info': '\\displaystyle e^{8}+e^{8}=2e^{8}'}], 'finalResult': '2e^{8}'},
             },
+            {
+                'expression': '3*2^{2}*5*4^{3}',
+                'keyword': None,
+                'expected_val': {'steps': [{'type': 'e-step', 'heading': '\\displaystyle 2^{2}=4', 'e-steps': [{'type': 'main-step', 'description': '\\displaystyle \\text{Compute Exponent}', 'info': '\\displaystyle 2^{2}=4'}]}, {'type': 'e-step', 'heading': '\\displaystyle 4^{3}=64', 'e-steps': [{'type': 'main-step', 'description': '\\displaystyle \\text{Compute Exponent}', 'info': '\\displaystyle 4^{3}=64'}]}, {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 3\\cdot4\\cdot5\\cdot64=3840'}], 'finalResult': '3840'},
+            },
+            {
+                'expression': '3*2^{1+1}*4^{2+3}*5',
+                'keyword': None,
+                'expected_val': {'steps': [{'type': 'e-step', 'heading': '\\displaystyle 2^{1+1}=4', 'e-steps': [{'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 1+1=2'}, {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 2^{1+1}=2^{2}'}, {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Exponential}', 'info': '\\displaystyle 2^{2}=4'}]}, {'type': 'e-step', 'heading': '\\displaystyle 4^{2+3}=1024', 'e-steps': [{'type': 'main-step', 'description': '\\displaystyle \\text{Add Numbers Left to Right}', 'info': '\\displaystyle 2+3=5'}, {'type': 'main-step', 'description': '\\displaystyle \\text{Simplify Exponent}', 'info': '\\displaystyle 4^{2+3}=4^{5}'}, {'type': 'main-step', 'description': '\\displaystyle \\text{Compute Exponential}', 'info': '\\displaystyle 4^{5}=1024'}]}, {'type': 'main-step', 'description': '\\displaystyle \\text{Multiply And Divide (left to right)}', 'info': '\\displaystyle 3\\cdot4\\cdot1024\\cdot5=61440'}], 'finalResult': '61440'},
+            },
+            # {
+            #     'expression': '',
+            #     'keyword': None,
+            #     'expected_val': {},
+            # },
+            # {
+            #     'expression': '',
+            #     'keyword': None,
+            #     'expected_val': {},
+            # },
             # {
             #     'expression': '',
             #     'keyword': None,
