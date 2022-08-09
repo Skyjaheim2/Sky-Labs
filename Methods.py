@@ -163,3 +163,11 @@ def splitAtIndex(expression: iter, index: int):
 
 def reverseList(L):
     return L[::-1]
+
+def removeDuplicatesFromList(items: list):
+    newList = []
+    for item in items:
+        if item not in newList:
+            newList.append(item)
+
+    return newList

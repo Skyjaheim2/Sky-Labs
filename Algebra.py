@@ -5,7 +5,8 @@ from exceptions import *
 
 from Methods import (latexify, parseLatex, getSpecialFunctions, createMainStep, createExpandableStep,
                      createGroupedTermsDict, createEStepHeadingFromGroup, parenIsBalanced, joinList,
-                     indexOf, getIndexOfLastOccurrence, list_diff, numOccurrences, splitAtIndex, reverseList)
+                     indexOf, getIndexOfLastOccurrence, list_diff, numOccurrences, splitAtIndex, reverseList,
+                     removeDuplicatesFromList)
 
 
 maxInt = 1000000000000000
@@ -389,13 +390,14 @@ class Exponential:
             if self.base[0] == '+' or self.base[0] == '-': self.base = self.base[1:]
 
             coefficient = ''
-            if len(self.base) > 1:
-                for i, char in enumerate(self.base):
-                    char = Constant(char)
-                    if char == '(' and self.base[-1] == ')':
-                        break
-                    if self.exponential[i + 1] != '^':
-                        coefficient += str(char)
+            if  not Constant(self.base).is_digit:
+                if len(self.base) > 1:
+                    for i, char in enumerate(self.base):
+                        char = Constant(char)
+                        if char == '(' and self.base[-1] == ')':
+                            break
+                        if self.exponential[i + 1] != '^':
+                            coefficient += str(char)
 
             if coefficient == '':
                 self.coefficient = '1'
@@ -1450,8 +1452,7 @@ def simplifyExpression(expression: Expression, keyword=None, specialOperations=N
                     denominator_simplification = Fraction(f"frac{'{'}{numerator_simplification.numerator}{'}'}{'{'}{parseLatex(simplifiedDenominator['finalResult'])}{'}'}")
                     # SIMPLIFICATION STEP 2
                     simplificationStepInfo = latexify(f"{numerator_simplification}={denominator_simplification}")
-                    if simplificationStepInfo[0] == '+' or simplificationStepInfo[
-                        0] == '-': simplificationStepInfo = simplificationStepInfo[1:]
+                    if simplificationStepInfo[0] == '+' or simplificationStepInfo[0] == '-': simplificationStepInfo = simplificationStepInfo[1:]
                     simplificationStep = createMainStep(r'\text{Simplify Denominator}', simplificationStepInfo)
                     temp_fraction = numerator_simplification
                     if temp_fraction[0] == '+' or temp_fraction[0] == '-': temp_fraction = temp_fraction[1:]
@@ -1650,7 +1651,7 @@ def simplifyExpression(expression: Expression, keyword=None, specialOperations=N
                                     exp_lcm = Exponential(lcm, CETAEIOCF=True)
 
                                 if exp_denominator.base == exp_lcm.base:
-                                    lcmFactorExponentExpression = Expression(f'{Exponential(lcm).exponent}-{Exponential(frac.denominator).exponent}')
+                                    lcmFactorExponentExpression = Expression(f'{Exponential(lcm, CETAEIOCF=True).exponent}-{Exponential(frac.denominator, CETAEIOCF=True).exponent}')
                                     lcmFactorExponentExpression = simplifyExpression(lcmFactorExponentExpression)['finalResult']
                                     if lcmFactorExponentExpression == '0':
                                         if str(exp_lcm) == str(exp_denominator):
@@ -1935,6 +1936,12 @@ def simplifyExpression(expression: Expression, keyword=None, specialOperations=N
                                         Steps.append(createMainStep(r'\text{Simplify}',
                                                                     latexify(f"{expression}={newExpression}")))
                                         simplifiedExpression = simplifiedExpression.replace(str(const), newExpression)
+                                    else:
+                                        """ SIMPLIFY PAREN IN: (x+y)+x """
+                                        if (str(const)[0] == '(' and str(const)[-1] == ')') and parenIsBalanced(const[1:-1]):
+                                            removeParenStep = createMainStep(r"\text{Apply Rule}: (a)=a", latexify(f"{const}={simplification}"))
+                                            Steps.append(removeParenStep)
+                                            simplifiedExpression = simplifiedExpression.replace(str(const), simplification)
 
                         const = str(const)
                         specialFunction = str(const[:indexOf(const, '(')])
@@ -2463,6 +2470,8 @@ def getLCM(terms: list, listOfNumbers=False, termsType=None):
         return min(commonMultiples)
 
 def getLCMFactor(fracDenominator: str, denominators: list):
+    denominators = removeDuplicatesFromList(denominators)
+
     denominatorDigits = []
     denominatorVariables = []
     for term in denominators:
@@ -3017,8 +3026,8 @@ def solveEquation(equation: Equation):
     pass
 
 def main():
-    E = Expression('3*2^{1+1}*4^{2+3}*5')
-    print(simplifyExpression(E, keyword='simplify', specialOperations='limit'))
+    E = Expression('3*2^{2}*5*4^{3}')
+    print(simplifyExpression(E, keyword='simplify'))
 
 
 if __name__ == '__main__':
