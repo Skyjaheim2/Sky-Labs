@@ -1671,9 +1671,15 @@ def simplifyExpression(expression: Expression, keyword=None, specialOperations=N
                             if frac.numerator != '1':
                                 if lcmFactor == '1': lcmFactor = ''
                                 if len(Expression(frac.numerator)) == 1:
-                                    adjustedFrac = Fraction(f"{sign}frac{'{'}{frac.numerator}{lcmFactor}{'}'}{'{'}{lcm}{'}'}")
+                                    if lcmFactor != '':
+                                        adjustedFrac = Fraction(f"{sign}frac{'{'}{frac.numerator}*{lcmFactor}{'}'}{'{'}{lcm}{'}'}")
+                                    else:
+                                        adjustedFrac = Fraction(f"{sign}frac{'{'}{frac.numerator}{'}'}{'{'}{lcm}{'}'}")
                                 else:
-                                    adjustedFrac = Fraction(f"{sign}frac{'{'}({frac.numerator}){lcmFactor}{'}'}{'{'}{lcm}{'}'}")
+                                    if lcmFactor != '':
+                                        adjustedFrac = Fraction(f"{sign}frac{'{'}({frac.numerator})*{lcmFactor}{'}'}{'{'}{lcm}{'}'}")
+                                    else:
+                                        adjustedFrac = Fraction(f"{sign}frac{'{'}({frac.numerator}){'}'}{'{'}{lcm}{'}'}")
                             else:
                                 if numOccurrences(lcmFactor, '(') == 1 and Exponential(lcmFactor).exponent == '1':
                                     lcmFactor = Exponential(lcmFactor).base[1:-1]  # REMOVE UNNECESSARY PARENTHESES
@@ -1682,8 +1688,7 @@ def simplifyExpression(expression: Expression, keyword=None, specialOperations=N
                             lcmFactor = lcm // int(frac.denominator)
                             if frac.numerator != '1':
                                 if Constant(frac.numerator).is_digit:
-                                    adjustedFrac = Fraction(
-                                        f"{sign}frac{'{'}{int(frac.numerator) * lcmFactor}{'}'}{'{'}{lcm}{'}'}")
+                                    adjustedFrac = Fraction(f"{sign}frac{'{'}{int(frac.numerator) * lcmFactor}{'}'}{'{'}{lcm}{'}'}")
                                 else:
                                     adjustedFrac = Fraction(f"{sign}frac{'{'}{lcmFactor}*{frac.numerator}{'}'}{'{'}{lcm}{'}'}")
                             else:
@@ -2148,6 +2153,8 @@ def simplifyExpression(expression: Expression, keyword=None, specialOperations=N
     return {'steps': Steps, 'finalResult': latexify(finalResult)}
 
 def simplifyImplicitProduct(expression: Expression, Steps) -> Expression:
+    if len(expression) == 1 and len(expression.getGroupedTerms()['Fractions']) == 1:
+        return expression
     if expression.isSingleExpression() and len(expression.getGroupedTerms()['Exponential']) == 1 and '*' not in expression:
         """ SINGLE EXPONENTIAL: 25x^{1+2} -> 25x^{3} """
         simplification = simplifyExpression(expression)
@@ -3026,8 +3033,9 @@ def solveEquation(equation: Equation):
     pass
 
 def main():
-    E = Expression('3*2^{2}*5*4^{3}')
-    print(simplifyExpression(E, keyword='simplify'))
+    E = Expression('e^{2x+x}+frac{s}{t+1}')
+
+    print(simplifyExpression(E, keyword='combine'))
 
 
 if __name__ == '__main__':
